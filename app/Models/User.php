@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'password',
         'rol',
         'pueblo_id',
+        'avatar',
     ];
 
     /**
@@ -57,6 +59,11 @@ class User extends Authenticatable
     public function pueblo(): BelongsTo
     {
         return $this->belongsTo(Pueblo::class);
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : null;
     }
 
     public function esAdministrador(): bool

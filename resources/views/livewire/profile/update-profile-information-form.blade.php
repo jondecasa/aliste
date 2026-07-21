@@ -3,12 +3,17 @@
 use App\Models\Pueblo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 
 new class extends Component
 {
+    use WithFileUploads;
+
     public string $name = '';
     public ?int $puebloId = null;
+    public $avatar = null;
 
     /**
      * Mount the component.
@@ -29,14 +34,26 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'puebloId' => ['nullable', 'exists:pueblos,id'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $user->fill([
+        $datos = [
             'name' => $validated['name'],
             'pueblo_id' => $validated['puebloId'],
-        ]);
+        ];
 
+        if ($this->avatar) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $datos['avatar'] = $this->avatar->store('avatars', 'public');
+        }
+
+        $user->fill($datos);
         $user->save();
+
+        $this->avatar = null;
 
         $this->dispatch('profile-updated', name: $user->name);
     }
@@ -72,6 +89,24 @@ new class extends Component
     </header>
 
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+        <div>
+            <x-input-label for="avatar" value="Foto de perfil" />
+
+            <div class="mt-2 flex items-center gap-4">
+                @if ($avatar)
+                    <img src="{{ $avatar->temporaryUrl() }}" class="w-16 h-16 rounded-full object-cover">
+                @elseif (auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" class="w-16 h-16 rounded-full object-cover">
+                @else
+                    <div class="w-16 h-16 rounded-full bg-gray-200"></div>
+                @endif
+
+                <input wire:model="avatar" id="avatar" type="file" accept="image/*" class="block text-sm" />
+            </div>
+            <div wire:loading wire:target="avatar" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+        </div>
+
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
