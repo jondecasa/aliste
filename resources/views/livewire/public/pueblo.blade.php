@@ -119,6 +119,17 @@ new #[Layout('layouts.public')] class extends Component
         </div>
 
         <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6">
+            <div class="grid grid-cols-2 gap-3">
+                <a href="{{ route('pueblo.calendario', $pueblo) }}" wire:navigate
+                    class="flex items-center justify-center gap-2 bg-white rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
+                    Calendario
+                </a>
+                <a href="{{ route('pueblo.gente', $pueblo) }}" wire:navigate
+                    class="flex items-center justify-center gap-2 bg-white rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
+                    Gente
+                </a>
+            </div>
+
             @if ($noticias->isNotEmpty())
                 <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
