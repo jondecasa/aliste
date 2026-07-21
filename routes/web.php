@@ -11,6 +11,7 @@ Volt::route('pueblos/{pueblo}/gente', 'public.gente')->name('pueblo.gente');
 Volt::route('servicios', 'public.servicios')->name('servicios');
 Volt::route('blog', 'public.blog')->name('blog');
 Volt::route('blog/{noticia}', 'public.noticia')->name('noticia');
+Volt::route('contacto', 'public.contacto')->name('contacto');
 
 Route::view('panel', 'dashboard')
     ->middleware(['auth', 'verified'])
