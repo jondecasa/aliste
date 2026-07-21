@@ -16,6 +16,7 @@ new #[Layout('layouts.admin')] class extends Component
         'servicio' => 'Servicio',
         'cancion' => 'Canción',
         'obra_literaria' => 'Obra literaria',
+        'evento' => 'Evento',
     ];
 
     public string $buscar = '';
@@ -24,6 +25,7 @@ new #[Layout('layouts.admin')] class extends Component
     public ?int $categoriaId = null;
     public string $nombre = '';
     public string $grupo = 'noticia';
+    public ?string $color = '#e11d48';
 
     public function mount(): void
     {
@@ -43,6 +45,7 @@ new #[Layout('layouts.admin')] class extends Component
         $this->categoriaId = $categoria->id;
         $this->nombre = $categoria->nombre;
         $this->grupo = $categoria->grupo;
+        $this->color = $categoria->color ?? '#e11d48';
 
         $this->dispatch('open-modal', 'categoria-form');
     }
@@ -52,6 +55,7 @@ new #[Layout('layouts.admin')] class extends Component
         $datos = $this->validate([
             'nombre' => ['required', 'string', 'max:255'],
             'grupo' => ['required', 'string', 'in:'.implode(',', array_keys(self::GRUPOS))],
+            'color' => ['nullable', 'string', 'max:7'],
         ]);
 
         Categoria::updateOrCreate(
@@ -60,6 +64,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'nombre' => $datos['nombre'],
                 'slug' => Str::slug($datos['nombre']),
                 'grupo' => $datos['grupo'],
+                'color' => $datos['grupo'] === 'evento' ? $datos['color'] : null,
             ]
         );
 
@@ -76,6 +81,7 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $this->reset(['categoriaId', 'nombre']);
         $this->grupo = 'noticia';
+        $this->color = '#e11d48';
         $this->resetErrorBag();
     }
 
@@ -116,6 +122,7 @@ new #[Layout('layouts.admin')] class extends Component
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-6 py-3"></th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grupo</th>
                     <th class="px-6 py-3"></th>
@@ -124,6 +131,11 @@ new #[Layout('layouts.admin')] class extends Component
             <tbody class="divide-y divide-gray-200">
                 @forelse ($categorias as $categoria)
                     <tr wire:key="categoria-{{ $categoria->id }}">
+                        <td class="px-6 py-4">
+                            @if ($categoria->color)
+                                <span class="inline-block w-4 h-4 rounded-full" style="background-color: {{ $categoria->color }}"></span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $categoria->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ self::GRUPOS[$categoria->grupo] }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
@@ -142,7 +154,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">No hay categorías.</td>
+                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay categorías.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -168,13 +180,21 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div>
                     <x-input-label for="grupo" value="Grupo" />
-                    <select wire:model="grupo" id="grupo" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <select wire:model.live="grupo" id="grupo" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                         @foreach (self::GRUPOS as $valor => $etiqueta)
                             <option value="{{ $valor }}">{{ $etiqueta }}</option>
                         @endforeach
                     </select>
                     <x-input-error :messages="$errors->get('grupo')" class="mt-2" />
                 </div>
+
+                @if ($grupo === 'evento')
+                    <div>
+                        <x-input-label for="color" value="Color en el calendario" />
+                        <input wire:model="color" id="color" type="color" class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm">
+                        <x-input-error :messages="$errors->get('color')" class="mt-2" />
+                    </div>
+                @endif
             </div>
 
             <div class="mt-6 flex justify-end">

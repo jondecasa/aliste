@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Pueblo;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,7 @@ new #[Layout('layouts.admin')] class extends Component
 
     public ?int $eventoId = null;
     public ?int $puebloId = null;
+    public ?int $categoriaId = null;
     public string $titulo = '';
     public ?string $descripcion = null;
     public ?string $lugar = null;
@@ -42,6 +44,7 @@ new #[Layout('layouts.admin')] class extends Component
 
         $this->eventoId = $evento->id;
         $this->puebloId = $evento->pueblo_id;
+        $this->categoriaId = $evento->categoria_id;
         $this->titulo = $evento->titulo;
         $this->descripcion = $evento->descripcion;
         $this->lugar = $evento->lugar;
@@ -57,6 +60,7 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $datos = $this->validate([
             'puebloId' => ['required', 'exists:pueblos,id'],
+            'categoriaId' => ['nullable', 'exists:categorias,id'],
             'titulo' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
             'lugar' => ['nullable', 'string', 'max:255'],
@@ -79,6 +83,7 @@ new #[Layout('layouts.admin')] class extends Component
             ['id' => $this->eventoId],
             [
                 'pueblo_id' => $datos['puebloId'],
+                'categoria_id' => $datos['categoriaId'],
                 'titulo' => $datos['titulo'],
                 'slug' => Str::slug($datos['titulo']),
                 'descripcion' => $datos['descripcion'],
@@ -107,7 +112,7 @@ new #[Layout('layouts.admin')] class extends Component
     private function resetearFormulario(): void
     {
         $this->reset([
-            'eventoId', 'puebloId', 'titulo', 'descripcion', 'lugar',
+            'eventoId', 'puebloId', 'categoriaId', 'titulo', 'descripcion', 'lugar',
             'imagenActual', 'imagen', 'fechaInicio', 'fechaFin',
         ]);
         $this->resetErrorBag();
@@ -117,11 +122,12 @@ new #[Layout('layouts.admin')] class extends Component
     {
         return [
             'eventos' => Evento::query()
-                ->with('pueblo')
+                ->with(['pueblo', 'categoria'])
                 ->when($this->buscar, fn ($q) => $q->where('titulo', 'like', "%{$this->buscar}%"))
                 ->orderByDesc('fecha_inicio')
                 ->paginate(15),
             'pueblos' => Pueblo::orderBy('nombre')->get(),
+            'categorias' => Categoria::deGrupo('evento')->orderBy('nombre')->get(),
         ];
     }
 }; ?>
@@ -160,7 +166,12 @@ new #[Layout('layouts.admin')] class extends Component
                                 <div class="w-12 h-12 rounded-lg bg-gray-100"></div>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $evento->titulo }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @if ($evento->categoria?->color)
+                                <span class="inline-block w-2.5 h-2.5 rounded-full me-1.5" style="background-color: {{ $evento->categoria->color }}"></span>
+                            @endif
+                            {{ $evento->titulo }}
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
@@ -212,6 +223,17 @@ new #[Layout('layouts.admin')] class extends Component
                     <x-input-label for="titulo" value="Título" />
                     <x-text-input wire:model="titulo" id="titulo" type="text" class="mt-1 block w-full" />
                     <x-input-error :messages="$errors->get('titulo')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="categoriaId" value="Categoría" />
+                    <select wire:model="categoriaId" id="categoriaId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option value="">Sin categoría</option>
+                        @foreach ($categorias as $categoria)
+                            <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('categoriaId')" class="mt-2" />
                 </div>
 
                 <div>
