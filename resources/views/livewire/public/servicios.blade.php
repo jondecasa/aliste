@@ -73,7 +73,7 @@ new #[Layout('layouts.public')] class extends Component
             <div class="mt-4 p-[18px] rounded-2xl bg-verde text-white">
                 <div class="font-bold text-sm">¿Tienes un negocio?</div>
                 <div class="text-xs mt-1.5 opacity-90 leading-relaxed">Añádelo gratis al directorio.</div>
-                <a href="{{ route('register') }}" wire:navigate
+                <a href="{{ route('contacto') }}" wire:navigate
                     class="mt-2.5 block text-center w-full bg-white text-verde border-0 py-2.5 rounded-full font-bold text-xs">
                     Añadir negocio
                 </a>
@@ -92,6 +92,14 @@ new #[Layout('layouts.public')] class extends Component
                     <div class="font-serif font-semibold text-lg text-tinta mt-2">{{ $servicio->nombre }}</div>
                     @if ($servicio->descripcion)
                         <div class="text-[13px] text-tinta-muted mt-1.5 leading-relaxed">{{ $servicio->descripcion }}</div>
+                    @endif
+                    @if ($servicio->direccion)
+                        <div class="text-[13px] text-tinta-muted mt-1.5">{{ $servicio->direccion }}</div>
+                    @endif
+                    @if ($servicio->telefono_1)
+                        <a href="tel:{{ $servicio->telefono_1 }}" class="block text-[13px] text-tinta-muted mt-1">
+                            {{ $servicio->telefono_1 }}{{ $servicio->telefono_2 ? ' / '.$servicio->telefono_2 : '' }}
+                        </a>
                     @endif
                     @if ($servicio->sitio_web)
                         <a href="{{ $servicio->sitio_web }}" target="_blank" rel="noopener" class="block text-xs text-terracota mt-2.5">
