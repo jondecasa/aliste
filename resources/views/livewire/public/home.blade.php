@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Categoria;
+use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Pueblo;
 use Livewire\Attributes\Layout;
@@ -23,6 +24,11 @@ new #[Layout('layouts.public')] class extends Component
                 ->get(),
             'ultimasNoticias' => Noticia::orderByDesc('publicado_en')
                 ->take(3)
+                ->get(),
+            'proximosEventos' => Evento::with(['pueblo', 'categoria'])
+                ->where('fecha_inicio', '>=', now())
+                ->orderBy('fecha_inicio')
+                ->take(5)
                 ->get(),
         ];
     }
@@ -80,7 +86,31 @@ new #[Layout('layouts.public')] class extends Component
             </div>
         </div>
 
-        <div class="w-full lg:w-[300px] flex-shrink-0">
+        <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6">
+            @if ($proximosEventos->isNotEmpty())
+                <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <div class="bg-terracota text-white px-5 py-4 font-serif font-semibold text-lg">Próximos eventos</div>
+                    <div class="bg-white p-5 flex flex-col gap-4">
+                        @foreach ($proximosEventos as $evento)
+                            <a href="{{ route('pueblo.calendario', $evento->pueblo) }}" wire:navigate wire:key="evento-home-{{ $evento->id }}" class="block">
+                                <div class="flex items-center gap-1.5 text-xs text-terracota font-bold uppercase">
+                                    @if ($evento->categoria?->color)
+                                        <span class="inline-block w-2 h-2 rounded-full" style="background-color: {{ $evento->categoria->color }}"></span>
+                                    @endif
+                                    {{ $evento->pueblo->nombre }}
+                                </div>
+                                <div class="font-serif font-semibold text-sm text-tinta mt-0.5">
+                                    {{ $evento->titulo }}
+                                    <span class="font-sans font-normal text-tinta-muted">
+                                        | {{ $evento->fecha_inicio->format('H:i') }}{{ $evento->fecha_fin ? '-'.$evento->fecha_fin->format('H:i') : '' }}
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
                 <div class="bg-white p-5 flex flex-col gap-4">
