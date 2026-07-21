@@ -47,6 +47,11 @@ class Pueblo extends Model
         return $this->hasMany(Noticia::class);
     }
 
+    public function eventos(): HasMany
+    {
+        return $this->hasMany(Evento::class);
+    }
+
     public function puntosInteres(): HasMany
     {
         return $this->hasMany(PuntoInteres::class);
