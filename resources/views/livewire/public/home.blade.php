@@ -26,6 +26,7 @@ new #[Layout('layouts.public')] class extends Component
                 ->take(3)
                 ->get(),
             'proximosEventos' => Evento::with(['pueblo', 'categoria'])
+                ->where('es_principal', true)
                 ->where('fecha_inicio', '>=', now())
                 ->orderBy('fecha_inicio')
                 ->take(5)

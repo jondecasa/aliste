@@ -20,6 +20,7 @@ class Evento extends Model
         'imagen',
         'fecha_inicio',
         'fecha_fin',
+        'es_principal',
     ];
 
     protected function casts(): array
@@ -27,6 +28,7 @@ class Evento extends Model
         return [
             'fecha_inicio' => 'datetime',
             'fecha_fin' => 'datetime',
+            'es_principal' => 'boolean',
         ];
     }
 

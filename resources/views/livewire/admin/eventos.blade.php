@@ -26,6 +26,7 @@ new #[Layout('layouts.admin')] class extends Component
     public $imagen = null;
     public ?string $fechaInicio = null;
     public ?string $fechaFin = null;
+    public bool $esPrincipal = false;
 
     public function mount(): void
     {
@@ -52,6 +53,7 @@ new #[Layout('layouts.admin')] class extends Component
         $this->imagen = null;
         $this->fechaInicio = $evento->fecha_inicio?->format('Y-m-d\TH:i');
         $this->fechaFin = $evento->fecha_fin?->format('Y-m-d\TH:i');
+        $this->esPrincipal = $evento->es_principal;
 
         $this->dispatch('open-modal', 'evento-form');
     }
@@ -67,6 +69,7 @@ new #[Layout('layouts.admin')] class extends Component
             'imagen' => ['nullable', 'image', 'max:4096'],
             'fechaInicio' => ['required', 'date'],
             'fechaFin' => ['nullable', 'date', 'after_or_equal:fechaInicio'],
+            'esPrincipal' => ['boolean'],
         ]);
 
         $rutaImagen = $this->imagenActual;
@@ -91,6 +94,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'imagen' => $rutaImagen,
                 'fecha_inicio' => $datos['fechaInicio'],
                 'fecha_fin' => $datos['fechaFin'],
+                'es_principal' => $datos['esPrincipal'],
             ]
         );
 
@@ -113,7 +117,7 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $this->reset([
             'eventoId', 'puebloId', 'categoriaId', 'titulo', 'descripcion', 'lugar',
-            'imagenActual', 'imagen', 'fechaInicio', 'fechaFin',
+            'imagenActual', 'imagen', 'fechaInicio', 'fechaFin', 'esPrincipal',
         ]);
         $this->resetErrorBag();
     }
@@ -153,6 +157,7 @@ new #[Layout('layouts.admin')] class extends Component
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Título</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pueblo</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Principal</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
@@ -174,6 +179,7 @@ new #[Layout('layouts.admin')] class extends Component
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->es_principal ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <button
                                 wire:click="editar({{ $evento->id }})"
@@ -190,7 +196,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">No hay eventos.</td>
+                        <td colspan="6" class="px-6 py-4 text-sm text-gray-500 text-center">No hay eventos.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -272,6 +278,13 @@ new #[Layout('layouts.admin')] class extends Component
                     <input wire:model="imagen" id="imagen" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
                     <div wire:loading wire:target="imagen" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
                     <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="inline-flex items-center">
+                        <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                        <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
+                    </label>
                 </div>
             </div>
 
