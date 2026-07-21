@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Pueblo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -10,6 +11,7 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public ?int $puebloId = null;
 
     /**
      * Mount the component.
@@ -18,6 +20,7 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->puebloId = Auth::user()->pueblo_id;
     }
 
     /**
@@ -30,9 +33,14 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'puebloId' => ['nullable', 'exists:pueblos,id'],
         ]);
 
-        $user->fill($validated);
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'pueblo_id' => $validated['puebloId'],
+        ]);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -102,6 +110,18 @@ new class extends Component
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="puebloId" value="Tu pueblo" />
+            <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="">Sin asociar</option>
+                @foreach (Pueblo::orderBy('nombre')->get() as $pueblo)
+                    <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-sm text-gray-500">Asóciate a tu pueblo para aparecer más adelante en su apartado de "gente".</p>
+            <x-input-error class="mt-2" :messages="$errors->get('puebloId')" />
         </div>
 
         <div class="flex items-center gap-4">
