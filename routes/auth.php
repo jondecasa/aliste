@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -16,6 +17,12 @@ Route::middleware('guest')->group(function () {
 
     Volt::route('restablecer-contrasena/{token}', 'pages.auth.reset-password')
         ->name('password.reset');
+
+    Route::get('auth/google/redirigir', [GoogleAuthController::class, 'redirect'])
+        ->name('auth.google.redirigir');
+
+    Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function () {
