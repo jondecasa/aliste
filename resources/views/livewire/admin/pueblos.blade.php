@@ -260,14 +260,55 @@ new #[Layout('layouts.admin')] class extends Component
                 </div>
 
                 <div class="sm:col-span-2">
-                    <x-input-label for="contenidoHtml" value="Página personalizada del pueblo (HTML)" />
-                    <textarea
-                        wire:model="contenidoHtml"
-                        id="contenidoHtml"
-                        rows="10"
-                        placeholder="<p>Escribe aquí el contenido HTML de la página del pueblo...</p>"
-                        class="mt-1 block w-full font-mono text-xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                    ></textarea>
+                    <x-input-label value="Página personalizada del pueblo" />
+
+                    <div
+                        wire:ignore
+                        x-data
+                        x-init="
+                            window.tinymce.init({
+                                selector: '#contenidoHtml',
+                                base_url: '{{ asset('vendor/tinymce') }}',
+                                suffix: '.min',
+                                license_key: 'gpl',
+                                height: 420,
+                                menubar: false,
+                                branding: false,
+                                plugins: 'advlist autolink lists link image table code media fullscreen',
+                                toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | code fullscreen',
+                                images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
+                                    const datosFormulario = new FormData();
+                                    datosFormulario.append('file', blobInfo.blob(), blobInfo.filename());
+
+                                    fetch('{{ route('admin.editor.imagenes') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                            'Accept': 'application/json',
+                                        },
+                                        body: datosFormulario,
+                                    })
+                                        .then((respuesta) => respuesta.ok ? respuesta.json() : Promise.reject())
+                                        .then((datos) => resolve(datos.location))
+                                        .catch(() => reject('Error al subir la imagen'));
+                                }),
+                                setup: (editor) => {
+                                    editor.on('change input undo redo', () => {
+                                        $wire.set('contenidoHtml', editor.getContent());
+                                    });
+
+                                    window.addEventListener('open-modal', (evento) => {
+                                        if (evento.detail === 'pueblo-form') {
+                                            editor.setContent($wire.contenidoHtml || '');
+                                        }
+                                    });
+                                },
+                            });
+                        "
+                    >
+                        <textarea id="contenidoHtml">{{ $contenidoHtml }}</textarea>
+                    </div>
+
                     <p class="mt-1 text-xs text-gray-500">Este contenido se mostrará tal cual en la página pública del pueblo (/pueblos/{{ Illuminate\Support\Str::slug($nombre) ?: 'slug' }}).</p>
                     <x-input-error :messages="$errors->get('contenidoHtml')" class="mt-2" />
                 </div>

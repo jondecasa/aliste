@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "postinstall": "node scripts/copy-tinymce.js"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
@@ -23,6 +24,7 @@
         "@fullcalendar/daygrid": "^6.1.21",
         "@fullcalendar/interaction": "^6.1.21",
         "@fullcalendar/list": "^6.1.21",
-        "leaflet": "^1.9.4"
+        "leaflet": "^1.9.4",
+        "tinymce": "^7.9.3"
     }
 }
