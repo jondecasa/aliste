@@ -39,7 +39,7 @@ new class extends Component
 
         $datos = [
             'name' => $validated['name'],
-            'pueblo_id' => $validated['puebloId'],
+            'pueblo_id' => $user->esRedactor() ? $user->pueblo_id : $validated['puebloId'],
         ];
 
         if ($this->avatar) {
@@ -139,13 +139,20 @@ new class extends Component
 
         <div>
             <x-input-label for="puebloId" value="Tu pueblo" />
-            <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <option value="">Sin asociar</option>
-                @foreach (Pueblo::orderBy('nombre')->get() as $pueblo)
-                    <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
-                @endforeach
-            </select>
-            <p class="mt-1 text-sm text-gray-500">Asóciate a tu pueblo para aparecer más adelante en su apartado de "gente".</p>
+
+            @if (auth()->user()->esRedactor())
+                <x-text-input :value="auth()->user()->pueblo?->nombre ?? 'Sin asociar'" id="puebloId" type="text" class="mt-1 block w-full bg-gray-100" disabled />
+                <p class="mt-1 text-sm text-gray-500">Como redactor, tu pueblo lo asigna un administrador y no se puede cambiar aquí.</p>
+            @else
+                <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <option value="">Sin asociar</option>
+                    @foreach (Pueblo::orderBy('nombre')->get() as $pueblo)
+                        <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-sm text-gray-500">Asóciate a tu pueblo para aparecer más adelante en su apartado de "gente".</p>
+            @endif
+
             <x-input-error class="mt-2" :messages="$errors->get('puebloId')" />
         </div>
 
