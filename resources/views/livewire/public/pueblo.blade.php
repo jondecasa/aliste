@@ -28,11 +28,12 @@ new #[Layout('layouts.public')] class extends Component
             'puntosInteresMapa' => $this->pueblo->puntosInteres()
                 ->whereNotNull('latitud')
                 ->whereNotNull('longitud')
-                ->get(['nombre', 'latitud', 'longitud'])
+                ->get()
                 ->map(fn ($punto) => [
                     'nombre' => $punto->nombre,
                     'latitud' => (float) $punto->latitud,
                     'longitud' => (float) $punto->longitud,
+                    'foto' => $punto->foto_url,
                 ]),
         ];
     }
@@ -83,14 +84,20 @@ new #[Layout('layouts.public')] class extends Component
 
                         const limites = [[{{ $pueblo->latitud }}, {{ $pueblo->longitud }}]];
 
+                        const popupHtml = (nombre, foto) => {
+                            const titulo = '<div style=&quot;font-weight:600;margin-top:' + (foto ? '6px' : '0') + ';&quot;>' + nombre + '</div>';
+                            const img = foto ? ('<img src=&quot;' + foto + '&quot; style=&quot;width:160px;height:110px;object-fit:cover;border-radius:8px;display:block;&quot;>') : '';
+                            return img + titulo;
+                        };
+
                         L.marker([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}])
                             .addTo(mapa)
-                            .bindPopup(@js($pueblo->nombre));
+                            .bindPopup(popupHtml(@js($pueblo->nombre), @js($pueblo->portada_url)));
 
                         @js($puntosInteresMapa).forEach((punto) => {
                             L.marker([punto.latitud, punto.longitud])
                                 .addTo(mapa)
-                                .bindPopup(punto.nombre);
+                                .bindPopup(popupHtml(punto.nombre, punto.foto));
                             limites.push([punto.latitud, punto.longitud]);
                         });
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class PuntoInteres extends Model
 {
@@ -16,6 +17,7 @@ class PuntoInteres extends Model
         'slug',
         'descripcion',
         'direccion',
+        'foto',
         'latitud',
         'longitud',
     ];
@@ -31,6 +33,11 @@ class PuntoInteres extends Model
     public function pueblo(): BelongsTo
     {
         return $this->belongsTo(Pueblo::class);
+    }
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        return $this->foto ? Storage::disk('public')->url($this->foto) : null;
     }
 
     public function categorias(): BelongsToMany

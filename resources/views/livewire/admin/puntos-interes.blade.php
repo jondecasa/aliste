@@ -3,14 +3,16 @@
 use App\Models\Categoria;
 use App\Models\Pueblo;
 use App\Models\PuntoInteres;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 new #[Layout('layouts.admin')] class extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public string $buscar = '';
 
@@ -19,6 +21,8 @@ new #[Layout('layouts.admin')] class extends Component
     public string $nombre = '';
     public ?string $descripcion = null;
     public ?string $direccion = null;
+    public ?string $fotoActual = null;
+    public $foto = null;
     public ?float $latitud = null;
     public ?float $longitud = null;
 
@@ -45,6 +49,8 @@ new #[Layout('layouts.admin')] class extends Component
         $this->nombre = $puntoInteres->nombre;
         $this->descripcion = $puntoInteres->descripcion;
         $this->direccion = $puntoInteres->direccion;
+        $this->fotoActual = $puntoInteres->foto;
+        $this->foto = null;
         $this->latitud = $puntoInteres->latitud;
         $this->longitud = $puntoInteres->longitud;
         $this->categoriaIds = $puntoInteres->categorias()->pluck('categorias.id')->all();
@@ -59,11 +65,22 @@ new #[Layout('layouts.admin')] class extends Component
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
             'direccion' => ['nullable', 'string', 'max:255'],
+            'foto' => ['nullable', 'image', 'max:4096'],
             'latitud' => ['nullable', 'numeric', 'between:-90,90'],
             'longitud' => ['nullable', 'numeric', 'between:-180,180'],
             'categoriaIds' => ['array'],
             'categoriaIds.*' => ['exists:categorias,id'],
         ]);
+
+        $rutaFoto = $this->fotoActual;
+
+        if ($this->foto) {
+            if ($this->fotoActual) {
+                Storage::disk('public')->delete($this->fotoActual);
+            }
+
+            $rutaFoto = $this->foto->store('puntos-interes', 'public');
+        }
 
         $puntoInteres = PuntoInteres::updateOrCreate(
             ['id' => $this->puntoInteresId],
@@ -73,6 +90,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'slug' => Str::slug($datos['nombre']),
                 'descripcion' => $datos['descripcion'],
                 'direccion' => $datos['direccion'],
+                'foto' => $rutaFoto,
                 'latitud' => $datos['latitud'],
                 'longitud' => $datos['longitud'],
             ]
@@ -86,14 +104,20 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function eliminar(int $id): void
     {
-        PuntoInteres::findOrFail($id)->delete();
+        $puntoInteres = PuntoInteres::findOrFail($id);
+
+        if ($puntoInteres->foto) {
+            Storage::disk('public')->delete($puntoInteres->foto);
+        }
+
+        $puntoInteres->delete();
     }
 
     private function resetearFormulario(): void
     {
         $this->reset([
             'puntoInteresId', 'puebloId', 'nombre', 'descripcion',
-            'direccion', 'latitud', 'longitud', 'categoriaIds',
+            'direccion', 'fotoActual', 'foto', 'latitud', 'longitud', 'categoriaIds',
         ]);
         $this->resetErrorBag();
     }
@@ -129,6 +153,7 @@ new #[Layout('layouts.admin')] class extends Component
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-6 py-3"></th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pueblo</th>
                     <th class="px-6 py-3"></th>
@@ -137,6 +162,13 @@ new #[Layout('layouts.admin')] class extends Component
             <tbody class="divide-y divide-gray-200">
                 @forelse ($puntosInteres as $puntoInteres)
                     <tr wire:key="poi-{{ $puntoInteres->id }}">
+                        <td class="px-6 py-4">
+                            @if ($puntoInteres->foto_url)
+                                <img src="{{ $puntoInteres->foto_url }}" alt="{{ $puntoInteres->nombre }}" class="w-12 h-12 rounded-lg object-cover">
+                            @else
+                                <div class="w-12 h-12 rounded-lg bg-gray-100"></div>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $puntoInteres->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $puntoInteres->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
@@ -155,7 +187,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-6 py-4 text-sm text-gray-500 text-center">No hay puntos de interés.</td>
+                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay puntos de interés.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -200,6 +232,20 @@ new #[Layout('layouts.admin')] class extends Component
                     <x-input-label for="direccion" value="Dirección" />
                     <x-text-input wire:model="direccion" id="direccion" type="text" class="mt-1 block w-full" />
                     <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
+                </div>
+
+                <div class="sm:col-span-2">
+                    <x-input-label for="foto" value="Foto" />
+
+                    @if ($foto)
+                        <img src="{{ $foto->temporaryUrl() }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @elseif ($fotoActual)
+                        <img src="{{ Illuminate\Support\Facades\Storage::disk('public')->url($fotoActual) }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @endif
+
+                    <input wire:model="foto" id="foto" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
+                    <div wire:loading wire:target="foto" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+                    <x-input-error :messages="$errors->get('foto')" class="mt-2" />
                 </div>
 
                 <div>
