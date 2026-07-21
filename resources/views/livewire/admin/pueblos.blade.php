@@ -303,13 +303,35 @@ new #[Layout('layouts.admin')] class extends Component
                                         .catch(() => reject('Error al subir la imagen'));
                                 }),
                                 setup: (editor) => {
+                                    let editorListo = false;
+                                    let contenidoPendiente = null;
+
+                                    const cargarContenido = (html) => {
+                                        if (editorListo) {
+                                            editor.setContent(html || '');
+                                        } else {
+                                            contenidoPendiente = html || '';
+                                        }
+                                    };
+
+                                    editor.on('init', () => {
+                                        editorListo = true;
+
+                                        if (contenidoPendiente !== null) {
+                                            editor.setContent(contenidoPendiente);
+                                            contenidoPendiente = null;
+                                        }
+                                    });
+
                                     editor.on('change input undo redo', () => {
                                         $wire.set('contenidoHtml', editor.getContent());
                                     });
 
                                     window.addEventListener('open-modal', (evento) => {
-                                        if (evento.detail === 'pueblo-form') {
-                                            editor.setContent($wire.contenidoHtml || '');
+                                        const nombreModal = Array.isArray(evento.detail) ? evento.detail[0] : evento.detail;
+
+                                        if (nombreModal === 'pueblo-form') {
+                                            cargarContenido($wire.contenidoHtml);
                                         }
                                     });
                                 },
