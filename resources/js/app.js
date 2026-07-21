@@ -13,3 +13,11 @@ L.Icon.Default.mergeOptions({
 });
 
 window.L = L;
+
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import listPlugin from '@fullcalendar/list';
+import interactionPlugin from '@fullcalendar/interaction';
+import esLocale from '@fullcalendar/core/locales/es';
+
+window.FullCalendar = { Calendar, dayGridPlugin, listPlugin, interactionPlugin, esLocale };
