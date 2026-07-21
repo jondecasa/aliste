@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ $title ?? config('app.name', 'Aliste.info') }}</title>
+        <title>{{ $title ?? config('app.name', 'Aliste.es') }}</title>
+
+        <link rel="icon" type="image/png" href="{{ asset('images/logo-aliste.png') }}">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -13,8 +15,8 @@
         <div x-data="{ menuAbierto: false }">
             <header class="border-b border-tinta-borde">
                 <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
-                    <a href="{{ route('inicio') }}" wire:navigate class="font-serif italic font-semibold text-xl sm:text-2xl text-tinta">
-                        Aliste<span class="text-verde">.es</span>
+                    <a href="{{ route('inicio') }}" wire:navigate class="flex items-center gap-2">
+                        <x-application-logo class="h-12 sm:h-14 w-auto" />
                     </a>
 
                     <nav class="hidden sm:flex items-center gap-8">
@@ -73,8 +75,10 @@
             </main>
 
             <footer class="bg-tinta text-tinta-borde">
-                <div class="max-w-7xl mx-auto px-5 sm:px-12 py-8 sm:py-9 flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-0 text-sm">
-                    <div class="font-serif italic text-base sm:text-lg text-white">Aliste.info</div>
+                <div class="max-w-7xl mx-auto px-5 sm:px-12 py-8 sm:py-9 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 text-sm">
+                    <div class="bg-crema rounded-lg px-3 py-1.5 inline-flex w-fit">
+                        <x-application-logo class="h-8 sm:h-9 w-auto" />
+                    </div>
                     <div class="flex flex-wrap gap-4 sm:gap-12">
                         <a href="{{ route('pueblos') }}" wire:navigate>Pueblos</a>
                         <a href="{{ route('servicios') }}" wire:navigate>Servicios</a>
