@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Categoria extends Model
 {
@@ -14,6 +15,7 @@ class Categoria extends Model
         'nombre',
         'slug',
         'grupo',
+        'color',
     ];
 
     public function noticias(): BelongsToMany
@@ -39,6 +41,11 @@ class Categoria extends Model
     public function obrasLiterarias(): BelongsToMany
     {
         return $this->belongsToMany(ObraLiteraria::class, 'categoria_obra');
+    }
+
+    public function eventos(): HasMany
+    {
+        return $this->hasMany(Evento::class);
     }
 
     public function scopeDeGrupo(Builder $query, string $grupo): Builder

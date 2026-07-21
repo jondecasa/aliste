@@ -12,6 +12,7 @@ class Evento extends Model
 
     protected $fillable = [
         'pueblo_id',
+        'categoria_id',
         'titulo',
         'slug',
         'descripcion',
@@ -32,6 +33,11 @@ class Evento extends Model
     public function pueblo(): BelongsTo
     {
         return $this->belongsTo(Pueblo::class);
+    }
+
+    public function categoria(): BelongsTo
+    {
+        return $this->belongsTo(Categoria::class);
     }
 
     public function getImagenUrlAttribute(): ?string

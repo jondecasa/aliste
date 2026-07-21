@@ -165,6 +165,19 @@ class CategoriaSeeder extends Seeder
         'Tradición Oral',
     ];
 
+    /**
+     * Categorías de eventos del calendario, cada una con su color.
+     */
+    private const EVENTOS = [
+        'Fiestas' => '#e11d48',
+        'Cultural' => '#7c3aed',
+        'Deportivo' => '#2563eb',
+        'Mercado' => '#d97706',
+        'Institucional' => '#0f766e',
+        'Gastronomía' => '#ca8a04',
+        'Naturaleza' => '#16a34a',
+    ];
+
     public function run(): void
     {
         $this->crear(self::NOTICIAS, 'noticia');
@@ -172,6 +185,7 @@ class CategoriaSeeder extends Seeder
         $this->crear(self::PUNTOS_INTERES, 'punto_interes');
         $this->crear(self::CANCIONES, 'cancion');
         $this->crear(self::OBRAS_LITERARIAS, 'obra_literaria');
+        $this->crearConColor(self::EVENTOS, 'evento');
     }
 
     /**
@@ -183,6 +197,19 @@ class CategoriaSeeder extends Seeder
             Categoria::updateOrCreate(
                 ['slug' => Str::slug($nombre), 'grupo' => $grupo],
                 ['nombre' => $nombre]
+            );
+        }
+    }
+
+    /**
+     * @param  array<string, string>  $nombresConColor
+     */
+    private function crearConColor(array $nombresConColor, string $grupo): void
+    {
+        foreach ($nombresConColor as $nombre => $color) {
+            Categoria::updateOrCreate(
+                ['slug' => Str::slug($nombre), 'grupo' => $grupo],
+                ['nombre' => $nombre, 'color' => $color]
             );
         }
     }
