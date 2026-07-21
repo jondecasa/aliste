@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Pueblo extends Model
 {
@@ -15,6 +16,7 @@ class Pueblo extends Model
         'latitud',
         'longitud',
         'descripcion',
+        'contenido_html',
         'portada',
         'poblacion',
         'altitud',
@@ -28,6 +30,16 @@ class Pueblo extends Model
             'longitud' => 'decimal:7',
             'es_cabecera' => 'boolean',
         ];
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function getPortadaUrlAttribute(): ?string
+    {
+        return $this->portada ? Storage::disk('public')->url($this->portada) : null;
     }
 
     public function noticias(): HasMany

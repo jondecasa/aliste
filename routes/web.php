@@ -5,6 +5,7 @@ use Livewire\Volt\Volt;
 
 Volt::route('/', 'public.home')->name('inicio');
 Volt::route('pueblos', 'public.pueblos')->name('pueblos');
+Volt::route('pueblos/{pueblo}', 'public.pueblo')->name('pueblo');
 Volt::route('servicios', 'public.servicios')->name('servicios');
 Volt::route('blog', 'public.blog')->name('blog');
 

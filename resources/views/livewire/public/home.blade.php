@@ -53,10 +53,10 @@ new #[Layout('layouts.public')] class extends Component
 
             <div class="flex sm:grid sm:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 mb-10 sm:mb-12">
                 @foreach ($pueblosDestacados as $pueblo)
-                    <a href="{{ route('pueblos') }}" wire:navigate class="w-40 sm:w-auto flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <a href="{{ route('pueblo', $pueblo) }}" wire:navigate class="w-40 sm:w-auto flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                         <div class="aspect-[4/3] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
-                            @if ($pueblo->portada)
-                                <img src="{{ $pueblo->portada }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
+                            @if ($pueblo->portada_url)
+                                <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
                             @else
                                 foto pueblo
                             @endif

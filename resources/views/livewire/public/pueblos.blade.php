@@ -76,10 +76,10 @@ new #[Layout('layouts.public')] class extends Component
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-14 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         @forelse ($pueblos as $pueblo)
-            <div wire:key="pueblo-{{ $pueblo->id }}" class="bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+            <a href="{{ route('pueblo', $pueblo) }}" wire:navigate wire:key="pueblo-{{ $pueblo->id }}" class="block bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="aspect-[4/3] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
-                    @if ($pueblo->portada)
-                        <img src="{{ $pueblo->portada }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
+                    @if ($pueblo->portada_url)
+                        <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
                     @else
                         foto pueblo
                     @endif
@@ -93,7 +93,7 @@ new #[Layout('layouts.public')] class extends Component
                         @endif
                     </div>
                 </div>
-            </div>
+            </a>
         @empty
             <p class="col-span-full text-center text-tinta-muted py-10">No se han encontrado pueblos.</p>
         @endforelse

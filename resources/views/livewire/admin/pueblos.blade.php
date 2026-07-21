@@ -1,21 +1,25 @@
 <?php
 
 use App\Models\Pueblo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 new #[Layout('layouts.admin')] class extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public string $buscar = '';
 
     public ?int $puebloId = null;
     public string $nombre = '';
     public ?string $descripcion = null;
-    public ?string $portada = null;
+    public ?string $contenidoHtml = null;
+    public ?string $portadaActual = null;
+    public $foto = null;
     public ?int $poblacion = null;
     public ?int $altitud = null;
     public ?float $latitud = null;
@@ -40,7 +44,9 @@ new #[Layout('layouts.admin')] class extends Component
         $this->puebloId = $pueblo->id;
         $this->nombre = $pueblo->nombre;
         $this->descripcion = $pueblo->descripcion;
-        $this->portada = $pueblo->portada;
+        $this->contenidoHtml = $pueblo->contenido_html;
+        $this->portadaActual = $pueblo->portada;
+        $this->foto = null;
         $this->poblacion = $pueblo->poblacion;
         $this->altitud = $pueblo->altitud;
         $this->latitud = $pueblo->latitud;
@@ -55,7 +61,8 @@ new #[Layout('layouts.admin')] class extends Component
         $datos = $this->validate([
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
-            'portada' => ['nullable', 'string', 'max:255'],
+            'contenidoHtml' => ['nullable', 'string'],
+            'foto' => ['nullable', 'image', 'max:4096'],
             'poblacion' => ['nullable', 'integer', 'min:0'],
             'altitud' => ['nullable', 'integer', 'min:0'],
             'latitud' => ['nullable', 'numeric', 'between:-90,90'],
@@ -63,13 +70,24 @@ new #[Layout('layouts.admin')] class extends Component
             'esCabecera' => ['boolean'],
         ]);
 
+        $rutaPortada = $this->portadaActual;
+
+        if ($this->foto) {
+            if ($this->portadaActual) {
+                Storage::disk('public')->delete($this->portadaActual);
+            }
+
+            $rutaPortada = $this->foto->store('pueblos', 'public');
+        }
+
         Pueblo::updateOrCreate(
             ['id' => $this->puebloId],
             [
                 'nombre' => $datos['nombre'],
                 'slug' => Str::slug($datos['nombre']),
                 'descripcion' => $datos['descripcion'],
-                'portada' => $datos['portada'],
+                'contenido_html' => $datos['contenidoHtml'],
+                'portada' => $rutaPortada,
                 'poblacion' => $datos['poblacion'],
                 'altitud' => $datos['altitud'],
                 'latitud' => $datos['latitud'],
@@ -84,13 +102,19 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function eliminar(int $id): void
     {
-        Pueblo::findOrFail($id)->delete();
+        $pueblo = Pueblo::findOrFail($id);
+
+        if ($pueblo->portada) {
+            Storage::disk('public')->delete($pueblo->portada);
+        }
+
+        $pueblo->delete();
     }
 
     private function resetearFormulario(): void
     {
         $this->reset([
-            'puebloId', 'nombre', 'descripcion', 'portada',
+            'puebloId', 'nombre', 'descripcion', 'contenidoHtml', 'portadaActual', 'foto',
             'poblacion', 'altitud', 'latitud', 'longitud', 'esCabecera',
         ]);
         $this->resetErrorBag();
@@ -124,6 +148,7 @@ new #[Layout('layouts.admin')] class extends Component
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-6 py-3"></th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Población</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabecera</th>
@@ -133,6 +158,13 @@ new #[Layout('layouts.admin')] class extends Component
             <tbody class="divide-y divide-gray-200">
                 @forelse ($pueblos as $pueblo)
                     <tr wire:key="pueblo-{{ $pueblo->id }}">
+                        <td class="px-6 py-4">
+                            @if ($pueblo->portada_url)
+                                <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-12 h-12 rounded-lg object-cover">
+                            @else
+                                <div class="w-12 h-12 rounded-lg bg-gray-100"></div>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $pueblo->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->poblacion ?? '—' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->es_cabecera ? 'Sí' : '' }}</td>
@@ -152,7 +184,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay pueblos.</td>
+                        <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">No hay pueblos.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -163,7 +195,7 @@ new #[Layout('layouts.admin')] class extends Component
         </div>
     </div>
 
-    <x-modal name="pueblo-form" :show="$errors->isNotEmpty()" focusable>
+    <x-modal name="pueblo-form" :show="$errors->isNotEmpty()" focusable maxWidth="2xl">
         <form wire:submit="guardar" class="p-6">
             <h2 class="text-lg font-medium text-gray-900">
                 {{ $puebloId ? 'Editar pueblo' : 'Nuevo pueblo' }}
@@ -183,9 +215,17 @@ new #[Layout('layouts.admin')] class extends Component
                 </div>
 
                 <div class="sm:col-span-2">
-                    <x-input-label for="portada" value="Imagen de portada (ruta o URL)" />
-                    <x-text-input wire:model="portada" id="portada" type="text" class="mt-1 block w-full" />
-                    <x-input-error :messages="$errors->get('portada')" class="mt-2" />
+                    <x-input-label for="foto" value="Foto del pueblo" />
+
+                    @if ($foto)
+                        <img src="{{ $foto->temporaryUrl() }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @elseif ($portadaActual)
+                        <img src="{{ Illuminate\Support\Facades\Storage::disk('public')->url($portadaActual) }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @endif
+
+                    <input wire:model="foto" id="foto" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
+                    <div wire:loading wire:target="foto" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+                    <x-input-error :messages="$errors->get('foto')" class="mt-2" />
                 </div>
 
                 <div>
@@ -217,6 +257,19 @@ new #[Layout('layouts.admin')] class extends Component
                         <input wire:model="esCabecera" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                         <span class="ms-2 text-sm text-gray-600">Es cabecera de comarca</span>
                     </label>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <x-input-label for="contenidoHtml" value="Página personalizada del pueblo (HTML)" />
+                    <textarea
+                        wire:model="contenidoHtml"
+                        id="contenidoHtml"
+                        rows="10"
+                        placeholder="<p>Escribe aquí el contenido HTML de la página del pueblo...</p>"
+                        class="mt-1 block w-full font-mono text-xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                    ></textarea>
+                    <p class="mt-1 text-xs text-gray-500">Este contenido se mostrará tal cual en la página pública del pueblo (/pueblos/{{ Illuminate\Support\Str::slug($nombre) ?: 'slug' }}).</p>
+                    <x-input-error :messages="$errors->get('contenidoHtml')" class="mt-2" />
                 </div>
             </div>
 
