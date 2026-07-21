@@ -21,6 +21,10 @@ new #[Layout('layouts.public')] class extends Component
                 ->orderByDesc('publicado_en')
                 ->take(6)
                 ->get(),
+            'servicios' => $this->pueblo->servicios()
+                ->with('categorias')
+                ->orderBy('nombre')
+                ->get(),
             'puntosInteresMapa' => $this->pueblo->puntosInteres()
                 ->whereNotNull('latitud')
                 ->whereNotNull('longitud')
@@ -45,90 +49,102 @@ new #[Layout('layouts.public')] class extends Component
         </div>
     </div>
 
-    <div class="max-w-3xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
-        @if ($pueblo->poblacion || $pueblo->altitud)
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                @if ($pueblo->poblacion)
-                    <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
-                        <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->poblacion }}</div>
-                        <div class="text-xs text-tinta-muted mt-1">Habitantes</div>
-                    </div>
-                @endif
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14 flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 min-w-0 max-w-3xl">
+            @if ($pueblo->poblacion || $pueblo->altitud)
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    @if ($pueblo->poblacion)
+                        <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                            <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->poblacion }}</div>
+                            <div class="text-xs text-tinta-muted mt-1">Habitantes</div>
+                        </div>
+                    @endif
 
-                @if ($pueblo->altitud)
-                    <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
-                        <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->altitud }} <span class="text-base font-sans font-normal text-tinta-muted">m</span></div>
-                        <div class="text-xs text-tinta-muted mt-1">Altitud</div>
-                    </div>
-                @endif
-            </div>
-        @endif
-
-        @if ($pueblo->latitud && $pueblo->longitud)
-            <div
-                wire:ignore
-                x-data
-                x-init="
-                    const mapa = L.map($el).setView([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}], 15);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a>',
-                        maxZoom: 19,
-                    }).addTo(mapa);
-
-                    const limites = [[{{ $pueblo->latitud }}, {{ $pueblo->longitud }}]];
-
-                    L.marker([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}])
-                        .addTo(mapa)
-                        .bindPopup(@js($pueblo->nombre));
-
-                    @js($puntosInteresMapa).forEach((punto) => {
-                        L.marker([punto.latitud, punto.longitud])
-                            .addTo(mapa)
-                            .bindPopup(punto.nombre);
-                        limites.push([punto.latitud, punto.longitud]);
-                    });
-
-                    if (limites.length > 1) {
-                        mapa.fitBounds(limites, { padding: [40, 40] });
-                    }
-                "
-                class="w-full h-[420px] sm:h-[480px] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] mb-8"
-            ></div>
-        @endif
-
-        @if ($pueblo->descripcion)
-            <p class="text-tinta-muted text-[15px] leading-relaxed mb-8">{{ $pueblo->descripcion }}</p>
-        @endif
-
-        @if ($pueblo->contenido_html)
-            <div class="prose prose-neutral max-w-none">
-                {!! $pueblo->contenido_html !!}
-            </div>
-        @else
-            <p class="text-tinta-muted text-sm italic">Todavía no hay contenido para este pueblo.</p>
-        @endif
-
-        @if ($noticias->isNotEmpty())
-            <div class="mt-14 pt-10 border-t border-tinta-borde">
-                <h2 class="font-serif text-xl sm:text-2xl text-tinta mb-6">Últimas noticias de {{ $pueblo->nombre }}</h2>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    @foreach ($noticias as $noticia)
-                        <a href="{{ route('blog') }}" wire:navigate wire:key="noticia-{{ $noticia->id }}" class="block">
-                            <div class="aspect-[16/10] rounded-[14px] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
-                                @if ($noticia->imagen_portada)
-                                    <img src="{{ $noticia->imagen_portada }}" alt="{{ $noticia->titulo }}" class="w-full h-full object-cover rounded-[14px]">
-                                @else
-                                    foto noticia
-                                @endif
-                            </div>
-                            <div class="text-xs text-tinta-muted mt-3">{{ $noticia->publicado_en?->translatedFormat('j \d\e F Y') }}</div>
-                            <div class="font-serif font-semibold text-base text-tinta mt-1">{{ $noticia->titulo }}</div>
-                        </a>
-                    @endforeach
+                    @if ($pueblo->altitud)
+                        <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                            <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->altitud }} <span class="text-base font-sans font-normal text-tinta-muted">m</span></div>
+                            <div class="text-xs text-tinta-muted mt-1">Altitud</div>
+                        </div>
+                    @endif
                 </div>
-            </div>
-        @endif
+            @endif
+
+            @if ($pueblo->latitud && $pueblo->longitud)
+                <div
+                    wire:ignore
+                    x-data
+                    x-init="
+                        const mapa = L.map($el).setView([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}], 15);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a>',
+                            maxZoom: 19,
+                        }).addTo(mapa);
+
+                        const limites = [[{{ $pueblo->latitud }}, {{ $pueblo->longitud }}]];
+
+                        L.marker([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}])
+                            .addTo(mapa)
+                            .bindPopup(@js($pueblo->nombre));
+
+                        @js($puntosInteresMapa).forEach((punto) => {
+                            L.marker([punto.latitud, punto.longitud])
+                                .addTo(mapa)
+                                .bindPopup(punto.nombre);
+                            limites.push([punto.latitud, punto.longitud]);
+                        });
+
+                        if (limites.length > 1) {
+                            mapa.fitBounds(limites, { padding: [40, 40] });
+                        }
+                    "
+                    class="w-full h-[420px] sm:h-[480px] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] mb-8"
+                ></div>
+            @endif
+
+            @if ($pueblo->descripcion)
+                <p class="text-tinta-muted text-[15px] leading-relaxed mb-8">{{ $pueblo->descripcion }}</p>
+            @endif
+
+            @if ($pueblo->contenido_html)
+                <div class="prose prose-neutral max-w-none">
+                    {!! $pueblo->contenido_html !!}
+                </div>
+            @else
+                <p class="text-tinta-muted text-sm italic">Todavía no hay contenido para este pueblo.</p>
+            @endif
+        </div>
+
+        <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6">
+            @if ($noticias->isNotEmpty())
+                <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
+                    <div class="bg-white p-5 flex flex-col gap-4">
+                        @foreach ($noticias as $noticia)
+                            <a href="{{ route('blog') }}" wire:navigate wire:key="noticia-{{ $noticia->id }}" class="block">
+                                <div class="text-xs text-tinta-muted/80">{{ $noticia->publicado_en?->translatedFormat('j \d\e F Y') }}</div>
+                                <div class="font-serif font-semibold text-sm text-tinta mt-0.5">{{ $noticia->titulo }}</div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if ($servicios->isNotEmpty())
+                <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <div class="bg-terracota text-white px-5 py-4 font-serif font-semibold text-lg">Servicios</div>
+                    <div class="bg-white p-5 flex flex-col gap-4">
+                        @foreach ($servicios as $servicio)
+                            <a href="{{ route('servicios') }}" wire:navigate wire:key="servicio-{{ $servicio->id }}" class="block">
+                                @if ($servicio->categorias->isNotEmpty())
+                                    <div class="text-xs text-terracota font-bold uppercase">{{ $servicio->categorias->pluck('nombre')->join(' · ') }}</div>
+                                @endif
+                                <div class="font-serif font-semibold text-sm text-tinta mt-0.5">{{ $servicio->nombre }}</div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
