@@ -30,5 +30,8 @@
     "Forgot your password?": "¿Has olvidado tu contraseña?",
     "Log in": "Entrar",
     "Reset Password": "Restablecer contraseña",
-    "You're logged in!": "¡Has iniciado sesión!"
+    "You're logged in!": "¡Has iniciado sesión!",
+    "Not registered?": "¿No tienes cuenta?",
+    "or": "o",
+    "Continue with Google": "Continuar con Google"
 }
