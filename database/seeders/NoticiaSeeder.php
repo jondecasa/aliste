@@ -6,6 +6,8 @@ use App\Models\Categoria;
 use App\Models\Noticia;
 use App\Models\Pueblo;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class NoticiaSeeder extends Seeder
@@ -24,6 +26,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Fiestas', 'Tradiciones'],
             'fuente_nombre' => 'Zamora News',
             'fuente_url' => 'https://www.zamoranews.com/articulo/comarcas/san-cristobal-aliste-presenta-fiestas-patronales-tres-dias-musica-tradicion/20260721175603404644.html',
+            'imagen_url' => 'https://www.zamoranews.com/media/zamoranews/images/2026/07/21/2026072117543869314.jpg',
             'publicado_en' => '2026-07-21',
         ],
         [
@@ -34,6 +37,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Fiestas', 'Tradiciones'],
             'fuente_nombre' => 'Zamora News',
             'fuente_url' => 'https://www.zamoranews.com/articulo/comarcas/cuenta-atras-fiestas-grisuela-aliste-ha-comenzado/20260715093141403460.html',
+            'imagen_url' => 'https://www.zamoranews.com/media/zamoranews/images/2025/07/23/2025072310544081713.jpg',
             'publicado_en' => '2026-07-15',
         ],
         [
@@ -44,6 +48,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Economía'],
             'fuente_nombre' => 'Zamora News',
             'fuente_url' => 'https://www.zamoranews.com/articulo/47-comarcas/reordenacion-fincas-nuez-aliste-encara-nueva-fase-administrativa/20260713100923403159.html',
+            'imagen_url' => 'https://www.zamoranews.com/media/zamoranews/images/2021/05/25/2021052512310361199.jpg',
             'publicado_en' => '2026-07-13',
         ],
         [
@@ -54,6 +59,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Deporte'],
             'fuente_nombre' => 'Zamora News',
             'fuente_url' => 'https://www.zamoranews.com/articulo/47-comarcas/san-vitero-celebra-11-julio-vi-edicion-cross-popular-deporte-naturaleza-convivencia-aliste/20260612073851396838.html',
+            'imagen_url' => 'https://www.zamoranews.com/media/zamoranews/images/2026/06/12/2026061207375697672.jpg',
             'publicado_en' => '2026-06-12',
         ],
         [
@@ -64,6 +70,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Fiestas', 'Tradiciones', 'Día de la comarca'],
             'fuente_nombre' => 'Zamora News',
             'fuente_url' => 'https://www.zamoranews.com/articulo/47-comarcas/valer-aliste-toma-relevo-como-anfitriona-xxxv-fiesta-comarca-aliste-tabara-alba/20260625175603399744.html',
+            'imagen_url' => 'https://www.zamoranews.com/media/zamoranews/images/2026/06/25/2026062517530482978.jpg',
             'publicado_en' => '2026-06-25',
         ],
         [
@@ -74,6 +81,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Fiestas'],
             'fuente_nombre' => 'ZA49',
             'fuente_url' => 'https://www.za49.es/aliste/buscas-escapada-fin-semana-mira-todo-preparado-castro-alcanices_1_5960769.html',
+            'imagen_url' => 'https://www.za49.es/images/showid/8072316',
             'publicado_en' => '2026-07-21',
         ],
         [
@@ -84,6 +92,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Sociedad'],
             'fuente_nombre' => 'ZA49',
             'fuente_url' => 'https://www.za49.es/aliste/cambio-reclamaban-riomanzanas-figueruela-arriba-esta-aqui-agua-potable-segura-nuevo-consultorio_1_5960893.html',
+            'imagen_url' => 'https://www.za49.es/images/showid/8072434',
             'publicado_en' => '2026-07-21',
         ],
         [
@@ -94,6 +103,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Cultura'],
             'fuente_nombre' => 'ZA49',
             'fuente_url' => 'https://www.za49.es/aliste/arte-autentico-aliste-reune-exposicion-unica-recorrera-pueblos-zamora_1_5959008.html',
+            'imagen_url' => 'https://www.za49.es/images/showid/8070379',
             'publicado_en' => '2026-07-20',
         ],
         [
@@ -104,6 +114,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Fiestas', 'Tradiciones'],
             'fuente_nombre' => 'ZA49',
             'fuente_url' => 'https://www.za49.es/aliste/pequeno-pueblo-zamora-tiene-listas-fiestas-santiago-dias-tradicion-musica-actividades-todas-edades_1_5956823.html',
+            'imagen_url' => 'https://www.za49.es/images/showid/8067693',
             'publicado_en' => '2026-07-20',
         ],
         [
@@ -114,6 +125,7 @@ class NoticiaSeeder extends Seeder
             'categorias' => ['Cultura', 'Tradiciones'],
             'fuente_nombre' => 'ZA49',
             'fuente_url' => 'https://www.za49.es/aliste/pueblo-zamora-prepara-agosto-no-salir-teatro-cena-gratis-hinchables-bingo-hasta-horno-tradicional_1_5955403.html',
+            'imagen_url' => 'https://www.za49.es/images/showid/8066106',
             'publicado_en' => '2026-07-16',
         ],
     ];
@@ -148,6 +160,47 @@ class NoticiaSeeder extends Seeder
                 ->pluck('id');
 
             $noticia->categorias()->sync($categoriaIds);
+
+            if (! $noticia->imagen_portada && isset($datos['imagen_url'])) {
+                if ($ruta = $this->descargarImagen($datos['imagen_url'], $noticia->slug)) {
+                    $noticia->update(['imagen_portada' => Storage::disk('public')->url($ruta)]);
+                }
+            }
         }
+    }
+
+    private function descargarImagen(string $url, string $slug): ?string
+    {
+        try {
+            $respuesta = Http::withHeaders(['User-Agent' => 'Mozilla/5.0'])->get($url);
+        } catch (\Throwable) {
+            $this->command?->warn("No se pudo descargar la imagen: {$url}");
+
+            return null;
+        }
+
+        if (! $respuesta->successful()) {
+            $this->command?->warn("No se pudo descargar la imagen ({$respuesta->status()}): {$url}");
+
+            return null;
+        }
+
+        $cuerpo = $respuesta->body();
+        $extension = match (true) {
+            str_starts_with($cuerpo, "\x89PNG") => 'png',
+            str_starts_with($cuerpo, "\xFF\xD8\xFF") => 'jpg',
+            default => null,
+        };
+
+        if (! $extension) {
+            $this->command?->warn("La URL no devolvió una imagen reconocible: {$url}");
+
+            return null;
+        }
+
+        $ruta = "noticias/{$slug}.{$extension}";
+        Storage::disk('public')->put($ruta, $cuerpo);
+
+        return $ruta;
     }
 }
