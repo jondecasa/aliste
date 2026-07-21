@@ -28,9 +28,9 @@
                             class="text-[15px] {{ request()->routeIs('servicios') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
                             Servicios
                         </a>
-                        <a href="{{ route('blog') }}" wire:navigate
-                            class="text-[15px] {{ request()->routeIs('blog') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
-                            Blog
+                        <a href="{{ route('noticias') }}" wire:navigate
+                            class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
+                            Noticias
                         </a>
                         <a href="{{ route('contacto') }}" wire:navigate
                             class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
@@ -60,7 +60,7 @@
                 <nav x-show="menuAbierto" x-cloak class="sm:hidden flex flex-col px-5 pb-4 gap-3 border-t border-tinta-borde pt-3">
                     <a href="{{ route('pueblos') }}" wire:navigate class="text-[15px] {{ request()->routeIs('pueblos') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Pueblos</a>
                     <a href="{{ route('servicios') }}" wire:navigate class="text-[15px] {{ request()->routeIs('servicios') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Servicios</a>
-                    <a href="{{ route('blog') }}" wire:navigate class="text-[15px] {{ request()->routeIs('blog') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Blog</a>
+                    <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
                         <a href="{{ route('dashboard') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
@@ -82,7 +82,7 @@
                     <div class="flex flex-wrap gap-4 sm:gap-12">
                         <a href="{{ route('pueblos') }}" wire:navigate>Pueblos</a>
                         <a href="{{ route('servicios') }}" wire:navigate>Servicios</a>
-                        <a href="{{ route('blog') }}" wire:navigate>Blog</a>
+                        <a href="{{ route('noticias') }}" wire:navigate>Noticias</a>
                         <a href="{{ route('contacto') }}" wire:navigate>Contacto</a>
                     </div>
                 </div>

@@ -20,7 +20,7 @@ new #[Layout('layouts.public')] class extends Component
             <img src="{{ $noticia->imagen_portada }}" alt="{{ $noticia->titulo }}" class="absolute inset-0 w-full h-full object-cover">
         @endif
         <div class="relative w-full bg-gradient-to-t from-black/60 to-transparent p-6 sm:p-10">
-            <a href="{{ route('blog') }}" wire:navigate class="text-white/80 text-xs mb-2 inline-block">← Volver al blog</a>
+            <a href="{{ route('noticias') }}" wire:navigate class="text-white/80 text-xs mb-2 inline-block">← Volver a noticias</a>
             <h1 class="font-serif text-2xl sm:text-4xl text-white">{{ $noticia->titulo }}</h1>
         </div>
     </div>
@@ -64,7 +64,7 @@ new #[Layout('layouts.public')] class extends Component
                 <div class="text-xs text-tinta-muted uppercase font-bold mb-3">Categorías</div>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($noticia->categorias as $categoria)
-                        <a href="{{ route('blog', ['categoriaId' => $categoria->id]) }}" wire:navigate
+                        <a href="{{ route('noticias', ['categoriaId' => $categoria->id]) }}" wire:navigate
                             class="px-4 py-2 rounded-full text-[13px] border border-tinta-borde text-tinta/70 hover:bg-terracota hover:text-white hover:border-terracota transition">
                             {{ $categoria->nombre }}
                         </a>

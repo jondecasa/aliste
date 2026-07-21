@@ -47,7 +47,7 @@ new #[Layout('layouts.public')] class extends Component
 
 <div>
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-6 sm:pb-8">
-        <h1 class="font-serif text-3xl sm:text-[38px] text-tinta mb-4">Noticias y blog de la comarca</h1>
+        <h1 class="font-serif text-3xl sm:text-[38px] text-tinta mb-4">Noticias de la comarca</h1>
 
         <div class="flex gap-2 flex-wrap">
             <button wire:click="$set('categoriaId', null)"
