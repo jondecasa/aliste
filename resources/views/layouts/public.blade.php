@@ -84,9 +84,12 @@
                         <a href="{{ route('servicios') }}" wire:navigate>Servicios</a>
                         <a href="{{ route('noticias') }}" wire:navigate>Noticias</a>
                         <a href="{{ route('contacto') }}" wire:navigate>Contacto</a>
+                        <a href="{{ route('cookies') }}" wire:navigate>Política de cookies</a>
                     </div>
                 </div>
             </footer>
         </div>
+
+        <x-cookie-consent />
     </body>
 </html>

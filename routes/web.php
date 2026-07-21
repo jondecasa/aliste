@@ -12,6 +12,7 @@ Volt::route('servicios', 'public.servicios')->name('servicios');
 Volt::route('noticias', 'public.blog')->name('noticias');
 Volt::route('noticias/{noticia}', 'public.noticia')->name('noticia');
 Volt::route('contacto', 'public.contacto')->name('contacto');
+Volt::route('politica-cookies', 'public.cookies')->name('cookies');
 
 Route::view('panel', 'dashboard')
     ->middleware(['auth', 'verified'])
