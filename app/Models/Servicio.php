@@ -14,6 +14,7 @@ class Servicio extends Model
         'pueblo_id',
         'nombre',
         'slug',
+        'prioridad',
         'direccion',
         'codigo_postal',
         'telefono_1',

@@ -30,6 +30,7 @@ new #[Layout('layouts.public')] class extends Component
                 'categorias',
                 fn ($sq) => $sq->where('categorias.id', $this->categoriaId)
             ))
+            ->orderBy('prioridad')
             ->orderBy('nombre');
 
         return [
@@ -72,7 +73,7 @@ new #[Layout('layouts.public')] class extends Component
 
             <div class="mt-4 p-[18px] rounded-2xl bg-verde text-white">
                 <div class="font-bold text-sm">¿Tienes un negocio?</div>
-                <div class="text-xs mt-1.5 opacity-90 leading-relaxed">Añádelo gratis al directorio.</div>
+                <div class="text-xs mt-1.5 opacity-90 leading-relaxed">Contáctanos para añadirlo al directorio.</div>
                 <a href="{{ route('contacto') }}" wire:navigate
                     class="mt-2.5 block text-center w-full bg-white text-verde border-0 py-2.5 rounded-full font-bold text-xs">
                     Añadir negocio

@@ -17,6 +17,7 @@ new #[Layout('layouts.admin')] class extends Component
     public ?int $servicioId = null;
     public ?int $puebloId = null;
     public string $nombre = '';
+    public int $prioridad = 5;
     public ?string $direccion = null;
     public ?string $codigoPostal = null;
     public ?string $telefono1 = null;
@@ -48,6 +49,7 @@ new #[Layout('layouts.admin')] class extends Component
         $this->servicioId = $servicio->id;
         $this->puebloId = $servicio->pueblo_id;
         $this->nombre = $servicio->nombre;
+        $this->prioridad = $servicio->prioridad;
         $this->direccion = $servicio->direccion;
         $this->codigoPostal = $servicio->codigo_postal;
         $this->telefono1 = $servicio->telefono_1;
@@ -66,6 +68,7 @@ new #[Layout('layouts.admin')] class extends Component
         $datos = $this->validate([
             'puebloId' => ['required', 'exists:pueblos,id'],
             'nombre' => ['required', 'string', 'max:255'],
+            'prioridad' => ['required', 'integer', 'min:1', 'max:255'],
             'direccion' => ['nullable', 'string', 'max:255'],
             'codigoPostal' => ['nullable', 'string', 'max:10'],
             'telefono1' => ['nullable', 'string', 'max:30'],
@@ -84,6 +87,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'pueblo_id' => $datos['puebloId'],
                 'nombre' => $datos['nombre'],
                 'slug' => Str::slug($datos['nombre']),
+                'prioridad' => $datos['prioridad'],
                 'direccion' => $datos['direccion'],
                 'codigo_postal' => $datos['codigoPostal'],
                 'telefono_1' => $datos['telefono1'],
@@ -117,7 +121,7 @@ new #[Layout('layouts.admin')] class extends Component
     private function resetearFormulario(): void
     {
         $this->reset([
-            'servicioId', 'puebloId', 'nombre', 'direccion', 'codigoPostal',
+            'servicioId', 'puebloId', 'nombre', 'prioridad', 'direccion', 'codigoPostal',
             'telefono1', 'telefono2', 'sitioWeb', 'latitud', 'longitud',
             'descripcion', 'categoriaIds',
         ]);
@@ -130,6 +134,7 @@ new #[Layout('layouts.admin')] class extends Component
             'servicios' => Servicio::query()
                 ->with('pueblo')
                 ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
+                ->orderBy('prioridad')
                 ->orderBy('nombre')
                 ->paginate(15),
             'pueblos' => Pueblo::orderBy('nombre')->get(),
@@ -158,6 +163,7 @@ new #[Layout('layouts.admin')] class extends Component
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pueblo</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prioridad</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
@@ -167,6 +173,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $servicio->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $servicio->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $servicio->telefono_1 }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $servicio->prioridad }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <button
                                 wire:click="editar({{ $servicio->id }})"
@@ -184,7 +191,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay servicios.</td>
+                        <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">No hay servicios.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -217,6 +224,13 @@ new #[Layout('layouts.admin')] class extends Component
                     <x-input-label for="nombre" value="Nombre" />
                     <x-text-input wire:model="nombre" id="nombre" type="text" class="mt-1 block w-full" />
                     <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
+                </div>
+
+                <div>
+                    <x-input-label for="prioridad" value="Prioridad" />
+                    <x-text-input wire:model="prioridad" id="prioridad" type="number" min="1" max="255" class="mt-1 block w-full" />
+                    <p class="mt-1 text-xs text-gray-500">Cuanto más baja, antes aparece en /servicios. Por defecto: 5.</p>
+                    <x-input-error :messages="$errors->get('prioridad')" class="mt-2" />
                 </div>
 
                 <div class="sm:col-span-2">
