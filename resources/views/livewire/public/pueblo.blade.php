@@ -14,20 +14,6 @@ new #[Layout('layouts.public')] class extends Component
         $this->pueblo = $pueblo;
     }
 
-    public function getMapaUrlProperty(): ?string
-    {
-        if (! $this->pueblo->latitud || ! $this->pueblo->longitud) {
-            return null;
-        }
-
-        $lat = (float) $this->pueblo->latitud;
-        $lon = (float) $this->pueblo->longitud;
-
-        $bbox = ($lon - 0.012).','.($lat - 0.008).','.($lon + 0.012).','.($lat + 0.008);
-
-        return "https://www.openstreetmap.org/export/embed.html?bbox={$bbox}&layer=mapnik&marker={$lat},{$lon}";
-    }
-
     public function with(): array
     {
         return [
@@ -35,6 +21,15 @@ new #[Layout('layouts.public')] class extends Component
                 ->orderByDesc('publicado_en')
                 ->take(6)
                 ->get(),
+            'puntosInteresMapa' => $this->pueblo->puntosInteres()
+                ->whereNotNull('latitud')
+                ->whereNotNull('longitud')
+                ->get(['nombre', 'latitud', 'longitud'])
+                ->map(fn ($punto) => [
+                    'nombre' => $punto->nombre,
+                    'latitud' => (float) $punto->latitud,
+                    'longitud' => (float) $punto->longitud,
+                ]),
         ];
     }
 }; ?>
@@ -51,8 +46,8 @@ new #[Layout('layouts.public')] class extends Component
     </div>
 
     <div class="max-w-3xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
-        @if ($pueblo->poblacion || $pueblo->altitud || $this->mapaUrl)
-            <div class="grid grid-cols-2 {{ $this->mapaUrl ? 'sm:grid-cols-4' : 'sm:grid-cols-2' }} gap-4 mb-8">
+        @if ($pueblo->poblacion || $pueblo->altitud)
+            <div class="grid grid-cols-2 gap-4 mb-6">
                 @if ($pueblo->poblacion)
                     <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                         <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->poblacion }}</div>
@@ -66,18 +61,40 @@ new #[Layout('layouts.public')] class extends Component
                         <div class="text-xs text-tinta-muted mt-1">Altitud</div>
                     </div>
                 @endif
-
-                @if ($this->mapaUrl)
-                    <div class="col-span-2 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] h-40 sm:h-auto">
-                        <iframe
-                            src="{{ $this->mapaUrl }}"
-                            class="w-full h-full border-0"
-                            loading="lazy"
-                            title="Mapa de {{ $pueblo->nombre }}"
-                        ></iframe>
-                    </div>
-                @endif
             </div>
+        @endif
+
+        @if ($pueblo->latitud && $pueblo->longitud)
+            <div
+                wire:ignore
+                x-data
+                x-init="
+                    const mapa = L.map($el).setView([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}], 15);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a>',
+                        maxZoom: 19,
+                    }).addTo(mapa);
+
+                    const limites = [[{{ $pueblo->latitud }}, {{ $pueblo->longitud }}]];
+
+                    L.marker([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}])
+                        .addTo(mapa)
+                        .bindPopup(@js($pueblo->nombre));
+
+                    @js($puntosInteresMapa).forEach((punto) => {
+                        L.marker([punto.latitud, punto.longitud])
+                            .addTo(mapa)
+                            .bindPopup(punto.nombre);
+                        limites.push([punto.latitud, punto.longitud]);
+                    });
+
+                    if (limites.length > 1) {
+                        mapa.fitBounds(limites, { padding: [40, 40] });
+                    }
+                "
+                class="w-full h-[420px] sm:h-[480px] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] mb-8"
+            ></div>
         @endif
 
         @if ($pueblo->descripcion)
