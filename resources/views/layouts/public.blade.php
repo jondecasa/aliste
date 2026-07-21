@@ -12,7 +12,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-crema text-tinta">
-        <div x-data="{ menuAbierto: false }">
+        <div x-data="{ menuAbierto: false }" class="min-h-screen flex flex-col">
             <header class="border-b border-tinta-borde">
                 <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
                     <a href="{{ route('inicio') }}" wire:navigate class="flex items-center gap-2">
@@ -70,7 +70,7 @@
                 </nav>
             </header>
 
-            <main>
+            <main class="flex-1">
                 {{ $slot }}
             </main>
 
