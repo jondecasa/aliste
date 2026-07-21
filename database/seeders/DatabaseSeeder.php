@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             PuebloSeeder::class,
             CategoriaSeeder::class,
             BannerSeeder::class,
+            NoticiaSeeder::class,
         ]);
     }
 }
