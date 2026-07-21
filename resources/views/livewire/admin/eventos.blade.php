@@ -30,18 +30,36 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('administrar'), 403);
+        abort_unless(auth()->user()->can('gestionar-contenido-pueblo'), 403);
+    }
+
+    /**
+     * Null para administradores (sin restricción). El id del pueblo del
+     * redactor si el usuario solo puede gestionar su propio pueblo.
+     */
+    private function puebloRestringidoId(): ?int
+    {
+        return auth()->user()->esAdministrador() ? null : auth()->user()->pueblo_id;
     }
 
     public function crear(): void
     {
         $this->resetearFormulario();
+
+        if ($puebloId = $this->puebloRestringidoId()) {
+            $this->puebloId = $puebloId;
+        }
+
         $this->dispatch('open-modal', 'evento-form');
     }
 
     public function editar(int $id): void
     {
         $evento = Evento::findOrFail($id);
+
+        if ($puebloRestringido = $this->puebloRestringidoId()) {
+            abort_unless($evento->pueblo_id === $puebloRestringido, 403);
+        }
 
         $this->eventoId = $evento->id;
         $this->puebloId = $evento->pueblo_id;
@@ -60,6 +78,16 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function guardar(): void
     {
+        $puebloRestringido = $this->puebloRestringidoId();
+
+        if ($puebloRestringido) {
+            $this->puebloId = $puebloRestringido;
+
+            if ($this->eventoId) {
+                abort_unless(Evento::whereKey($this->eventoId)->where('pueblo_id', $puebloRestringido)->exists(), 403);
+            }
+        }
+
         $datos = $this->validate([
             'puebloId' => ['required', 'exists:pueblos,id'],
             'categoriaId' => ['nullable', 'exists:categorias,id'],
@@ -94,7 +122,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'imagen' => $rutaImagen,
                 'fecha_inicio' => $datos['fechaInicio'],
                 'fecha_fin' => $datos['fechaFin'],
-                'es_principal' => $datos['esPrincipal'],
+                'es_principal' => $puebloRestringido ? false : $datos['esPrincipal'],
             ]
         );
 
@@ -105,6 +133,10 @@ new #[Layout('layouts.admin')] class extends Component
     public function eliminar(int $id): void
     {
         $evento = Evento::findOrFail($id);
+
+        if ($puebloRestringido = $this->puebloRestringidoId()) {
+            abort_unless($evento->pueblo_id === $puebloRestringido, 403);
+        }
 
         if ($evento->imagen) {
             Storage::disk('public')->delete($evento->imagen);
@@ -124,14 +156,18 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function with(): array
     {
+        $puebloRestringido = $this->puebloRestringidoId();
+
         return [
             'eventos' => Evento::query()
                 ->with(['pueblo', 'categoria'])
+                ->when($puebloRestringido, fn ($q) => $q->where('pueblo_id', $puebloRestringido))
                 ->when($this->buscar, fn ($q) => $q->where('titulo', 'like', "%{$this->buscar}%"))
                 ->orderByDesc('fecha_inicio')
                 ->paginate(15),
             'pueblos' => Pueblo::orderBy('nombre')->get(),
             'categorias' => Categoria::deGrupo('evento')->orderBy('nombre')->get(),
+            'puebloRestringido' => $puebloRestringido,
         ];
     }
 }; ?>
@@ -215,13 +251,17 @@ new #[Layout('layouts.admin')] class extends Component
 
             <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <x-input-label for="puebloId" value="Pueblo" />
-                    <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                        <option value="">Selecciona un pueblo</option>
-                        @foreach ($pueblos as $pueblo)
-                            <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
-                        @endforeach
-                    </select>
+                    <x-input-label value="Pueblo" />
+                    @if ($puebloRestringido)
+                        <p class="mt-1 py-2 text-sm text-gray-700">{{ auth()->user()->pueblo->nombre }}</p>
+                    @else
+                        <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="">Selecciona un pueblo</option>
+                            @foreach ($pueblos as $pueblo)
+                                <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+                            @endforeach
+                        </select>
+                    @endif
                     <x-input-error :messages="$errors->get('puebloId')" class="mt-2" />
                 </div>
 
@@ -280,12 +320,14 @@ new #[Layout('layouts.admin')] class extends Component
                     <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
                 </div>
 
-                <div class="sm:col-span-2">
-                    <label class="inline-flex items-center">
-                        <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                        <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
-                    </label>
-                </div>
+                @unless ($puebloRestringido)
+                    <div class="sm:col-span-2">
+                        <label class="inline-flex items-center">
+                            <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                            <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
+                        </label>
+                    </div>
+                @endunless
             </div>
 
             <div class="mt-6 flex justify-end">

@@ -27,5 +27,10 @@ class AppServiceProvider extends ServiceProvider
             'redactar-noticias',
             fn (User $user) => $user->esAdministrador() || $user->esRedactor()
         );
+
+        Gate::define(
+            'gestionar-contenido-pueblo',
+            fn (User $user) => $user->esAdministrador() || ($user->esRedactor() && $user->pueblo_id !== null)
+        );
     }
 }

@@ -31,18 +31,36 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->can('administrar'), 403);
+        abort_unless(auth()->user()->can('gestionar-contenido-pueblo'), 403);
+    }
+
+    /**
+     * Null para administradores (sin restricción). El id del pueblo del
+     * redactor si el usuario solo puede gestionar su propio pueblo.
+     */
+    private function puebloRestringidoId(): ?int
+    {
+        return auth()->user()->esAdministrador() ? null : auth()->user()->pueblo_id;
     }
 
     public function crear(): void
     {
         $this->resetearFormulario();
+
+        if ($puebloId = $this->puebloRestringidoId()) {
+            $this->puebloId = $puebloId;
+        }
+
         $this->dispatch('open-modal', 'punto-interes-form');
     }
 
     public function editar(int $id): void
     {
         $puntoInteres = PuntoInteres::findOrFail($id);
+
+        if ($puebloRestringido = $this->puebloRestringidoId()) {
+            abort_unless($puntoInteres->pueblo_id === $puebloRestringido, 403);
+        }
 
         $this->puntoInteresId = $puntoInteres->id;
         $this->puebloId = $puntoInteres->pueblo_id;
@@ -60,6 +78,16 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function guardar(): void
     {
+        $puebloRestringido = $this->puebloRestringidoId();
+
+        if ($puebloRestringido) {
+            $this->puebloId = $puebloRestringido;
+
+            if ($this->puntoInteresId) {
+                abort_unless(PuntoInteres::whereKey($this->puntoInteresId)->where('pueblo_id', $puebloRestringido)->exists(), 403);
+            }
+        }
+
         $datos = $this->validate([
             'puebloId' => ['required', 'exists:pueblos,id'],
             'nombre' => ['required', 'string', 'max:255'],
@@ -106,6 +134,10 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $puntoInteres = PuntoInteres::findOrFail($id);
 
+        if ($puebloRestringido = $this->puebloRestringidoId()) {
+            abort_unless($puntoInteres->pueblo_id === $puebloRestringido, 403);
+        }
+
         if ($puntoInteres->foto) {
             Storage::disk('public')->delete($puntoInteres->foto);
         }
@@ -124,14 +156,18 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function with(): array
     {
+        $puebloRestringido = $this->puebloRestringidoId();
+
         return [
             'puntosInteres' => PuntoInteres::query()
                 ->with('pueblo')
+                ->when($puebloRestringido, fn ($q) => $q->where('pueblo_id', $puebloRestringido))
                 ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
                 ->orderBy('nombre')
                 ->paginate(15),
             'pueblos' => Pueblo::orderBy('nombre')->get(),
             'categoriasDisponibles' => Categoria::deGrupo('punto_interes')->orderBy('nombre')->get(),
+            'puebloRestringido' => $puebloRestringido,
         ];
     }
 }; ?>
@@ -206,13 +242,17 @@ new #[Layout('layouts.admin')] class extends Component
 
             <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <x-input-label for="puebloId" value="Pueblo" />
-                    <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                        <option value="">Selecciona un pueblo</option>
-                        @foreach ($pueblos as $pueblo)
-                            <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
-                        @endforeach
-                    </select>
+                    <x-input-label value="Pueblo" />
+                    @if ($puebloRestringido)
+                        <p class="mt-1 py-2 text-sm text-gray-700">{{ auth()->user()->pueblo->nombre }}</p>
+                    @else
+                        <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="">Selecciona un pueblo</option>
+                            @foreach ($pueblos as $pueblo)
+                                <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+                            @endforeach
+                        </select>
+                    @endif
                     <x-input-error :messages="$errors->get('puebloId')" class="mt-2" />
                 </div>
 
