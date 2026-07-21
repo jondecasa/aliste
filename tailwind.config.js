@@ -12,7 +12,26 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Karla', ...defaultTheme.fontFamily.sans],
+                serif: ['Newsreader', ...defaultTheme.fontFamily.serif],
+            },
+            colors: {
+                crema: {
+                    DEFAULT: 'oklch(97% 0.015 70)',
+                    suave: 'oklch(94% 0.005 250)',
+                },
+                tinta: {
+                    DEFAULT: 'oklch(22% 0.02 60)',
+                    muted: 'oklch(45% 0.02 60)',
+                    borde: 'oklch(85% 0.02 60)',
+                },
+                terracota: {
+                    DEFAULT: 'oklch(50% 0.14 40)',
+                    dark: 'oklch(40% 0.14 40)',
+                },
+                verde: {
+                    DEFAULT: 'oklch(55% 0.14 130)',
+                },
             },
         },
     },
