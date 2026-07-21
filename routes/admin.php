@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::middleware('can:administrar')->group(function () {
         Volt::route('pueblos', 'admin.pueblos')->name('pueblos');
+        Volt::route('eventos', 'admin.eventos')->name('eventos');
         Volt::route('categorias', 'admin.categorias')->name('categorias');
         Volt::route('puntos-interes', 'admin.puntos-interes')->name('puntos-interes');
         Volt::route('servicios', 'admin.servicios')->name('servicios');
