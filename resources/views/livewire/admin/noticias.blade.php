@@ -221,8 +221,15 @@ new #[Layout('layouts.admin')] class extends Component
                 </div>
 
                 <div class="sm:col-span-2">
-                    <x-input-label for="cuerpo" value="Cuerpo" />
-                    <textarea wire:model="cuerpo" id="cuerpo" rows="6" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
+                    <x-input-label for="cuerpo" value="Cuerpo (HTML)" />
+                    <textarea
+                        wire:model="cuerpo"
+                        id="cuerpo"
+                        rows="8"
+                        placeholder="<p>Escribe aquí el cuerpo de la noticia...</p>"
+                        class="mt-1 block w-full font-mono text-xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                    ></textarea>
+                    <p class="mt-1 text-xs text-gray-500">Este contenido se mostrará tal cual (como HTML) en la página pública de la noticia.</p>
                     <x-input-error :messages="$errors->get('cuerpo')" class="mt-2" />
                 </div>
 

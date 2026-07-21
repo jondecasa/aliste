@@ -195,7 +195,7 @@ new #[Layout('layouts.public')] class extends Component
                 <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
                 <div class="bg-white p-5 flex flex-col gap-4">
                     @forelse ($ultimasNoticias as $noticia)
-                        <a href="{{ route('blog') }}" wire:navigate class="block">
+                        <a href="{{ route('noticia', $noticia) }}" wire:navigate class="block">
                             <div class="text-xs text-tinta-muted/80">{{ $noticia->publicado_en?->translatedFormat('j \d\e F Y') }}</div>
                             <div class="font-serif font-semibold text-sm text-tinta mt-0.5">{{ $noticia->titulo }}</div>
                         </a>

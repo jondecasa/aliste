@@ -3,10 +3,12 @@
 use App\Models\Categoria;
 use App\Models\Noticia;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 
 new #[Layout('layouts.public')] class extends Component
 {
+    #[Url]
     public ?int $categoriaId = null;
     public int $porPagina = 6;
 
@@ -63,7 +65,7 @@ new #[Layout('layouts.public')] class extends Component
 
     @if ($destacada)
         <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-8">
-            <div class="flex flex-col sm:flex-row gap-0 sm:gap-8 bg-white rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+            <a href="{{ route('noticia', $destacada) }}" wire:navigate class="flex flex-col sm:flex-row gap-0 sm:gap-8 bg-white rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="sm:w-[440px] flex-shrink-0 aspect-[16/9] sm:aspect-auto bg-foto-placeholder flex items-center justify-center text-tinta-muted text-xs">
                     @if ($destacada->imagen_portada)
                         <img src="{{ $destacada->imagen_portada }}" alt="{{ $destacada->titulo }}" class="w-full h-full object-cover">
@@ -83,13 +85,13 @@ new #[Layout('layouts.public')] class extends Component
                         <div class="text-sm text-tinta-muted mt-2.5 leading-relaxed">{{ $destacada->extracto }}</div>
                     @endif
                 </div>
-            </div>
+            </a>
         </div>
     @endif
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         @forelse ($resto as $noticia)
-            <div wire:key="noticia-{{ $noticia->id }}">
+            <a href="{{ route('noticia', $noticia) }}" wire:navigate wire:key="noticia-{{ $noticia->id }}" class="block">
                 <div class="aspect-[16/10] rounded-[14px] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
                     @if ($noticia->imagen_portada)
                         <img src="{{ $noticia->imagen_portada }}" alt="{{ $noticia->titulo }}" class="w-full h-full object-cover rounded-[14px]">
@@ -104,7 +106,7 @@ new #[Layout('layouts.public')] class extends Component
                     @endif
                 </div>
                 <div class="font-serif font-semibold text-base sm:text-[17px] text-tinta mt-1">{{ $noticia->titulo }}</div>
-            </div>
+            </a>
         @empty
             @if (! $destacada)
                 <p class="col-span-full text-center text-tinta-muted py-10">Todavía no hay noticias publicadas.</p>
