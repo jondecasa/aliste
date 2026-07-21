@@ -27,7 +27,7 @@ new #[Layout('layouts.public')] class extends Component
     public function with(): array
     {
         $query = Noticia::query()
-            ->with('categorias')
+            ->with(['categorias', 'pueblo'])
             ->when($this->categoriaId, fn ($q) => $q->whereHas(
                 'categorias',
                 fn ($sq) => $sq->where('categorias.id', $this->categoriaId)
@@ -76,6 +76,7 @@ new #[Layout('layouts.public')] class extends Component
                 <div class="p-6 sm:p-8 sm:pl-0 flex flex-col justify-center">
                     <div class="text-xs text-terracota font-bold uppercase">
                         {{ $destacada->categorias->pluck('nombre')->join(' · ') }}
+                        · {{ $destacada->pueblo->nombre ?? 'Toda la comarca' }}
                         @if ($destacada->publicado_en)
                             · {{ $destacada->publicado_en->translatedFormat('j \d\e F Y') }}
                         @endif
@@ -104,6 +105,7 @@ new #[Layout('layouts.public')] class extends Component
                     @if ($noticia->categorias->isNotEmpty())
                         · {{ $noticia->categorias->first()->nombre }}
                     @endif
+                    · {{ $noticia->pueblo->nombre ?? 'Toda la comarca' }}
                 </div>
                 <div class="font-serif font-semibold text-base sm:text-[17px] text-tinta mt-1">{{ $noticia->titulo }}</div>
             </a>

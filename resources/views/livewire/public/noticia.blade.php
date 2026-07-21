@@ -30,9 +30,7 @@ new #[Layout('layouts.public')] class extends Component
             @if ($noticia->publicado_en)
                 {{ $noticia->publicado_en->translatedFormat('j \d\e F \d\e Y') }}
             @endif
-            @if ($noticia->pueblo)
-                · {{ $noticia->pueblo->nombre }}
-            @endif
+            · {{ $noticia->pueblo->nombre ?? 'Toda la comarca' }}
             @if ($noticia->fuente_nombre)
                 · vía
                 @if ($noticia->fuente_url)
