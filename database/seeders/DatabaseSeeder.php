@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PuebloSeeder::class,
             CategoriaSeeder::class,
+            ServicioSeeder::class,
             BannerSeeder::class,
             NoticiaSeeder::class,
         ]);
