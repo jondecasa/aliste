@@ -82,17 +82,13 @@ new #[Layout('layouts.public')] class extends Component
                             maxZoom: 19,
                         }).addTo(mapa);
 
-                        const limites = [[{{ $pueblo->latitud }}, {{ $pueblo->longitud }}]];
-
                         const popupHtml = (nombre, foto) => {
                             const titulo = '<div style=&quot;font-weight:600;margin-top:' + (foto ? '6px' : '0') + ';&quot;>' + nombre + '</div>';
                             const img = foto ? ('<img src=&quot;' + foto + '&quot; style=&quot;width:160px;height:110px;object-fit:cover;border-radius:8px;display:block;&quot;>') : '';
                             return img + titulo;
                         };
 
-                        L.marker([{{ $pueblo->latitud }}, {{ $pueblo->longitud }}])
-                            .addTo(mapa)
-                            .bindPopup(popupHtml(@js($pueblo->nombre), @js($pueblo->portada_url)));
+                        const limites = [];
 
                         @js($puntosInteresMapa).forEach((punto) => {
                             L.marker([punto.latitud, punto.longitud])
@@ -101,8 +97,8 @@ new #[Layout('layouts.public')] class extends Component
                             limites.push([punto.latitud, punto.longitud]);
                         });
 
-                        if (limites.length > 1) {
-                            mapa.fitBounds(limites, { padding: [40, 40] });
+                        if (limites.length > 0) {
+                            mapa.fitBounds(limites, { padding: [40, 40], maxZoom: 16 });
                         }
                     "
                     class="w-full h-[420px] sm:h-[480px] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] mb-8"
