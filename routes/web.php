@@ -10,6 +10,7 @@ Volt::route('pueblos/{pueblo}/calendario', 'public.calendario')->name('pueblo.ca
 Volt::route('pueblos/{pueblo}/gente', 'public.gente')->name('pueblo.gente');
 Volt::route('servicios', 'public.servicios')->name('servicios');
 Volt::route('blog', 'public.blog')->name('blog');
+Volt::route('blog/{noticia}', 'public.noticia')->name('noticia');
 
 Route::view('panel', 'dashboard')
     ->middleware(['auth', 'verified'])

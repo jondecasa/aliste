@@ -30,6 +30,11 @@ class Noticia extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function pueblo(): BelongsTo
     {
         return $this->belongsTo(Pueblo::class);
