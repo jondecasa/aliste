@@ -3,6 +3,7 @@
 use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Pueblo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -28,6 +29,7 @@ new #[Layout('layouts.admin')] class extends Component
     public ?string $fechaFin = null;
     public bool $esPrincipal = false;
     public ?int $idAEliminar = null;
+    public ?string $avisoPrincipal = null;
 
     public function mount(): void
     {
@@ -46,6 +48,7 @@ new #[Layout('layouts.admin')] class extends Component
     public function crear(): void
     {
         $this->resetearFormulario();
+        $this->avisoPrincipal = null;
 
         if ($puebloId = $this->puebloRestringidoId()) {
             $this->puebloId = $puebloId;
@@ -57,6 +60,8 @@ new #[Layout('layouts.admin')] class extends Component
     public function editar(int $id): void
     {
         $evento = Evento::findOrFail($id);
+
+        $this->avisoPrincipal = null;
 
         if ($puebloRestringido = $this->puebloRestringidoId()) {
             abort_unless($evento->pueblo_id === $puebloRestringido, 403);
@@ -111,7 +116,7 @@ new #[Layout('layouts.admin')] class extends Component
             $rutaImagen = $this->imagen->store('eventos', 'public');
         }
 
-        Evento::updateOrCreate(
+        $evento = Evento::updateOrCreate(
             ['id' => $this->eventoId],
             [
                 'pueblo_id' => $datos['puebloId'],
@@ -123,9 +128,25 @@ new #[Layout('layouts.admin')] class extends Component
                 'imagen' => $rutaImagen,
                 'fecha_inicio' => $datos['fechaInicio'],
                 'fecha_fin' => $datos['fechaFin'],
-                'es_principal' => $puebloRestringido ? false : $datos['esPrincipal'],
+                'es_principal' => $datos['esPrincipal'],
             ]
         );
+
+        if ($puebloRestringido && $datos['esPrincipal']) {
+            $otrosPrincipales = Evento::where('pueblo_id', $puebloRestringido)
+                ->whereDate('fecha_inicio', Carbon::parse($datos['fechaInicio'])->toDateString())
+                ->where('id', '!=', $evento->id)
+                ->where('es_principal', true)
+                ->get();
+
+            if ($otrosPrincipales->isNotEmpty()) {
+                Evento::whereIn('id', $otrosPrincipales->pluck('id'))->update(['es_principal' => false]);
+
+                $this->avisoPrincipal = 'Solo puede haber un evento principal por día: se ha desactivado "es principal" en '
+                    .$otrosPrincipales->pluck('titulo')->map(fn ($t) => "\"{$t}\"")->join(', ')
+                    .' para dejar únicamente "'.$evento->titulo.'" como principal ese día.';
+            }
+        }
 
         $this->dispatch('close-modal', 'evento-form');
         $this->resetearFormulario();
@@ -182,6 +203,13 @@ new #[Layout('layouts.admin')] class extends Component
 }; ?>
 
 <div>
+    @if ($avisoPrincipal)
+        <div class="mb-6 flex items-start justify-between gap-4 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+            <span>{{ $avisoPrincipal }}</span>
+            <button wire:click="$set('avisoPrincipal', null)" class="text-amber-600 hover:text-amber-900 font-bold leading-none">&times;</button>
+        </div>
+    @endif
+
     <div class="flex items-center justify-between mb-6">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Eventos</h2>
 
@@ -330,14 +358,15 @@ new #[Layout('layouts.admin')] class extends Component
                     <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
                 </div>
 
-                @unless ($puebloRestringido)
-                    <div class="sm:col-span-2">
-                        <label class="inline-flex items-center">
-                            <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                            <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
-                        </label>
-                    </div>
-                @endunless
+                <div class="sm:col-span-2">
+                    <label class="inline-flex items-center">
+                        <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                        <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
+                    </label>
+                    @if ($puebloRestringido)
+                        <p class="mt-1 text-xs text-gray-500">Solo puede haber un evento principal por día en tu pueblo: si marcas esta opción, se desactivará automáticamente en cualquier otro evento del mismo día.</p>
+                    @endif
+                </div>
             </div>
 
             <div class="mt-6 flex justify-end">
