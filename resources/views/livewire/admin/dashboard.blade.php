@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Blog;
 use App\Models\Cancion;
 use App\Models\Categoria;
 use App\Models\Noticia;
@@ -30,7 +29,6 @@ new #[Layout('layouts.admin')] class extends Component
                 'Categorías' => Categoria::count(),
                 'Puntos de interés' => PuntoInteres::count(),
                 'Servicios' => Servicio::count(),
-                'Blogs' => Blog::count(),
                 'Canciones' => Cancion::count(),
                 'Obras literarias' => ObraLiteraria::count(),
             ],
