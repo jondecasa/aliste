@@ -8,11 +8,11 @@ Volt::route('pueblos', 'public.pueblos')->name('pueblos');
 Volt::route('servicios', 'public.servicios')->name('servicios');
 Volt::route('blog', 'public.blog')->name('blog');
 
-Route::view('dashboard', 'dashboard')
+Route::view('panel', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::view('profile', 'profile')
+Route::view('perfil', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 

@@ -1,16 +1,13 @@
 <?php
 
 use App\Models\Pueblo;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
 new class extends Component
 {
     public string $name = '';
-    public string $email = '';
     public ?int $puebloId = null;
 
     /**
@@ -19,7 +16,6 @@ new class extends Component
     public function mount(): void
     {
         $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
         $this->puebloId = Auth::user()->pueblo_id;
     }
 
@@ -32,19 +28,13 @@ new class extends Component
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'puebloId' => ['nullable', 'exists:pueblos,id'],
         ]);
 
         $user->fill([
             'name' => $validated['name'],
-            'email' => $validated['email'],
             'pueblo_id' => $validated['puebloId'],
         ]);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
 
         $user->save();
 
@@ -77,7 +67,7 @@ new class extends Component
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            {{ __("Update your account's profile information.") }}
         </p>
     </header>
 
@@ -90,8 +80,8 @@ new class extends Component
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <x-text-input :value="auth()->user()->email" id="email" type="email" class="mt-1 block w-full bg-gray-100" disabled />
+            <p class="mt-1 text-sm text-gray-500">El email de acceso no se puede modificar.</p>
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
                 <div>
