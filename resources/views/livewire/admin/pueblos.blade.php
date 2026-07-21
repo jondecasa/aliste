@@ -25,6 +25,7 @@ new #[Layout('layouts.admin')] class extends Component
     public ?float $latitud = null;
     public ?float $longitud = null;
     public bool $esCabecera = false;
+    public ?int $idAEliminar = null;
 
     public function mount(): void
     {
@@ -100,6 +101,11 @@ new #[Layout('layouts.admin')] class extends Component
         $this->resetearFormulario();
     }
 
+    public function confirmarEliminar(int $id): void
+    {
+        $this->idAEliminar = $id;
+    }
+
     public function eliminar(int $id): void
     {
         $pueblo = Pueblo::findOrFail($id);
@@ -109,6 +115,9 @@ new #[Layout('layouts.admin')] class extends Component
         }
 
         $pueblo->delete();
+
+        $this->idAEliminar = null;
+        $this->dispatch('close-modal', 'confirmar-eliminar');
     }
 
     private function resetearFormulario(): void
@@ -176,8 +185,9 @@ new #[Layout('layouts.admin')] class extends Component
                                 class="text-indigo-600 hover:text-indigo-900"
                             >Editar</button>
                             <button
-                                wire:click="eliminar({{ $pueblo->id }})"
-                                wire:confirm="¿Seguro que quieres eliminar este pueblo?"
+                                wire:click="confirmarEliminar({{ $pueblo->id }})"
+                                x-data=""
+                                x-on:click="$dispatch('open-modal', 'confirmar-eliminar')"
                                 class="text-red-600 hover:text-red-900"
                             >Eliminar</button>
                         </td>
@@ -320,4 +330,6 @@ new #[Layout('layouts.admin')] class extends Component
             </div>
         </form>
     </x-modal>
+
+    <x-modal-confirmar-eliminar :id-a-eliminar="$idAEliminar" mensaje="¿Seguro que quieres eliminar este pueblo?" />
 </div>
