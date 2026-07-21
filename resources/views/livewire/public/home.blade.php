@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Banner;
 use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Noticia;
@@ -12,6 +13,7 @@ new #[Layout('layouts.public')] class extends Component
     public function with(): array
     {
         return [
+            'banner' => Banner::obtener(),
             'pueblosDestacados' => Pueblo::withCount('servicios')
                 ->orderByDesc('servicios_count')
                 ->orderBy('nombre')
@@ -68,6 +70,12 @@ new #[Layout('layouts.public')] class extends Component
             </div>
         </div>
     </div>
+
+    @if ($banner->contenido_html)
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16">
+            {!! $banner->contenido_html !!}
+        </div>
+    @endif
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16" x-data="{ eventoSeleccionado: null }">
         <h2 class="font-serif text-xl sm:text-[28px] text-tinta mb-5 sm:mb-7">Calendario de la comarca</h2>

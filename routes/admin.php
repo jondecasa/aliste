@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::middleware('can:administrar')->group(function () {
         Route::post('editor/imagenes', [EditorImagenController::class, 'subir'])->name('editor.imagenes');
 
+        Volt::route('banner', 'admin.banner')->name('banner');
         Volt::route('pueblos', 'admin.pueblos')->name('pueblos');
         Volt::route('categorias', 'admin.categorias')->name('categorias');
         Volt::route('servicios', 'admin.servicios')->name('servicios');

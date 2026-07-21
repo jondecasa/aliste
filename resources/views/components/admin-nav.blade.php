@@ -12,6 +12,7 @@
     }
 
     if (auth()->user()->can('administrar')) {
+        $enlaces[] = ['ruta' => 'admin.banner', 'etiqueta' => 'Banner'];
         $enlaces[] = ['ruta' => 'admin.pueblos', 'etiqueta' => 'Pueblos'];
         $enlaces[] = ['ruta' => 'admin.categorias', 'etiqueta' => 'Categorías'];
         $enlaces[] = ['ruta' => 'admin.servicios', 'etiqueta' => 'Servicios'];
