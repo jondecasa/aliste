@@ -30,7 +30,12 @@ new #[Layout('layouts.public')] class extends Component
             @if ($noticia->publicado_en)
                 {{ $noticia->publicado_en->translatedFormat('j \d\e F \d\e Y') }}
             @endif
-            · {{ $noticia->pueblo->nombre ?? 'Toda la comarca' }}
+            ·
+            @if ($noticia->pueblo)
+                <a href="{{ route('pueblo', $noticia->pueblo) }}" wire:navigate class="text-terracota font-semibold">{{ $noticia->pueblo->nombre }}</a>
+            @else
+                Toda la comarca
+            @endif
             @if ($noticia->fuente_nombre)
                 · vía
                 @if ($noticia->fuente_url)
@@ -57,8 +62,24 @@ new #[Layout('layouts.public')] class extends Component
             </a>
         @endif
 
+        <div class="mt-12 pt-8 border-t border-tinta-borde">
+            <div class="text-xs text-tinta-muted uppercase font-bold mb-3">Pueblo</div>
+            <div class="flex flex-wrap gap-2">
+                @if ($noticia->pueblo)
+                    <a href="{{ route('pueblo', $noticia->pueblo) }}" wire:navigate
+                        class="px-4 py-2 rounded-full text-[13px] border border-tinta-borde text-tinta/70 hover:bg-terracota hover:text-white hover:border-terracota transition">
+                        {{ $noticia->pueblo->nombre }}
+                    </a>
+                @else
+                    <span class="px-4 py-2 rounded-full text-[13px] border border-tinta-borde text-tinta/70">
+                        Toda la comarca
+                    </span>
+                @endif
+            </div>
+        </div>
+
         @if ($noticia->categorias->isNotEmpty())
-            <div class="mt-12 pt-8 border-t border-tinta-borde">
+            <div class="mt-8 pt-8 border-t border-tinta-borde">
                 <div class="text-xs text-tinta-muted uppercase font-bold mb-3">Categorías</div>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($noticia->categorias as $categoria)
