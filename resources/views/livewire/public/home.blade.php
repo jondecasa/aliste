@@ -177,7 +177,7 @@ new #[Layout('layouts.public')] class extends Component
                                     @if ($evento->categoria?->color)
                                         <span class="inline-block w-2 h-2 rounded-full" style="background-color: {{ $evento->categoria->color }}"></span>
                                     @endif
-                                    {{ $evento->pueblo->nombre }}
+                                    {{ $evento->pueblo->nombre }} ({{ $evento->fecha_inicio->isToday() ? 'hoy' : 'mañana' }})
                                 </div>
                                 <div class="font-serif font-semibold text-sm text-tinta mt-0.5">
                                     {{ $evento->titulo }}
