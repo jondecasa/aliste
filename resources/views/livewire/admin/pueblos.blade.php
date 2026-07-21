@@ -178,18 +178,8 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->poblacion ?? '—' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->es_cabecera ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
-                            <button
-                                wire:click="editar({{ $pueblo->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'pueblo-form')"
-                                class="text-indigo-600 hover:text-indigo-900"
-                            >Editar</button>
-                            <button
-                                wire:click="confirmarEliminar({{ $pueblo->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'confirmar-eliminar')"
-                                class="text-red-600 hover:text-red-900"
-                            >Eliminar</button>
+                            <x-boton-editar wire:click="editar({{ $pueblo->id }})" modal="pueblo-form" />
+                            <x-boton-eliminar wire:click="confirmarEliminar({{ $pueblo->id }})" />
                         </td>
                     </tr>
                 @empty

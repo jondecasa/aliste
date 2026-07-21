@@ -172,18 +172,8 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $obra->tipo_obra ? self::TIPOS[$obra->tipo_obra] : '' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $obra->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
-                            <button
-                                wire:click="editar({{ $obra->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'obra-form')"
-                                class="text-indigo-600 hover:text-indigo-900"
-                            >Editar</button>
-                            <button
-                                wire:click="confirmarEliminar({{ $obra->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'confirmar-eliminar')"
-                                class="text-red-600 hover:text-red-900"
-                            >Eliminar</button>
+                            <x-boton-editar wire:click="editar({{ $obra->id }})" modal="obra-form" />
+                            <x-boton-eliminar wire:click="confirmarEliminar({{ $obra->id }})" />
                         </td>
                     </tr>
                 @empty

@@ -254,18 +254,8 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->es_principal ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
-                            <button
-                                wire:click="editar({{ $evento->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'evento-form')"
-                                class="text-indigo-600 hover:text-indigo-900"
-                            >Editar</button>
-                            <button
-                                wire:click="confirmarEliminar({{ $evento->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'confirmar-eliminar')"
-                                class="text-red-600 hover:text-red-900"
-                            >Eliminar</button>
+                            <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
+                            <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
                         </td>
                     </tr>
                 @empty

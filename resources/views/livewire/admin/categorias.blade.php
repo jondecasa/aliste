@@ -148,18 +148,8 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $categoria->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ self::GRUPOS[$categoria->grupo] }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
-                            <button
-                                wire:click="editar({{ $categoria->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'categoria-form')"
-                                class="text-indigo-600 hover:text-indigo-900"
-                            >Editar</button>
-                            <button
-                                wire:click="confirmarEliminar({{ $categoria->id }})"
-                                x-data=""
-                                x-on:click="$dispatch('open-modal', 'confirmar-eliminar')"
-                                class="text-red-600 hover:text-red-900"
-                            >Eliminar</button>
+                            <x-boton-editar wire:click="editar({{ $categoria->id }})" modal="categoria-form" />
+                            <x-boton-eliminar wire:click="confirmarEliminar({{ $categoria->id }})" />
                         </td>
                     </tr>
                 @empty
