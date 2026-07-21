@@ -27,10 +27,25 @@ new #[Layout('layouts.public')] class extends Component
                 ->get(),
             'proximosEventos' => Evento::with(['pueblo', 'categoria'])
                 ->where('es_principal', true)
-                ->where('fecha_inicio', '>=', now())
+                ->whereBetween('fecha_inicio', [now()->startOfDay(), now()->addDay()->endOfDay()])
                 ->orderBy('fecha_inicio')
-                ->take(5)
                 ->get(),
+            'eventosCalendario' => Evento::with(['pueblo', 'categoria'])
+                ->where('es_principal', true)
+                ->get()
+                ->map(fn (Evento $evento) => [
+                    'title' => $evento->titulo.' · '.$evento->pueblo->nombre,
+                    'start' => $evento->fecha_inicio->toIso8601String(),
+                    'end' => $evento->fecha_fin?->toIso8601String(),
+                    'color' => $evento->categoria->color ?? '#78716c',
+                    'extendedProps' => [
+                        'pueblo' => $evento->pueblo->nombre,
+                        'lugar' => $evento->lugar,
+                        'descripcion' => $evento->descripcion,
+                        'imagen' => $evento->imagen_url,
+                        'categoria' => $evento->categoria->nombre ?? null,
+                    ],
+                ]),
         ];
     }
 }; ?>
@@ -50,6 +65,70 @@ new #[Layout('layouts.public')] class extends Component
                     class="text-center bg-white/15 text-white border border-white/60 px-6 py-3.5 rounded-full font-bold text-sm sm:text-[15px]">
                     Ver servicios
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16" x-data="{ eventoSeleccionado: null }">
+        <h2 class="font-serif text-xl sm:text-[28px] text-tinta mb-5 sm:mb-7">Calendario de la comarca</h2>
+
+        <div
+            wire:ignore
+            x-init="
+                const calendario = new FullCalendar.Calendar($el, {
+                    plugins: [FullCalendar.dayGridPlugin, FullCalendar.listPlugin, FullCalendar.interactionPlugin],
+                    initialView: 'dayGridMonth',
+                    locale: FullCalendar.esLocale,
+                    height: 'auto',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,listMonth',
+                    },
+                    events: @js($eventosCalendario),
+                    eventClick: (info) => {
+                        eventoSeleccionado = {
+                            titulo: info.event.title,
+                            color: info.event.backgroundColor,
+                            pueblo: info.event.extendedProps.pueblo,
+                            lugar: info.event.extendedProps.lugar,
+                            descripcion: info.event.extendedProps.descripcion,
+                            imagen: info.event.extendedProps.imagen,
+                            categoria: info.event.extendedProps.categoria,
+                            fecha: info.event.start.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                        };
+                    },
+                });
+                calendario.render();
+            "
+            class="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
+        ></div>
+
+        <div
+            x-show="eventoSeleccionado"
+            x-cloak
+            class="mt-6 bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] flex flex-col sm:flex-row"
+        >
+            <template x-if="eventoSeleccionado?.imagen">
+                <div class="sm:w-56 flex-shrink-0 aspect-[16/9] sm:aspect-auto bg-foto-placeholder">
+                    <img :src="eventoSeleccionado.imagen" class="w-full h-full object-cover">
+                </div>
+            </template>
+
+            <div class="p-6 flex-1">
+                <div class="flex items-center justify-between">
+                    <div class="text-xs font-bold uppercase" :style="{ color: eventoSeleccionado?.color ?? '#78716c' }" x-text="eventoSeleccionado?.categoria ?? 'Evento'"></div>
+                    <button @click="eventoSeleccionado = null" class="text-tinta-muted hover:text-tinta text-sm">✕</button>
+                </div>
+                <div class="font-serif font-semibold text-xl text-tinta mt-1" x-text="eventoSeleccionado?.titulo"></div>
+                <div class="text-sm text-tinta-muted mt-1" x-text="eventoSeleccionado?.pueblo"></div>
+                <div class="text-sm text-tinta-muted" x-text="eventoSeleccionado?.fecha"></div>
+                <template x-if="eventoSeleccionado?.lugar">
+                    <div class="text-sm text-tinta-muted mt-1" x-text="eventoSeleccionado.lugar"></div>
+                </template>
+                <template x-if="eventoSeleccionado?.descripcion">
+                    <p class="text-[15px] text-tinta-muted mt-3 leading-relaxed" x-text="eventoSeleccionado.descripcion"></p>
+                </template>
             </div>
         </div>
     </div>
