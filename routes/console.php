@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('notificaciones:eventos-del-dia')->dailyAt('10:00');
+
+Schedule::command('noticias:scrapear')->twiceDaily(14, 22);
