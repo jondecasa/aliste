@@ -171,7 +171,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $obra->autor }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $obra->tipo_obra ? self::TIPOS[$obra->tipo_obra] : '' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $obra->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3">
+                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
                             <x-boton-editar wire:click="editar({{ $obra->id }})" modal="obra-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $obra->id }})" />
                         </td>

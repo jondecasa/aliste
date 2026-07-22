@@ -253,7 +253,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->pueblo?->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->es_principal ? 'Sí' : '' }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3">
+                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
                             <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
                         </td>

@@ -162,7 +162,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $cancion->titulo }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->artista }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3">
+                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
                             <x-boton-editar wire:click="editar({{ $cancion->id }})" modal="cancion-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $cancion->id }})" />
                         </td>

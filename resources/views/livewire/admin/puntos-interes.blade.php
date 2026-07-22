@@ -216,7 +216,7 @@ new #[Layout('layouts.admin')] class extends Component
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $puntoInteres->nombre }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $puntoInteres->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3">
+                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
                             <x-boton-editar wire:click="editar({{ $puntoInteres->id }})" modal="punto-interes-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $puntoInteres->id }})" />
                         </td>
