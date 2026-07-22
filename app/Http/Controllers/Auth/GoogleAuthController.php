@@ -45,6 +45,6 @@ class GoogleAuthController extends Controller
 
         Session::regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('profile', absolute: false));
     }
 }

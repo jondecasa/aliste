@@ -38,7 +38,7 @@
                         </a>
 
                         @auth
-                            <a href="{{ route('dashboard') }}" wire:navigate
+                            <a href="{{ route('profile') }}" wire:navigate
                                 class="border border-terracota text-terracota px-4 py-2 rounded-full text-sm font-semibold hover:bg-terracota hover:text-white transition">
                                 Mi cuenta
                             </a>
@@ -63,7 +63,7 @@
                     <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
-                        <a href="{{ route('dashboard') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
+                        <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
                     @else
                         <a href="{{ route('login') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Entrar</a>
                     @endauth
