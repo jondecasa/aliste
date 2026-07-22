@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class CategoriaSeeder extends Seeder
 {
     /**
-     * Etiquetas de noticias tal y como aparecen en aliste.info.
+     * Etiquetas de noticias tal y como aparecen en aliste.es.
      */
     private const NOTICIAS = [
         'Alistanos por el mundo',
@@ -34,7 +34,7 @@ class CategoriaSeeder extends Seeder
     ];
 
     /**
-     * Tipos de servicio tal y como aparecen en aliste.info.
+     * Tipos de servicio tal y como aparecen en aliste.es.
      */
     private const SERVICIOS = [
         'Abogados',

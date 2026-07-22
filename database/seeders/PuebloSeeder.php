@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class PuebloSeeder extends Seeder
 {
     /**
-     * Los 68 pueblos de la comarca de Aliste tal y como figuran en aliste.info.
+     * Los 68 pueblos de la comarca de Aliste tal y como figuran en aliste.es.
      * No se incluyen coordenadas: la web original usa un mapa de imagen estática
      * (no geolocalización real), así que se dejan en null para completarlas
      * más adelante con datos verificados.

@@ -37,7 +37,7 @@ new #[Layout('layouts.public')] class extends Component
             <p class="text-tinta-muted text-sm italic">Todavía no hay nadie registrado de {{ $pueblo->nombre }}.</p>
         @else
             <p class="text-tinta-muted text-[15px] mb-8">
-                {{ $gente->count() }} {{ Str::plural('persona', $gente->count()) }} de {{ $pueblo->nombre }} registrada{{ $gente->count() === 1 ? '' : 's' }} en Aliste.info.
+                {{ $gente->count() }} {{ Str::plural('persona', $gente->count()) }} de {{ $pueblo->nombre }} registrada{{ $gente->count() === 1 ? '' : 's' }} en Aliste.es.
             </p>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
@@ -46,7 +46,7 @@ new #[Layout('layouts.public')] class extends Component
                         @if ($persona->avatar_url)
                             <img src="{{ $persona->avatar_url }}" alt="{{ $persona->name }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                         @else
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white shadow-[0_8px_24px_rgba(60,30,10,0.08)]"></div>
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white dark:bg-gray-800 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"></div>
                         @endif
                         <div class="font-serif font-semibold text-sm sm:text-base text-tinta mt-3">{{ $persona->name }}</div>
                     </div>

@@ -23,7 +23,7 @@ class ContactoEnviado extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Contacto Aliste.info: '.$this->asunto,
+            subject: 'Contacto Aliste.es: '.$this->asunto,
             replyTo: [new Address($this->emailRemitente, $this->nombreRemitente)],
         );
     }
