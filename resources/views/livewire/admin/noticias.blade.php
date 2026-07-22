@@ -139,7 +139,7 @@ new #[Layout('layouts.admin')] class extends Component
 
 <div>
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Noticias</h2>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Noticias</h2>
 
         <x-primary-button x-data="" x-on:click="$dispatch('open-modal', 'noticia-form')" wire:click="crear">
             Nueva noticia
@@ -150,22 +150,22 @@ new #[Layout('layouts.admin')] class extends Component
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por título..." />
     </div>
 
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Título</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pueblo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Publicado</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Publicado</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse ($noticias as $noticia)
                     <tr wire:key="noticia-{{ $noticia->id }}">
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $noticia->titulo }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $noticia->pueblo?->nombre ?? 'Comarca' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $noticia->publicado_en?->format('d/m/Y') }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $noticia->titulo }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $noticia->pueblo?->nombre ?? 'Comarca' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $noticia->publicado_en?->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <x-boton-editar wire:click="editar({{ $noticia->id }})" modal="noticia-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $noticia->id }})" />
@@ -173,7 +173,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay noticias.</td>
+                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay noticias.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -186,7 +186,7 @@ new #[Layout('layouts.admin')] class extends Component
 
     <x-modal name="noticia-form" :show="$errors->isNotEmpty()" focusable maxWidth="xl">
         <form wire:submit="guardar" class="p-6">
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ $noticiaId ? 'Editar noticia' : 'Nueva noticia' }}
             </h2>
 
@@ -199,7 +199,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div>
                     <x-input-label for="puebloId" value="Pueblo (opcional)" />
-                    <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                         <option value="">Toda la comarca</option>
                         @foreach ($pueblos as $pueblo)
                             <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
@@ -216,7 +216,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div class="sm:col-span-2">
                     <x-input-label for="extracto" value="Extracto" />
-                    <textarea wire:model="extracto" id="extracto" rows="2" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
+                    <textarea wire:model="extracto" id="extracto" rows="2" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
                     <x-input-error :messages="$errors->get('extracto')" class="mt-2" />
                 </div>
 
@@ -227,9 +227,9 @@ new #[Layout('layouts.admin')] class extends Component
                         id="cuerpo"
                         rows="8"
                         placeholder="<p>Escribe aquí el cuerpo de la noticia...</p>"
-                        class="mt-1 block w-full font-mono text-xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                        class="mt-1 block w-full font-mono text-xs border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                     ></textarea>
-                    <p class="mt-1 text-xs text-gray-500">Este contenido se mostrará tal cual (como HTML) en la página pública de la noticia.</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Este contenido se mostrará tal cual (como HTML) en la página pública de la noticia.</p>
                     <x-input-error :messages="$errors->get('cuerpo')" class="mt-2" />
                 </div>
 
@@ -262,8 +262,8 @@ new #[Layout('layouts.admin')] class extends Component
                     <div class="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
                         @foreach ($categoriasDisponibles as $categoria)
                             <label class="inline-flex items-center">
-                                <input type="checkbox" wire:model="categoriaIds" value="{{ $categoria->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                <span class="ms-2 text-sm text-gray-600">{{ $categoria->nombre }}</span>
+                                <input type="checkbox" wire:model="categoriaIds" value="{{ $categoria->id }}" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ $categoria->nombre }}</span>
                             </label>
                         @endforeach
                     </div>

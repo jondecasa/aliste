@@ -75,7 +75,7 @@ new #[Layout('layouts.public')] class extends Component
                 <div class="font-bold text-sm">¿Tienes un negocio?</div>
                 <div class="text-xs mt-1.5 opacity-90 leading-relaxed">Contáctanos para añadirlo al directorio.</div>
                 <a href="{{ route('contacto') }}" wire:navigate
-                    class="mt-2.5 block text-center w-full bg-white text-verde border-0 py-2.5 rounded-full font-bold text-xs">
+                    class="mt-2.5 block text-center w-full bg-white dark:bg-gray-800 text-verde border-0 py-2.5 rounded-full font-bold text-xs">
                     Añadir negocio
                 </a>
             </div>
@@ -83,7 +83,7 @@ new #[Layout('layouts.public')] class extends Component
 
         <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 content-start">
             @forelse ($servicios as $servicio)
-                <div wire:key="servicio-{{ $servicio->id }}" class="bg-white rounded-2xl p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                <div wire:key="servicio-{{ $servicio->id }}" class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="text-xs text-terracota font-bold uppercase">
                         {{ $servicio->categorias->pluck('nombre')->join(' · ') }}
                         @if ($servicio->pueblo)
@@ -116,7 +116,7 @@ new #[Layout('layouts.public')] class extends Component
 
     @if ($total > count($servicios))
         <div class="flex justify-center pb-14">
-            <button wire:click="verMas" class="bg-white border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
+            <button wire:click="verMas" class="bg-white dark:bg-gray-800 border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
                 Cargar más servicios
             </button>
         </div>

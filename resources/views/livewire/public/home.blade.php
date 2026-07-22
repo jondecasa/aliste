@@ -109,13 +109,13 @@ new #[Layout('layouts.public')] class extends Component
                 });
                 calendario.render();
             "
-            class="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
+            class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
         ></div>
 
         <div
             x-show="eventoSeleccionado"
             x-cloak
-            class="mt-6 bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] flex flex-col sm:flex-row"
+            class="mt-6 bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] flex flex-col sm:flex-row"
         >
             <template x-if="eventoSeleccionado?.imagen">
                 <div class="sm:w-56 flex-shrink-0 aspect-[16/9] sm:aspect-auto bg-foto-placeholder">
@@ -147,7 +147,7 @@ new #[Layout('layouts.public')] class extends Component
 
             <div class="flex sm:grid sm:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 mb-10 sm:mb-12">
                 @foreach ($pueblosDestacados as $pueblo)
-                    <a href="{{ route('pueblo', $pueblo) }}" wire:navigate class="w-40 sm:w-auto flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <a href="{{ route('pueblo', $pueblo) }}" wire:navigate class="w-40 sm:w-auto flex-shrink-0 bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                         <div class="aspect-[4/3] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
                             @if ($pueblo->portada_url)
                                 <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
@@ -166,7 +166,7 @@ new #[Layout('layouts.public')] class extends Component
             <h2 class="font-serif text-xl sm:text-[28px] text-tinta mb-5 sm:mb-7">Servicios y negocios locales</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 @foreach ($categoriasDestacadas as $categoria)
-                    <a href="{{ route('servicios') }}" wire:navigate class="bg-white rounded-2xl p-6 sm:p-7 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                    <a href="{{ route('servicios') }}" wire:navigate class="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-7 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                         <div class="font-serif italic font-semibold text-base sm:text-lg text-tinta">{{ $categoria->nombre }}</div>
                         <div class="text-sm text-tinta-muted mt-2">{{ $categoria->servicios_count }} {{ Str::plural('negocio', $categoria->servicios_count) }} registrados</div>
                     </a>
@@ -178,7 +178,7 @@ new #[Layout('layouts.public')] class extends Component
             @if ($proximosEventos->isNotEmpty())
                 <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="bg-terracota text-white px-5 py-4 font-serif font-semibold text-lg">Próximos eventos</div>
-                    <div class="bg-white p-5 flex flex-col gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-5 flex flex-col gap-4">
                         @foreach ($proximosEventos as $evento)
                             <a href="{{ route('pueblo.calendario', $evento->pueblo) }}" wire:navigate wire:key="evento-home-{{ $evento->id }}" class="block">
                                 <div class="flex items-center gap-1.5 text-xs text-terracota font-bold uppercase">
@@ -201,7 +201,7 @@ new #[Layout('layouts.public')] class extends Component
 
             <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
-                <div class="bg-white p-5 flex flex-col gap-4">
+                <div class="bg-white dark:bg-gray-800 p-5 flex flex-col gap-4">
                     @forelse ($ultimasNoticias as $noticia)
                         <a href="{{ route('noticia', $noticia) }}" wire:navigate class="block">
                             <div class="text-xs text-tinta-muted/80">{{ $noticia->publicado_en?->translatedFormat('j \d\e F Y') }}</div>
