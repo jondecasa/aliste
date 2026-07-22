@@ -9,6 +9,9 @@
 
         <link rel="icon" type="image/png" href="{{ asset('images/logo-aliste.png') }}">
 
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#a24019">
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-crema text-tinta">
