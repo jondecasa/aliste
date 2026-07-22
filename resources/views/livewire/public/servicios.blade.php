@@ -27,7 +27,11 @@ new #[Layout('layouts.public')] class extends Component
     {
         $query = Servicio::query()
             ->with(['pueblo', 'categorias'])
-            ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
+            ->when($this->buscar, fn ($q) => $q->where(function ($sq) {
+                $sq->where('nombre', 'like', "%{$this->buscar}%")
+                    ->orWhereHas('pueblo', fn ($pq) => $pq->where('nombre', 'like', "%{$this->buscar}%"))
+                    ->orWhereHas('categorias', fn ($cq) => $cq->where('categorias.nombre', 'like', "%{$this->buscar}%"));
+            }))
             ->when($this->categoriaId, fn ($q) => $q->whereHas(
                 'categorias',
                 fn ($sq) => $sq->where('categorias.id', $this->categoriaId)
@@ -58,7 +62,7 @@ new #[Layout('layouts.public')] class extends Component
         <input
             wire:model.live.debounce.300ms="buscar"
             type="text"
-            placeholder="Buscar un servicio o negocio..."
+            placeholder="Buscar por negocio, categoría o pueblo..."
             class="w-full sm:max-w-[340px] h-11 rounded-full border border-tinta-borde bg-white dark:bg-gray-800 px-5 text-sm text-tinta placeholder:text-tinta-muted focus:outline-none focus:ring-2 focus:ring-terracota/40"
         >
     </div>
