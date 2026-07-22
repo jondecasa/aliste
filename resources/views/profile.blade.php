@@ -29,6 +29,10 @@
                         async comprobar() {
                             this.suscrito = await window.PushNotificaciones.estadoSuscripcion();
                             this.cargando = false;
+
+                            if (! this.suscrito && window.Notification && Notification.permission === 'default') {
+                                this.activar();
+                            }
                         },
                         async activar() {
                             this.error = null;
