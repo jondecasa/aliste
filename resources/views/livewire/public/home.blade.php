@@ -142,7 +142,7 @@ new #[Layout('layouts.public')] class extends Component
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col lg:flex-row gap-8 py-10 sm:py-16">
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0 order-2 lg:order-none">
             <h2 class="font-serif text-xl sm:text-[28px] text-tinta mb-5 sm:mb-7">Pueblos destacados</h2>
 
             <div class="flex sm:grid sm:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 mb-10 sm:mb-12">
@@ -174,7 +174,7 @@ new #[Layout('layouts.public')] class extends Component
             </div>
         </div>
 
-        <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6">
+        <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6 order-1 lg:order-none">
             @if ($proximosEventos->isNotEmpty())
                 <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="bg-terracota text-white px-5 py-4 font-serif font-semibold text-lg">Próximos eventos</div>
