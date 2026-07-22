@@ -1,0 +1,12 @@
+[
+    {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "es.aliste.app",
+            "sha256_cert_fingerprints": [
+                "59:C1:40:16:B9:9D:F1:15:74:4E:C4:DF:DC:38:B6:B2:98:3A:2D:5C:13:5C:13:AE:EF:90:C4:87:68:80:8C:54"
+            ]
+        }
+    }
+]
