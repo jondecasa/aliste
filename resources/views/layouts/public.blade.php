@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ auth()->check() && auth()->user()->prefiereTemaOscuro() ? 'dark' : '' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
         <div x-data="{ menuAbierto: false }" class="min-h-screen flex flex-col">
             <header class="border-b border-tinta-borde">
                 <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
-                    <a href="{{ route('inicio') }}" wire:navigate class="flex items-center gap-2">
+                    <a href="{{ route('inicio') }}" wire:navigate class="flex items-center gap-2 bg-white rounded-xl px-2 py-1">
                         <x-application-logo class="h-12 sm:h-14 w-auto" />
                     </a>
 
@@ -76,7 +76,7 @@
 
             <footer class="bg-tinta text-tinta-borde">
                 <div class="max-w-7xl mx-auto px-5 sm:px-12 py-8 sm:py-9 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 text-sm">
-                    <div class="bg-crema rounded-lg px-3 py-1.5 inline-flex w-fit">
+                    <div class="bg-white rounded-lg px-3 py-1.5 inline-flex w-fit">
                         <x-application-logo class="h-8 sm:h-9 w-auto" />
                     </div>
                     <div class="flex flex-wrap gap-4 sm:gap-12">

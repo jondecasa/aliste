@@ -211,7 +211,7 @@ new #[Layout('layouts.admin')] class extends Component
     @endif
 
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Eventos</h2>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Eventos</h2>
 
         <x-primary-button x-data="" x-on:click="$dispatch('open-modal', 'evento-form')" wire:click="crear">
             Nuevo evento
@@ -222,37 +222,37 @@ new #[Layout('layouts.admin')] class extends Component
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por título..." />
     </div>
 
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
                     <th class="px-6 py-3"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Título</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pueblo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Principal</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Principal</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse ($eventos as $evento)
                     <tr wire:key="evento-{{ $evento->id }}">
                         <td class="px-6 py-4">
                             @if ($evento->imagen_url)
                                 <img src="{{ $evento->imagen_url }}" alt="{{ $evento->titulo }}" class="w-12 h-12 rounded-lg object-cover">
                             @else
-                                <div class="w-12 h-12 rounded-lg bg-gray-100"></div>
+                                <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-900"></div>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                             @if ($evento->categoria?->color)
                                 <span class="inline-block w-2.5 h-2.5 rounded-full me-1.5" style="background-color: {{ $evento->categoria->color }}"></span>
                             @endif
                             {{ $evento->titulo }}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $evento->es_principal ? 'Sí' : '' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->pueblo?->nombre }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->es_principal ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
@@ -260,7 +260,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-sm text-gray-500 text-center">No hay eventos.</td>
+                        <td colspan="6" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay eventos.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -273,7 +273,7 @@ new #[Layout('layouts.admin')] class extends Component
 
     <x-modal name="evento-form" :show="$errors->isNotEmpty()" focusable maxWidth="xl">
         <form wire:submit="guardar" class="p-6">
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ $eventoId ? 'Editar evento' : 'Nuevo evento' }}
             </h2>
 
@@ -281,9 +281,9 @@ new #[Layout('layouts.admin')] class extends Component
                 <div>
                     <x-input-label value="Pueblo" />
                     @if ($puebloRestringido)
-                        <p class="mt-1 py-2 text-sm text-gray-700">{{ auth()->user()->pueblo->nombre }}</p>
+                        <p class="mt-1 py-2 text-sm text-gray-700 dark:text-gray-300">{{ auth()->user()->pueblo->nombre }}</p>
                     @else
-                        <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="">Selecciona un pueblo</option>
                             @foreach ($pueblos as $pueblo)
                                 <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
@@ -301,7 +301,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div>
                     <x-input-label for="categoriaId" value="Categoría" />
-                    <select wire:model="categoriaId" id="categoriaId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <select wire:model="categoriaId" id="categoriaId" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                         <option value="">Sin categoría</option>
                         @foreach ($categorias as $categoria)
                             <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
@@ -330,7 +330,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div class="sm:col-span-2">
                     <x-input-label for="descripcion" value="Descripción" />
-                    <textarea wire:model="descripcion" id="descripcion" rows="4" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
+                    <textarea wire:model="descripcion" id="descripcion" rows="4" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
                     <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                 </div>
 
@@ -344,17 +344,17 @@ new #[Layout('layouts.admin')] class extends Component
                     @endif
 
                     <input wire:model="imagen" id="imagen" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
-                    <div wire:loading wire:target="imagen" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+                    <div wire:loading wire:target="imagen" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo imagen...</div>
                     <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
                 </div>
 
                 <div class="sm:col-span-2">
                     <label class="inline-flex items-center">
-                        <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                        <span class="ms-2 text-sm text-gray-600">Es principal (aparece en el calendario de la home)</span>
+                        <input wire:model="esPrincipal" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                        <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Es principal (aparece en el calendario de la home)</span>
                     </label>
                     @if ($puebloRestringido)
-                        <p class="mt-1 text-xs text-gray-500">Solo puede haber un evento principal por día en tu pueblo: si marcas esta opción, se desactivará automáticamente en cualquier otro evento del mismo día.</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Solo puede haber un evento principal por día en tu pueblo: si marcas esta opción, se desactivará automáticamente en cualquier otro evento del mismo día.</p>
                     @endif
                 </div>
             </div>

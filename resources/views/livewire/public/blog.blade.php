@@ -65,7 +65,7 @@ new #[Layout('layouts.public')] class extends Component
 
     @if ($destacada)
         <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-8">
-            <a href="{{ route('noticia', $destacada) }}" wire:navigate class="flex flex-col sm:flex-row gap-0 sm:gap-8 bg-white rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+            <a href="{{ route('noticia', $destacada) }}" wire:navigate class="flex flex-col sm:flex-row gap-0 sm:gap-8 bg-white dark:bg-gray-800 rounded-[20px] overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="sm:w-[440px] flex-shrink-0 aspect-[16/9] sm:aspect-auto bg-foto-placeholder flex items-center justify-center text-tinta-muted text-xs">
                     @if ($destacada->imagen_portada)
                         <img src="{{ $destacada->imagen_portada }}" alt="{{ $destacada->titulo }}" class="w-full h-full object-cover">
@@ -118,7 +118,7 @@ new #[Layout('layouts.public')] class extends Component
 
     @if ($total > (count($resto) + ($destacada ? 1 : 0)))
         <div class="flex justify-center pb-14">
-            <button wire:click="verMas" class="bg-white border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
+            <button wire:click="verMas" class="bg-white dark:bg-gray-800 border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
                 Cargar más noticias
             </button>
         </div>

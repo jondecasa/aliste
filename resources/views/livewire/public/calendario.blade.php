@@ -103,12 +103,12 @@ new #[Layout('layouts.public')] class extends Component
                     });
                     calendario.render();
                 "
-                class="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
+                class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
             ></div>
         </div>
 
         <div class="w-full lg:w-[320px] flex-shrink-0">
-            <div class="bg-white rounded-2xl shadow-[0_8px_24px_rgba(60,30,10,0.08)] sticky top-6 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_24px_rgba(60,30,10,0.08)] sticky top-6 overflow-hidden">
                 <template x-if="!diaSeleccionado">
                     <div class="p-6 text-sm text-tinta-muted italic">
                         Haz clic en un día del calendario para ver sus eventos.

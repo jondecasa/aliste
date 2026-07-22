@@ -2,8 +2,8 @@
 
 <x-modal name="confirmar-eliminar" focusable maxWidth="sm">
     <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900">Eliminar</h2>
-        <p class="mt-2 text-sm text-gray-600">{{ $mensaje }} Esta acción no se puede deshacer.</p>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Eliminar</h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ $mensaje }} Esta acción no se puede deshacer.</p>
 
         <div class="mt-6 flex justify-end gap-3">
             <x-secondary-button x-on:click="$dispatch('close')">Cancelar</x-secondary-button>

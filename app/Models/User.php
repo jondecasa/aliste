@@ -32,6 +32,7 @@ class User extends Authenticatable
         'rol',
         'pueblo_id',
         'avatar',
+        'tema',
     ];
 
     /**
@@ -80,5 +81,10 @@ class User extends Authenticatable
     public function esInvitado(): bool
     {
         return $this->rol === self::ROL_INVITADO;
+    }
+
+    public function prefiereTemaOscuro(): bool
+    {
+        return $this->tema === 'oscuro';
     }
 }

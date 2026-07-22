@@ -29,14 +29,14 @@ new #[Layout('layouts.admin')] class extends Component
 
 <div>
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Banner de la home</h2>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Banner de la home</h2>
     </div>
 
-    <p class="text-sm text-gray-500 mb-6">
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
         Este bloque se muestra en la página de inicio, entre la cabecera y el calendario de la comarca. Si lo dejas vacío, no se mostrará nada.
     </p>
 
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
         <form wire:submit="guardar">
             <div
                 wire:ignore

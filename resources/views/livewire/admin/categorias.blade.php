@@ -109,7 +109,7 @@ new #[Layout('layouts.admin')] class extends Component
 
 <div>
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Categorías</h2>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Categorías</h2>
 
         <x-primary-button x-data="" x-on:click="$dispatch('open-modal', 'categoria-form')" wire:click="crear">
             Nueva categoría
@@ -119,7 +119,7 @@ new #[Layout('layouts.admin')] class extends Component
     <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por nombre..." />
 
-        <select wire:model.live="filtroGrupo" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+        <select wire:model.live="filtroGrupo" class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
             <option value="">Todos los grupos</option>
             @foreach (self::GRUPOS as $valor => $etiqueta)
                 <option value="{{ $valor }}">{{ $etiqueta }}</option>
@@ -127,17 +127,17 @@ new #[Layout('layouts.admin')] class extends Component
         </select>
     </div>
 
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
                     <th class="px-6 py-3"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grupo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Grupo</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse ($categorias as $categoria)
                     <tr wire:key="categoria-{{ $categoria->id }}">
                         <td class="px-6 py-4">
@@ -145,8 +145,8 @@ new #[Layout('layouts.admin')] class extends Component
                                 <span class="inline-block w-4 h-4 rounded-full" style="background-color: {{ $categoria->color }}"></span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $categoria->nombre }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ self::GRUPOS[$categoria->grupo] }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $categoria->nombre }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ self::GRUPOS[$categoria->grupo] }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <x-boton-editar wire:click="editar({{ $categoria->id }})" modal="categoria-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $categoria->id }})" />
@@ -154,7 +154,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 text-center">No hay categorías.</td>
+                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay categorías.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -167,7 +167,7 @@ new #[Layout('layouts.admin')] class extends Component
 
     <x-modal name="categoria-form" :show="$errors->isNotEmpty()" focusable>
         <form wire:submit="guardar" class="p-6">
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ $categoriaId ? 'Editar categoría' : 'Nueva categoría' }}
             </h2>
 
@@ -180,7 +180,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div>
                     <x-input-label for="grupo" value="Grupo" />
-                    <select wire:model.live="grupo" id="grupo" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <select wire:model.live="grupo" id="grupo" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                         @foreach (self::GRUPOS as $valor => $etiqueta)
                             <option value="{{ $valor }}">{{ $etiqueta }}</option>
                         @endforeach
@@ -191,7 +191,7 @@ new #[Layout('layouts.admin')] class extends Component
                 @if ($grupo === 'evento')
                     <div>
                         <x-input-label for="color" value="Color en el calendario" />
-                        <input wire:model="color" id="color" type="color" class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm">
+                        <input wire:model="color" id="color" type="color" class="mt-1 block w-full h-10 border-gray-300 dark:border-gray-600 rounded-md shadow-sm">
                         <x-input-error :messages="$errors->get('color')" class="mt-2" />
                     </div>
                 @endif

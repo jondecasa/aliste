@@ -72,7 +72,7 @@ new #[Layout('layouts.public')] class extends Component
 
     <div class="max-w-2xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
         @if ($enviado)
-            <div class="bg-white rounded-2xl p-8 shadow-[0_8px_24px_rgba(60,30,10,0.08)] text-center">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-[0_8px_24px_rgba(60,30,10,0.08)] text-center">
                 <div class="font-serif text-xl text-tinta mb-2">¡Mensaje enviado!</div>
                 <p class="text-tinta-muted text-sm">Gracias por escribirnos, te responderemos lo antes posible.</p>
                 <button wire:click="$set('enviado', false)" class="mt-6 text-sm text-terracota font-semibold">
@@ -81,7 +81,7 @@ new #[Layout('layouts.public')] class extends Component
             </div>
         @else
             <div
-                class="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
+                class="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-[0_8px_24px_rgba(60,30,10,0.08)]"
                 x-data
                 x-on:captcha-token.window="$wire.set('captchaToken', $event.detail)"
                 x-on:captcha-reset.window="window.grecaptcha && window.grecaptcha.reset()"

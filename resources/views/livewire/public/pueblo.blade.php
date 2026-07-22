@@ -55,14 +55,14 @@ new #[Layout('layouts.public')] class extends Component
             @if ($pueblo->poblacion || $pueblo->altitud)
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     @if ($pueblo->poblacion)
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                             <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->poblacion }}</div>
                             <div class="text-xs text-tinta-muted mt-1">Habitantes</div>
                         </div>
                     @endif
 
                     @if ($pueblo->altitud)
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                             <div class="text-2xl sm:text-3xl font-serif font-semibold text-terracota">{{ $pueblo->altitud }} <span class="text-base font-sans font-normal text-tinta-muted">m</span></div>
                             <div class="text-xs text-tinta-muted mt-1">Altitud</div>
                         </div>
@@ -121,11 +121,11 @@ new #[Layout('layouts.public')] class extends Component
         <div class="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-6">
             <div class="grid grid-cols-2 gap-3">
                 <a href="{{ route('pueblo.calendario', $pueblo) }}" wire:navigate
-                    class="flex items-center justify-center gap-2 bg-white rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
+                    class="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
                     Calendario
                 </a>
                 <a href="{{ route('pueblo.gente', $pueblo) }}" wire:navigate
-                    class="flex items-center justify-center gap-2 bg-white rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
+                    class="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 rounded-2xl py-4 px-3 shadow-[0_8px_24px_rgba(60,30,10,0.08)] font-serif font-semibold text-sm text-tinta hover:text-terracota">
                     Gente
                 </a>
             </div>
@@ -133,7 +133,7 @@ new #[Layout('layouts.public')] class extends Component
             @if ($noticias->isNotEmpty())
                 <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="bg-tinta text-white px-5 py-4 font-serif font-semibold text-lg">Últimas noticias</div>
-                    <div class="bg-white p-5 flex flex-col gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-5 flex flex-col gap-4">
                         @foreach ($noticias as $noticia)
                             <a href="{{ route('noticia', $noticia) }}" wire:navigate wire:key="noticia-{{ $noticia->id }}" class="block">
                                 <div class="text-xs text-tinta-muted/80">{{ $noticia->publicado_en?->translatedFormat('j \d\e F Y') }}</div>
@@ -147,7 +147,7 @@ new #[Layout('layouts.public')] class extends Component
             @if ($servicios->isNotEmpty())
                 <div class="rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="bg-terracota text-white px-5 py-4 font-serif font-semibold text-lg">Servicios</div>
-                    <div class="bg-white p-5 flex flex-col gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-5 flex flex-col gap-4">
                         @foreach ($servicios as $servicio)
                             <a href="{{ route('servicios') }}" wire:navigate wire:key="servicio-{{ $servicio->id }}" class="block">
                                 @if ($servicio->categorias->isNotEmpty())

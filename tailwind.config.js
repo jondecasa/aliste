@@ -4,6 +4,8 @@ import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -18,20 +20,20 @@ export default {
             },
             colors: {
                 crema: {
-                    DEFAULT: 'oklch(97% 0.015 70)',
-                    suave: 'oklch(94% 0.005 250)',
+                    DEFAULT: 'var(--color-crema)',
+                    suave: 'var(--color-crema-suave)',
                 },
                 tinta: {
-                    DEFAULT: 'oklch(22% 0.02 60)',
-                    muted: 'oklch(45% 0.02 60)',
-                    borde: 'oklch(85% 0.02 60)',
+                    DEFAULT: 'var(--color-tinta)',
+                    muted: 'var(--color-tinta-muted)',
+                    borde: 'var(--color-tinta-borde)',
                 },
                 terracota: {
-                    DEFAULT: 'oklch(50% 0.14 40)',
-                    dark: 'oklch(40% 0.14 40)',
+                    DEFAULT: 'var(--color-terracota)',
+                    dark: 'var(--color-terracota-dark)',
                 },
                 verde: {
-                    DEFAULT: 'oklch(55% 0.14 130)',
+                    DEFAULT: 'var(--color-verde)',
                 },
             },
         },

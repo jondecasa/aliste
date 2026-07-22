@@ -142,7 +142,7 @@ new #[Layout('layouts.admin')] class extends Component
 
 <div>
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Pueblos</h2>
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Pueblos</h2>
 
         <x-primary-button x-data="" x-on:click="$dispatch('open-modal', 'pueblo-form')" wire:click="crear">
             Nuevo pueblo
@@ -153,30 +153,30 @@ new #[Layout('layouts.admin')] class extends Component
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por nombre..." />
     </div>
 
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
                     <th class="px-6 py-3"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Población</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabecera</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Población</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Cabecera</th>
                     <th class="px-6 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse ($pueblos as $pueblo)
                     <tr wire:key="pueblo-{{ $pueblo->id }}">
                         <td class="px-6 py-4">
                             @if ($pueblo->portada_url)
                                 <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-12 h-12 rounded-lg object-cover">
                             @else
-                                <div class="w-12 h-12 rounded-lg bg-gray-100"></div>
+                                <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-900"></div>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $pueblo->nombre }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->poblacion ?? '—' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $pueblo->es_cabecera ? 'Sí' : '' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $pueblo->nombre }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $pueblo->poblacion ?? '—' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $pueblo->es_cabecera ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3">
                             <x-boton-editar wire:click="editar({{ $pueblo->id }})" modal="pueblo-form" />
                             <x-boton-eliminar wire:click="confirmarEliminar({{ $pueblo->id }})" />
@@ -184,7 +184,7 @@ new #[Layout('layouts.admin')] class extends Component
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-sm text-gray-500 text-center">No hay pueblos.</td>
+                        <td colspan="5" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay pueblos.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -197,7 +197,7 @@ new #[Layout('layouts.admin')] class extends Component
 
     <x-modal name="pueblo-form" :show="$errors->isNotEmpty()" focusable maxWidth="2xl">
         <form wire:submit="guardar" class="p-6">
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ $puebloId ? 'Editar pueblo' : 'Nuevo pueblo' }}
             </h2>
 
@@ -210,7 +210,7 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div class="sm:col-span-2">
                     <x-input-label for="descripcion" value="Descripción" />
-                    <textarea wire:model="descripcion" id="descripcion" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
+                    <textarea wire:model="descripcion" id="descripcion" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
                     <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                 </div>
 
@@ -224,7 +224,7 @@ new #[Layout('layouts.admin')] class extends Component
                     @endif
 
                     <input wire:model="foto" id="foto" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
-                    <div wire:loading wire:target="foto" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+                    <div wire:loading wire:target="foto" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo imagen...</div>
                     <x-input-error :messages="$errors->get('foto')" class="mt-2" />
                 </div>
 
@@ -254,8 +254,8 @@ new #[Layout('layouts.admin')] class extends Component
 
                 <div class="sm:col-span-2">
                     <label class="inline-flex items-center">
-                        <input wire:model="esCabecera" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                        <span class="ms-2 text-sm text-gray-600">Es cabecera de comarca</span>
+                        <input wire:model="esCabecera" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                        <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Es cabecera de comarca</span>
                     </label>
                 </div>
 
@@ -331,7 +331,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <textarea id="contenidoHtml">{{ $contenidoHtml }}</textarea>
                     </div>
 
-                    <p class="mt-1 text-xs text-gray-500">Este contenido se mostrará tal cual en la página pública del pueblo (/pueblos/{{ Illuminate\Support\Str::slug($nombre) ?: 'slug' }}).</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Este contenido se mostrará tal cual en la página pública del pueblo (/pueblos/{{ Illuminate\Support\Str::slug($nombre) ?: 'slug' }}).</p>
                     <x-input-error :messages="$errors->get('contenidoHtml')" class="mt-2" />
                 </div>
             </div>

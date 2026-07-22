@@ -55,7 +55,7 @@ new #[Layout('layouts.public')] class extends Component
                 wire:model.live.debounce.300ms="buscar"
                 type="text"
                 placeholder="Buscar un pueblo..."
-                class="w-full sm:max-w-[340px] h-11 rounded-full border border-tinta-borde bg-white px-5 text-sm text-tinta placeholder:text-tinta-muted focus:outline-none focus:ring-2 focus:ring-terracota/40"
+                class="w-full sm:max-w-[340px] h-11 rounded-full border border-tinta-borde bg-white dark:bg-gray-800 px-5 text-sm text-tinta placeholder:text-tinta-muted focus:outline-none focus:ring-2 focus:ring-terracota/40"
             >
             <div class="flex gap-2 flex-wrap">
                 <button wire:click="$set('filtro', 'todos')"
@@ -76,7 +76,7 @@ new #[Layout('layouts.public')] class extends Component
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-14 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         @forelse ($pueblos as $pueblo)
-            <a href="{{ route('pueblo', $pueblo) }}" wire:navigate wire:key="pueblo-{{ $pueblo->id }}" class="block bg-white rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
+            <a href="{{ route('pueblo', $pueblo) }}" wire:navigate wire:key="pueblo-{{ $pueblo->id }}" class="block bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                 <div class="aspect-[4/3] bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
                     @if ($pueblo->portada_url)
                         <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
@@ -101,7 +101,7 @@ new #[Layout('layouts.public')] class extends Component
 
     @if ($total > count($pueblos))
         <div class="flex justify-center pb-14">
-            <button wire:click="verMas" class="bg-white border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
+            <button wire:click="verMas" class="bg-white dark:bg-gray-800 border-[1.5px] border-terracota text-terracota px-7 py-3 rounded-full font-bold text-sm">
                 Cargar más pueblos
             </button>
         </div>

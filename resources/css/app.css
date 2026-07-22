@@ -5,8 +5,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --color-crema: oklch(97% 0.015 70);
+    --color-crema-suave: oklch(94% 0.005 250);
+    --color-tinta: oklch(22% 0.02 60);
+    --color-tinta-muted: oklch(45% 0.02 60);
+    --color-tinta-borde: oklch(85% 0.02 60);
+    --color-terracota: oklch(50% 0.14 40);
+    --color-terracota-dark: oklch(40% 0.14 40);
+    --color-verde: oklch(55% 0.14 130);
+}
+
+.dark {
+    --color-crema: oklch(20% 0.012 260);
+    --color-crema-suave: oklch(26% 0.012 260);
+    --color-tinta: oklch(92% 0.01 70);
+    --color-tinta-muted: oklch(72% 0.02 60);
+    --color-tinta-borde: oklch(34% 0.02 60);
+    --color-terracota: oklch(68% 0.15 40);
+    --color-terracota-dark: oklch(74% 0.15 40);
+    --color-verde: oklch(68% 0.14 130);
+}
+
 .bg-foto-placeholder {
     background-image: repeating-linear-gradient(135deg, oklch(84% 0.02 50), oklch(84% 0.02 50) 8px, oklch(90% 0.02 50) 8px, oklch(90% 0.02 50) 16px);
+}
+
+.dark .bg-foto-placeholder {
+    background-image: repeating-linear-gradient(135deg, oklch(28% 0.015 50), oklch(28% 0.015 50) 8px, oklch(33% 0.015 50) 8px, oklch(33% 0.015 50) 16px);
 }
 
 [x-cloak] {

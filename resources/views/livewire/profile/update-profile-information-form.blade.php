@@ -13,6 +13,7 @@ new class extends Component
 
     public string $name = '';
     public ?int $puebloId = null;
+    public string $tema = 'claro';
     public $avatar = null;
 
     /**
@@ -22,6 +23,7 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->puebloId = Auth::user()->pueblo_id;
+        $this->tema = Auth::user()->tema;
     }
 
     /**
@@ -34,12 +36,14 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'puebloId' => ['nullable', 'exists:pueblos,id'],
+            'tema' => ['required', 'in:claro,oscuro'],
             'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $datos = [
             'name' => $validated['name'],
             'pueblo_id' => $user->esRedactor() ? $user->pueblo_id : $validated['puebloId'],
+            'tema' => $validated['tema'],
         ];
 
         if ($this->avatar) {
@@ -56,6 +60,7 @@ new class extends Component
         $this->avatar = null;
 
         $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch('tema-actualizado', tema: $validated['tema']);
     }
 
     /**
@@ -79,11 +84,11 @@ new class extends Component
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
             {{ __("Update your account's profile information.") }}
         </p>
     </header>
@@ -98,12 +103,12 @@ new class extends Component
                 @elseif (auth()->user()->avatar_url)
                     <img src="{{ auth()->user()->avatar_url }}" class="w-16 h-16 rounded-full object-cover">
                 @else
-                    <div class="w-16 h-16 rounded-full bg-gray-200"></div>
+                    <div class="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                 @endif
 
                 <input wire:model="avatar" id="avatar" type="file" accept="image/*" class="block text-sm" />
             </div>
-            <div wire:loading wire:target="avatar" class="text-xs text-gray-500 mt-1">Subiendo imagen...</div>
+            <div wire:loading wire:target="avatar" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo imagen...</div>
             <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
 
@@ -115,15 +120,15 @@ new class extends Component
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input :value="auth()->user()->email" id="email" type="email" class="mt-1 block w-full bg-gray-100" disabled />
-            <p class="mt-1 text-sm text-gray-500">El email de acceso no se puede modificar.</p>
+            <x-text-input :value="auth()->user()->email" id="email" type="email" class="mt-1 block w-full bg-gray-100 dark:bg-gray-900" disabled />
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">El email de acceso no se puede modificar.</p>
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-100">
                         {{ __('Your email address is unverified.') }}
 
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -141,19 +146,29 @@ new class extends Component
             <x-input-label for="puebloId" value="Tu pueblo" />
 
             @if (auth()->user()->esRedactor())
-                <x-text-input :value="auth()->user()->pueblo?->nombre ?? 'Sin asociar'" id="puebloId" type="text" class="mt-1 block w-full bg-gray-100" disabled />
-                <p class="mt-1 text-sm text-gray-500">Como redactor, tu pueblo lo asigna un administrador y no se puede cambiar aquí.</p>
+                <x-text-input :value="auth()->user()->pueblo?->nombre ?? 'Sin asociar'" id="puebloId" type="text" class="mt-1 block w-full bg-gray-100 dark:bg-gray-900" disabled />
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Como redactor, tu pueblo lo asigna un administrador y no se puede cambiar aquí.</p>
             @else
-                <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <select wire:model="puebloId" id="puebloId" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                     <option value="">Sin asociar</option>
                     @foreach (Pueblo::orderBy('nombre')->get() as $pueblo)
                         <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
                     @endforeach
                 </select>
-                <p class="mt-1 text-sm text-gray-500">Asóciate a tu pueblo para aparecer más adelante en su apartado de "gente".</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Asóciate a tu pueblo para aparecer más adelante en su apartado de "gente".</p>
             @endif
 
             <x-input-error class="mt-2" :messages="$errors->get('puebloId')" />
+        </div>
+
+        <div>
+            <x-input-label for="tema" value="Apariencia" />
+            <select wire:model="tema" id="tema" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="claro">Clásico</option>
+                <option value="oscuro">Oscuro</option>
+            </select>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Elige cómo quieres ver la aplicación.</p>
+            <x-input-error class="mt-2" :messages="$errors->get('tema')" />
         </div>
 
         <div class="flex items-center gap-4">
