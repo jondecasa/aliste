@@ -55,8 +55,7 @@ new class extends Component
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Una vez elimines tu cuenta, todos tus datos se borrarán de forma permanente. Descarga cualquier
-            información que quieras conservar antes de continuar.
+            Una vez elimines tu cuenta, todos tus datos se borrarán de forma permanente.
         </p>
     </header>
 
