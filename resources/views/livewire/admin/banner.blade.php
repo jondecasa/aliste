@@ -42,6 +42,7 @@ new #[Layout('layouts.admin')] class extends Component
                 wire:ignore
                 x-data
                 x-init="
+                    window.tinymce.get('contenidoHtml')?.remove();
                     window.tinymce.init({
                         selector: '#contenidoHtml',
                         base_url: '{{ asset('vendor/tinymce') }}',
