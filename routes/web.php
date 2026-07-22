@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PushSubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -21,6 +22,11 @@ Route::view('panel', 'dashboard')
 Route::view('perfil', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('push/suscribirse', [PushSubscriptionController::class, 'store'])->name('push.suscribirse');
+    Route::post('push/desuscribirse', [PushSubscriptionController::class, 'destroy'])->name('push.desuscribirse');
+});
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

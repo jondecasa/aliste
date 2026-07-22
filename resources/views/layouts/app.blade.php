@@ -4,10 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key') }}">
 
         <title>{{ config('app.name', 'Aliste.es') }}</title>
 
         <link rel="icon" type="image/png" href="{{ asset('images/logo-aliste.png') }}">
+
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#a24019">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

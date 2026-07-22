@@ -1,4 +1,5 @@
 import './bootstrap';
+import './push';
 
 import L from 'leaflet';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';

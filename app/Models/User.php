@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasPushSubscriptions;
 
     public const ROL_ADMINISTRADOR = 'administrador';
     public const ROL_REDACTOR = 'redactor';
