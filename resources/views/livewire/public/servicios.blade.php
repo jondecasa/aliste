@@ -7,6 +7,7 @@ use Livewire\Volt\Component;
 
 new #[Layout('layouts.public')] class extends Component
 {
+    public string $buscar = '';
     public ?int $categoriaId = null;
     public int $porPagina = 12;
 
@@ -17,7 +18,7 @@ new #[Layout('layouts.public')] class extends Component
 
     public function updated($property): void
     {
-        if ($property === 'categoriaId') {
+        if (in_array($property, ['buscar', 'categoriaId'])) {
             $this->porPagina = 12;
         }
     }
@@ -26,6 +27,7 @@ new #[Layout('layouts.public')] class extends Component
     {
         $query = Servicio::query()
             ->with(['pueblo', 'categorias'])
+            ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
             ->when($this->categoriaId, fn ($q) => $q->whereHas(
                 'categorias',
                 fn ($sq) => $sq->where('categorias.id', $this->categoriaId)
@@ -49,9 +51,16 @@ new #[Layout('layouts.public')] class extends Component
 <div>
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-4">
         <h1 class="font-serif text-3xl sm:text-[38px] text-tinta mb-3">Servicios y negocios locales</h1>
-        <p class="text-sm sm:text-[15px] text-tinta-muted max-w-xl leading-relaxed">
+        <p class="text-sm sm:text-[15px] text-tinta-muted max-w-xl leading-relaxed mb-6">
             Alojamiento, comercio, salud y oficios de toda la comarca, en un directorio siempre al día.
         </p>
+
+        <input
+            wire:model.live.debounce.300ms="buscar"
+            type="text"
+            placeholder="Buscar un servicio o negocio..."
+            class="w-full sm:max-w-[340px] h-11 rounded-full border border-tinta-borde bg-white dark:bg-gray-800 px-5 text-sm text-tinta placeholder:text-tinta-muted focus:outline-none focus:ring-2 focus:ring-terracota/40"
+        >
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-8 pb-14 flex flex-col lg:flex-row gap-6 sm:gap-8">
