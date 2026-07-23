@@ -1,32 +1,62 @@
 <?php
 
+use App\Livewire\Concerns\VerificaCaptcha;
 use App\Models\User;
+use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('layouts.guest')] class extends Component
 {
+    use VerificaCaptcha;
+
     public string $name = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $captchaToken = '';
+
+    /**
+     * Campo señuelo (honeypot): invisible para una persona, pero muchos bots
+     * lo rellenan igualmente. Si llega con contenido, se descarta el registro.
+     */
+    public string $sitioWeb = '';
 
     /**
      * Handle an incoming registration request.
      */
     public function register(): void
     {
+        $this->ensureIsNotRateLimited();
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'captchaToken' => [config('services.recaptcha.site_key') ? 'required' : 'nullable', 'string'],
+        ], [
+            'captchaToken.required' => 'Por favor, confirma el captcha antes de continuar.',
         ]);
 
+        if ($this->sitioWeb !== '' || ! $this->verificarCaptcha($validated['captchaToken'] ?? '')) {
+            RateLimiter::hit($this->throttleKey(), 3600);
+
+            $this->addError('captchaToken', 'No hemos podido verificar el captcha. Inténtalo de nuevo.');
+            $this->dispatch('captcha-reset');
+
+            return;
+        }
+
+        RateLimiter::clear($this->throttleKey());
+
         $validated['password'] = Hash::make($validated['password']);
+        unset($validated['captchaToken']);
 
         event(new Registered($user = User::create($validated)));
 
@@ -34,10 +64,40 @@ new #[Layout('layouts.guest')] class extends Component
 
         $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
+
+    private function ensureIsNotRateLimited(): void
+    {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+            return;
+        }
+
+        event(new Lockout(request()));
+
+        $segundos = RateLimiter::availableIn($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'name' => "Demasiados intentos de registro. Inténtalo de nuevo en {$segundos} segundos.",
+        ]);
+    }
+
+    private function throttleKey(): string
+    {
+        return 'registro|'.request()->ip();
+    }
 }; ?>
 
-<div>
+<div
+    x-data
+    x-on:captcha-token.window="$wire.set('captchaToken', $event.detail)"
+    x-on:captcha-reset.window="window.grecaptcha && window.grecaptcha.reset()"
+>
     <form wire:submit="register">
+        <!-- Campo señuelo: oculto para personas, algunos bots lo rellenan igualmente -->
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+            <label for="sitio_web">Deja este campo vacío</label>
+            <input wire:model="sitioWeb" id="sitio_web" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -75,6 +135,18 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        @if (config('services.recaptcha.site_key'))
+            <div wire:ignore class="mt-4">
+                <div
+                    class="g-recaptcha"
+                    data-sitekey="{{ config('services.recaptcha.site_key') }}"
+                    data-callback="alisteCaptchaOkRegistro"
+                    data-expired-callback="alisteCaptchaExpiradoRegistro"
+                ></div>
+            </div>
+        @endif
+        <x-input-error :messages="$errors->get('captchaToken')" class="mt-2" />
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}" wire:navigate>
                 {{ __('Already registered?') }}
@@ -102,4 +174,16 @@ new #[Layout('layouts.guest')] class extends Component
         </svg>
         {{ __('Continue with Google') }}
     </a>
+
+    @if (config('services.recaptcha.site_key'))
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <script>
+            function alisteCaptchaOkRegistro(token) {
+                window.dispatchEvent(new CustomEvent('captcha-token', { detail: token }));
+            }
+            function alisteCaptchaExpiradoRegistro() {
+                window.dispatchEvent(new CustomEvent('captcha-token', { detail: '' }));
+            }
+        </script>
+    @endif
 </div>

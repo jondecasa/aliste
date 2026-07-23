@@ -1,7 +1,7 @@
 <?php
 
+use App\Livewire\Concerns\VerificaCaptcha;
 use App\Mail\ContactoEnviado;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
@@ -9,6 +9,8 @@ use Livewire\Volt\Component;
 
 new #[Layout('layouts.public')] class extends Component
 {
+    use VerificaCaptcha;
+
     public string $nombre = '';
     public string $email = '';
     public string $asunto = '';
@@ -51,22 +53,6 @@ new #[Layout('layouts.public')] class extends Component
         $this->reset(['nombre', 'email', 'asunto', 'descripcion', 'captchaToken']);
         $this->dispatch('captcha-reset');
         $this->enviado = true;
-    }
-
-    private function verificarCaptcha(string $token): bool
-    {
-        $secretKey = config('services.recaptcha.secret_key');
-
-        if (! $secretKey) {
-            return true;
-        }
-
-        $respuesta = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => $secretKey,
-            'response' => $token,
-        ]);
-
-        return (bool) $respuesta->json('success');
     }
 }; ?>
 
