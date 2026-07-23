@@ -422,68 +422,58 @@ new #[Layout('layouts.admin')] class extends Component
 
                     <div
                         wire:ignore
-                        x-data
                         x-init="
-                            window.tinymce.get('descripcion')?.remove();
-                            window.tinymce.init({
-                                selector: '#descripcion',
-                                base_url: '{{ asset('vendor/tinymce') }}',
-                                suffix: '.min',
-                                license_key: 'gpl',
-                                height: 300,
-                                menubar: false,
-                                branding: false,
-                                plugins: 'advlist autolink lists link image table code media fullscreen',
-                                toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | code fullscreen',
-                                images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
-                                    const datosFormulario = new FormData();
-                                    datosFormulario.append('file', blobInfo.blob(), blobInfo.filename());
+                            $watch('show', (visible) => {
+                                if (! visible) {
+                                    window.tinymce.get('descripcion')?.remove();
+                                }
+                            });
 
-                                    fetch('{{ route('admin.editor.imagenes') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                            'Accept': 'application/json',
-                                        },
-                                        body: datosFormulario,
-                                    })
-                                        .then((respuesta) => respuesta.ok ? respuesta.json() : Promise.reject())
-                                        .then((datos) => resolve(datos.location))
-                                        .catch(() => reject('Error al subir la imagen'));
-                                }),
-                                setup: (editor) => {
-                                    let editorListo = false;
-                                    let contenidoPendiente = null;
+                            window.addEventListener('open-modal', (evento) => {
+                                const nombreModal = Array.isArray(evento.detail) ? evento.detail[0] : evento.detail;
 
-                                    const cargarContenido = (html) => {
-                                        if (editorListo) {
-                                            editor.setContent(html || '');
-                                        } else {
-                                            contenidoPendiente = html || '';
-                                        }
-                                    };
+                                if (nombreModal !== 'cancion-form') {
+                                    return;
+                                }
 
-                                    editor.on('init', () => {
-                                        editorListo = true;
+                                window.tinymce.get('descripcion')?.remove();
 
-                                        if (contenidoPendiente !== null) {
-                                            editor.setContent(contenidoPendiente);
-                                            contenidoPendiente = null;
-                                        }
-                                    });
+                                window.tinymce.init({
+                                    selector: '#descripcion',
+                                    base_url: '{{ asset('vendor/tinymce') }}',
+                                    suffix: '.min',
+                                    license_key: 'gpl',
+                                    height: 300,
+                                    menubar: false,
+                                    branding: false,
+                                    plugins: 'advlist autolink lists link image table code media fullscreen',
+                                    toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media table | code fullscreen',
+                                    images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
+                                        const datosFormulario = new FormData();
+                                        datosFormulario.append('file', blobInfo.blob(), blobInfo.filename());
 
-                                    editor.on('change input undo redo', () => {
-                                        $wire.set('descripcion', editor.getContent());
-                                    });
+                                        fetch('{{ route('admin.editor.imagenes') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                'Accept': 'application/json',
+                                            },
+                                            body: datosFormulario,
+                                        })
+                                            .then((respuesta) => respuesta.ok ? respuesta.json() : Promise.reject())
+                                            .then((datos) => resolve(datos.location))
+                                            .catch(() => reject('Error al subir la imagen'));
+                                    }),
+                                    setup: (editor) => {
+                                        editor.on('init', () => {
+                                            editor.setContent($wire.descripcion || '');
+                                        });
 
-                                    window.addEventListener('open-modal', (evento) => {
-                                        const nombreModal = Array.isArray(evento.detail) ? evento.detail[0] : evento.detail;
-
-                                        if (nombreModal === 'cancion-form') {
-                                            cargarContenido($wire.descripcion);
-                                        }
-                                    });
-                                },
+                                        editor.on('change input undo redo', () => {
+                                            $wire.set('descripcion', editor.getContent());
+                                        });
+                                    },
+                                });
                             });
                         "
                     >
