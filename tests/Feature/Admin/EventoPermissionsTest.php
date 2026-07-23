@@ -75,6 +75,16 @@ class EventoPermissionsTest extends TestCase
         Volt::test('admin.eventos')->call('editar', $evento->id)->assertForbidden();
     }
 
+    public function test_redactor_can_edit_a_future_event_with_no_recorded_creator(): void
+    {
+        $redactor = $this->redactor($this->puebloA);
+        $evento = $this->evento($this->puebloA, null, now()->addMonth(), 'futuro-sin-creador');
+
+        $this->actingAs($redactor);
+
+        Volt::test('admin.eventos')->call('editar', $evento->id)->assertOk();
+    }
+
     public function test_redactor_cannot_edit_a_future_event_created_by_another_redactor(): void
     {
         $otroRedactor = $this->redactor($this->puebloA);

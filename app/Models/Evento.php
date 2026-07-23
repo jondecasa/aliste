@@ -56,6 +56,11 @@ class Evento extends Model
     /**
      * Los administradores pueden editar cualquier evento. Los redactores solo
      * los suyos propios, y únicamente mientras no hayan pasado ya de fecha.
+     *
+     * Los eventos sin creador registrado (created_by null, creados antes de
+     * que existiera este campo) se consideran "de nadie en particular": los
+     * puede editar cualquier redactor del pueblo, igual que ocurría antes de
+     * añadir esta restricción, para no dejarlos bloqueados para siempre.
      */
     public function puedeEditar(User $user): bool
     {
@@ -63,7 +68,9 @@ class Evento extends Model
             return true;
         }
 
-        return $this->created_by === $user->id
+        $esSuyoOSinCreadorConocido = $this->created_by === null || $this->created_by === $user->id;
+
+        return $esSuyoOSinCreadorConocido
             && $this->fecha_inicio->startOfDay()->gte(now()->startOfDay());
     }
 }
