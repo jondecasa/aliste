@@ -67,6 +67,8 @@ new #[Layout('layouts.admin')] class extends Component
             abort_unless($evento->pueblo_id === $puebloRestringido, 403);
         }
 
+        abort_unless($evento->puedeEditar(auth()->user()), 403);
+
         $this->eventoId = $evento->id;
         $this->puebloId = $evento->pueblo_id;
         $this->categoriaId = $evento->categoria_id;
@@ -94,6 +96,10 @@ new #[Layout('layouts.admin')] class extends Component
             }
         }
 
+        if ($this->eventoId) {
+            abort_unless(Evento::findOrFail($this->eventoId)->puedeEditar(auth()->user()), 403);
+        }
+
         $datos = $this->validate([
             'puebloId' => ['required', 'exists:pueblos,id'],
             'categoriaId' => ['nullable', 'exists:categorias,id'],
@@ -116,21 +122,24 @@ new #[Layout('layouts.admin')] class extends Component
             $rutaImagen = $this->imagen->store('eventos', 'public');
         }
 
-        $evento = Evento::updateOrCreate(
-            ['id' => $this->eventoId],
-            [
-                'pueblo_id' => $datos['puebloId'],
-                'categoria_id' => $datos['categoriaId'],
-                'titulo' => $datos['titulo'],
-                'slug' => Str::slug($datos['titulo']),
-                'descripcion' => $datos['descripcion'],
-                'lugar' => $datos['lugar'],
-                'imagen' => $rutaImagen,
-                'fecha_inicio' => $datos['fechaInicio'],
-                'fecha_fin' => $datos['fechaFin'],
-                'es_principal' => $datos['esPrincipal'],
-            ]
-        );
+        $valores = [
+            'pueblo_id' => $datos['puebloId'],
+            'categoria_id' => $datos['categoriaId'],
+            'titulo' => $datos['titulo'],
+            'slug' => Str::slug($datos['titulo']),
+            'descripcion' => $datos['descripcion'],
+            'lugar' => $datos['lugar'],
+            'imagen' => $rutaImagen,
+            'fecha_inicio' => $datos['fechaInicio'],
+            'fecha_fin' => $datos['fechaFin'],
+            'es_principal' => $datos['esPrincipal'],
+        ];
+
+        if (! $this->eventoId) {
+            $valores['created_by'] = auth()->id();
+        }
+
+        $evento = Evento::updateOrCreate(['id' => $this->eventoId], $valores);
 
         if ($puebloRestringido && $datos['esPrincipal']) {
             $otrosPrincipales = Evento::where('pueblo_id', $puebloRestringido)
@@ -164,6 +173,8 @@ new #[Layout('layouts.admin')] class extends Component
         if ($puebloRestringido = $this->puebloRestringidoId()) {
             abort_unless($evento->pueblo_id === $puebloRestringido, 403);
         }
+
+        abort_unless($evento->puedeEditar(auth()->user()), 403);
 
         if ($evento->imagen) {
             Storage::disk('public')->delete($evento->imagen);
@@ -254,8 +265,10 @@ new #[Layout('layouts.admin')] class extends Component
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->es_principal ? 'Sí' : '' }}</td>
                         <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
-                            <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
-                            <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
+                            @if ($evento->puedeEditar(auth()->user()))
+                                <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
+                                <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
+                            @endif
                         </td>
                     </tr>
                 @empty

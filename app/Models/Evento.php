@@ -13,6 +13,7 @@ class Evento extends Model
     protected $fillable = [
         'pueblo_id',
         'categoria_id',
+        'created_by',
         'titulo',
         'slug',
         'descripcion',
@@ -42,8 +43,27 @@ class Evento extends Model
         return $this->belongsTo(Categoria::class);
     }
 
+    public function creadoPor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function getImagenUrlAttribute(): ?string
     {
         return $this->imagen ? Storage::disk('public')->url($this->imagen) : null;
+    }
+
+    /**
+     * Los administradores pueden editar cualquier evento. Los redactores solo
+     * los suyos propios, y únicamente mientras no hayan pasado ya de fecha.
+     */
+    public function puedeEditar(User $user): bool
+    {
+        if ($user->esAdministrador()) {
+            return true;
+        }
+
+        return $this->created_by === $user->id
+            && $this->fecha_inicio->startOfDay()->gte(now()->startOfDay());
     }
 }
