@@ -77,7 +77,7 @@ new #[Layout('layouts.public')] class extends Component
                     @if ($destacada->imagen_portada)
                         <img src="{{ $destacada->imagen_portada }}" alt="{{ $destacada->titulo }}" class="w-full h-full object-cover">
                     @else
-                        foto destacada
+                        {{ $destacada->titulo }}
                     @endif
                 </div>
                 <div class="p-6 sm:p-8 sm:pl-0 flex flex-col justify-center">
@@ -104,7 +104,7 @@ new #[Layout('layouts.public')] class extends Component
                     @if ($noticia->imagen_portada)
                         <img src="{{ $noticia->imagen_portada }}" alt="{{ $noticia->titulo }}" class="w-full h-full object-cover rounded-[14px]">
                     @else
-                        foto noticia
+                        {{ $noticia->titulo }}
                     @endif
                 </div>
                 <div class="text-xs text-tinta-muted mt-3">

@@ -102,7 +102,7 @@ new #[Layout('layouts.public')] class extends Component
                         @if ($cancion->portada_url)
                             <img src="{{ $cancion->portada_url }}" alt="{{ $cancion->titulo }}" class="w-full h-full object-cover">
                         @else
-                            portada
+                            {{ $cancion->titulo }}
                         @endif
                     </div>
                     <div class="p-5">

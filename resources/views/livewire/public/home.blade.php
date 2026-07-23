@@ -158,7 +158,7 @@ new #[Layout('layouts.public')] class extends Component
                             @if ($pueblo->portada_url)
                                 <img src="{{ $pueblo->portada_url }}" alt="{{ $pueblo->nombre }}" class="w-full h-full object-cover">
                             @else
-                                foto pueblo
+                                {{ $pueblo->nombre }}
                             @endif
                         </div>
                         <div class="p-4">
