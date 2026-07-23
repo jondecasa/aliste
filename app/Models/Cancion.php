@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Cancion extends Model
 {
@@ -42,5 +43,10 @@ class Cancion extends Model
     public function audios(): HasMany
     {
         return $this->hasMany(AudioCancion::class)->orderBy('orden');
+    }
+
+    public function getPortadaUrlAttribute(): ?string
+    {
+        return $this->portada ? Storage::disk('public')->url($this->portada) : null;
     }
 }

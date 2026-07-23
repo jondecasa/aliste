@@ -54,6 +54,31 @@ class CancionesTest extends TestCase
         }
     }
 
+    public function test_seleccionar_un_segundo_audio_no_borra_el_primero(): void
+    {
+        $this->actingAs($this->admin());
+
+        $componente = Volt::test('admin.canciones')->call('crear');
+
+        // Cada vez que se elige un fichero en el input, el navegador SUSTITUYE
+        // la selección anterior por la nueva: simulamos dos elecciones
+        // separadas (no un único diálogo con varios ficheros) para comprobar
+        // que ambos archivos se acumulan en vez de perderse el primero.
+        $componente->set('nuevaSeleccionAudios', [UploadedFile::fake()->create('cara-a.mp3', 500, 'audio/mpeg')]);
+        $componente->set('nuevaSeleccionAudios', [UploadedFile::fake()->create('cara-b.mp3', 500, 'audio/mpeg')]);
+
+        $componente->set('titulo', 'Ronda con dos caras');
+        $componente->call('guardar')->assertHasNoErrors();
+
+        $cancion = Cancion::where('titulo', 'Ronda con dos caras')->firstOrFail();
+
+        $this->assertCount(2, $cancion->audios);
+        $this->assertEqualsCanonicalizing(
+            ['cara-a', 'cara-b'],
+            $cancion->audios->pluck('titulo')->all()
+        );
+    }
+
     public function test_puede_renombrar_un_audio_existente_al_editar(): void
     {
         $this->actingAs($this->admin());
@@ -91,6 +116,40 @@ class CancionesTest extends TestCase
 
         $this->assertNull($audio->fresh());
         Storage::disk('public')->assertMissing('canciones/audios/borrame.mp3');
+    }
+
+    public function test_puede_subir_una_foto_de_portada(): void
+    {
+        $this->actingAs($this->admin());
+
+        Volt::test('admin.canciones')
+            ->call('crear')
+            ->set('titulo', 'Con portada')
+            ->set('nuevaPortada', UploadedFile::fake()->image('portada.jpg', 800, 800))
+            ->call('guardar')
+            ->assertHasNoErrors();
+
+        $cancion = Cancion::where('titulo', 'Con portada')->firstOrFail();
+
+        $this->assertNotNull($cancion->portada);
+        Storage::disk('public')->assertExists($cancion->portada);
+    }
+
+    public function test_al_reemplazar_la_portada_se_borra_la_anterior(): void
+    {
+        $this->actingAs($this->admin());
+
+        $cancion = Cancion::create(['titulo' => 'Tonada', 'slug' => 'tonada', 'portada' => 'canciones/portadas/vieja.webp']);
+        Storage::disk('public')->put('canciones/portadas/vieja.webp', 'contenido');
+
+        Volt::test('admin.canciones')
+            ->call('editar', $cancion->id)
+            ->set('nuevaPortada', UploadedFile::fake()->image('nueva.jpg', 800, 800))
+            ->call('guardar')
+            ->assertHasNoErrors();
+
+        Storage::disk('public')->assertMissing('canciones/portadas/vieja.webp');
+        $this->assertNotSame('canciones/portadas/vieja.webp', $cancion->fresh()->portada);
     }
 
     public function test_al_eliminar_una_cancion_se_borran_tambien_sus_audios(): void

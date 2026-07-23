@@ -99,8 +99,8 @@ new #[Layout('layouts.public')] class extends Component
                 <a href="{{ route('cancion', $cancion) }}" wire:navigate wire:key="cancion-{{ $cancion->id }}"
                     class="block bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)]">
                     <div class="aspect-square bg-foto-placeholder flex items-center justify-center text-tinta-muted text-[11px]">
-                        @if ($cancion->portada)
-                            <img src="{{ $cancion->portada }}" alt="{{ $cancion->titulo }}" class="w-full h-full object-cover">
+                        @if ($cancion->portada_url)
+                            <img src="{{ $cancion->portada_url }}" alt="{{ $cancion->titulo }}" class="w-full h-full object-cover">
                         @else
                             portada
                         @endif

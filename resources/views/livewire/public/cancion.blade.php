@@ -18,7 +18,7 @@ new #[Layout('layouts.public')] class extends Component
 
         View::share('title', $this->cancion->titulo.' · Aliste.es');
         View::share('ogDescripcion', $descripcionPlana ?: 'Música tradicional de la comarca de Aliste, en Zamora.');
-        View::share('ogImagen', $this->cancion->portada);
+        View::share('ogImagen', $this->cancion->portada_url);
         View::share('ogUrl', route('cancion', $this->cancion));
         View::share('ogTipo', 'music.song');
     }
@@ -26,8 +26,8 @@ new #[Layout('layouts.public')] class extends Component
 
 <div>
     <div class="relative h-[220px] sm:h-[340px] mx-4 sm:mx-8 mt-4 sm:mt-8 rounded-2xl overflow-hidden bg-foto-placeholder flex items-end">
-        @if ($cancion->portada)
-            <img src="{{ $cancion->portada }}" alt="{{ $cancion->titulo }}" class="absolute inset-0 w-full h-full object-cover">
+        @if ($cancion->portada_url)
+            <img src="{{ $cancion->portada_url }}" alt="{{ $cancion->titulo }}" class="absolute inset-0 w-full h-full object-cover">
         @endif
         <div class="relative w-full bg-gradient-to-t from-black/60 to-transparent p-6 sm:p-10">
             <a href="{{ route('musica') }}" wire:navigate class="text-white/80 text-xs mb-2 inline-block">← Volver a música</a>
@@ -65,16 +65,16 @@ new #[Layout('layouts.public')] class extends Component
             </div>
         @endif
 
-        @if ($cancion->descripcion)
-            <div class="prose prose-neutral max-w-none">
-                {!! $cancion->descripcion !!}
+        @if ($cancion->letra)
+            <div class="mb-10">
+                <div class="text-xs text-tinta-muted uppercase font-bold mb-6 tracking-wide text-center">Letra</div>
+                <div class="font-serif italic text-tinta text-base sm:text-lg leading-loose whitespace-pre-line text-center max-w-xl mx-auto">{{ $cancion->letra }}</div>
             </div>
         @endif
 
-        @if ($cancion->letra)
-            <div class="mt-12 pt-10 border-t border-tinta-borde">
-                <div class="text-xs text-tinta-muted uppercase font-bold mb-6 tracking-wide text-center">Letra</div>
-                <div class="font-serif italic text-tinta text-base sm:text-lg leading-loose whitespace-pre-line text-center max-w-xl mx-auto">{{ $cancion->letra }}</div>
+        @if ($cancion->descripcion)
+            <div class="prose prose-neutral max-w-none">
+                {!! $cancion->descripcion !!}
             </div>
         @endif
 

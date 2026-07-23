@@ -4,6 +4,7 @@ use App\Models\AudioCancion;
 use App\Models\Cancion;
 use App\Models\Categoria;
 use App\Models\Pueblo;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -24,7 +25,8 @@ new #[Layout('layouts.admin')] class extends Component
     public ?string $album = null;
     public ?int $duracion = null;
     public ?int $anio = null;
-    public ?string $portada = null;
+    public ?string $portadaActual = null;
+    public $nuevaPortada = null;
     public ?string $descripcion = null;
     public ?string $letra = null;
 
@@ -37,11 +39,36 @@ new #[Layout('layouts.admin')] class extends Component
     /** @var array<int, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile> */
     public array $nuevosAudios = [];
 
+    /**
+     * Ligada al input de fichero. Cada vez que se seleccionan archivos se
+     * acumulan en $nuevosAudios y esta propiedad se vacía, porque el propio
+     * input de fichero SUSTITUYE su selección cada vez que se usa (si no se
+     * acumulara aquí, elegir un segundo audio borraría el primero).
+     *
+     * @var array<int, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile>
+     */
+    public array $nuevaSeleccionAudios = [];
+
     public ?int $idAEliminar = null;
 
     public function mount(): void
     {
         abort_unless(auth()->user()->can('administrar'), 403);
+    }
+
+    public function updatedNuevaSeleccionAudios(): void
+    {
+        foreach ($this->nuevaSeleccionAudios as $archivo) {
+            $this->nuevosAudios[] = $archivo;
+        }
+
+        $this->nuevaSeleccionAudios = [];
+    }
+
+    public function eliminarNuevoAudio(int $indice): void
+    {
+        unset($this->nuevosAudios[$indice]);
+        $this->nuevosAudios = array_values($this->nuevosAudios);
     }
 
     public function crear(): void
@@ -61,7 +88,8 @@ new #[Layout('layouts.admin')] class extends Component
         $this->album = $cancion->album;
         $this->duracion = $cancion->duracion;
         $this->anio = $cancion->anio;
-        $this->portada = $cancion->portada;
+        $this->portadaActual = $cancion->portada;
+        $this->nuevaPortada = null;
         $this->descripcion = $cancion->descripcion;
         $this->letra = $cancion->letra;
         $this->categoriaIds = $cancion->categorias()->pluck('categorias.id')->all();
@@ -79,7 +107,7 @@ new #[Layout('layouts.admin')] class extends Component
             'album' => ['nullable', 'string', 'max:255'],
             'duracion' => ['nullable', 'integer', 'min:0'],
             'anio' => ['nullable', 'integer', 'min:0', 'max:'.(date('Y') + 1)],
-            'portada' => ['nullable', 'string', 'max:255'],
+            'nuevaPortada' => ['nullable', 'image', 'max:4096'],
             'descripcion' => ['nullable', 'string'],
             'letra' => ['nullable', 'string'],
             'categoriaIds' => ['array'],
@@ -91,6 +119,16 @@ new #[Layout('layouts.admin')] class extends Component
             'nuevosAudios.*' => ['file', 'mimes:mp3,wav,ogg,m4a,aac,flac', 'max:20480'],
         ]);
 
+        $rutaPortada = $this->portadaActual;
+
+        if ($this->nuevaPortada) {
+            if ($this->portadaActual) {
+                Storage::disk('public')->delete($this->portadaActual);
+            }
+
+            $rutaPortada = OptimizadorImagenes::guardar($this->nuevaPortada, 'canciones/portadas');
+        }
+
         $cancion = Cancion::updateOrCreate(
             ['id' => $this->cancionId],
             [
@@ -101,7 +139,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'album' => $datos['album'],
                 'duracion' => $datos['duracion'],
                 'anio' => $datos['anio'],
-                'portada' => $datos['portada'],
+                'portada' => $rutaPortada,
                 'descripcion' => $datos['descripcion'],
                 'letra' => $datos['letra'],
             ]
@@ -153,6 +191,10 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $cancion = Cancion::findOrFail($id);
 
+        if ($cancion->portada) {
+            Storage::disk('public')->delete($cancion->portada);
+        }
+
         foreach ($cancion->audios as $audio) {
             Storage::disk('public')->delete($audio->archivo);
         }
@@ -178,8 +220,8 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $this->reset([
             'cancionId', 'puebloId', 'titulo', 'artista', 'album',
-            'duracion', 'anio', 'portada', 'descripcion', 'letra',
-            'categoriaIds', 'audiosExistentes', 'nuevosAudios',
+            'duracion', 'anio', 'portadaActual', 'nuevaPortada', 'descripcion', 'letra',
+            'categoriaIds', 'audiosExistentes', 'nuevosAudios', 'nuevaSeleccionAudios',
         ]);
         $this->resetErrorBag();
     }
@@ -296,9 +338,17 @@ new #[Layout('layouts.admin')] class extends Component
                 </div>
 
                 <div class="sm:col-span-2">
-                    <x-input-label for="portada" value="Portada (ruta o URL)" />
-                    <x-text-input wire:model="portada" id="portada" type="text" class="mt-1 block w-full" />
-                    <x-input-error :messages="$errors->get('portada')" class="mt-2" />
+                    <x-input-label for="nuevaPortada" value="Portada" />
+
+                    @if ($nuevaPortada)
+                        <img src="{{ $nuevaPortada->temporaryUrl() }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @elseif ($portadaActual)
+                        <img src="{{ Illuminate\Support\Facades\Storage::disk('public')->url($portadaActual) }}" class="mt-2 w-32 h-32 object-cover rounded-lg">
+                    @endif
+
+                    <input wire:model="nuevaPortada" id="nuevaPortada" type="file" accept="image/*" class="mt-2 block w-full text-sm" />
+                    <div wire:loading wire:target="nuevaPortada" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo imagen...</div>
+                    <x-input-error :messages="$errors->get('nuevaPortada')" class="mt-2" />
                 </div>
 
                 <div class="sm:col-span-2">
@@ -331,11 +381,40 @@ new #[Layout('layouts.admin')] class extends Component
                         </div>
                     @endif
 
-                    <input wire:model="nuevosAudios" type="file" multiple accept="audio/*" class="mt-2 block w-full text-sm" />
-                    <div wire:loading wire:target="nuevosAudios" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo audio...</div>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Puedes subir uno o varios archivos (mp3, wav, ogg, m4a...). Se añadirán al guardar.</p>
+                    @if (count($nuevosAudios))
+                        <div class="mt-2 space-y-2">
+                            @foreach ($nuevosAudios as $index => $archivo)
+                                <div class="flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 rounded-md p-2" wire:key="audio-nuevo-{{ $index }}">
+                                    <audio controls preload="none" src="{{ $archivo->temporaryUrl() }}" class="h-8 flex-shrink-0 max-w-[160px]"></audio>
+                                    <span class="flex-1 min-w-0 text-sm text-gray-600 dark:text-gray-300 truncate">{{ $archivo->getClientOriginalName() }}</span>
+                                    <span class="flex-shrink-0 text-[11px] text-amber-700 dark:text-amber-400 font-semibold uppercase">Nuevo</span>
+                                    <button
+                                        type="button"
+                                        wire:click="eliminarNuevoAudio({{ $index }})"
+                                        class="flex-shrink-0 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                        title="Quitar de la selección"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <input wire:model="nuevaSeleccionAudios" type="file" multiple accept="audio/*" class="mt-2 block w-full text-sm" />
+                    <div wire:loading wire:target="nuevaSeleccionAudios" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Subiendo audio...</div>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Puedes seleccionar varios archivos a la vez, o repetir la selección para ir añadiendo más (mp3, wav, ogg, m4a...). Se guardarán al pulsar "Guardar".</p>
                     <x-input-error :messages="$errors->get('nuevosAudios')" class="mt-2" />
                     <x-input-error :messages="$errors->get('nuevosAudios.*')" class="mt-2" />
+                </div>
+
+                <div class="sm:col-span-2">
+                    <x-input-label for="letra" value="Letra de la canción" />
+                    <textarea wire:model="letra" id="letra" rows="8" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm font-mono text-sm"></textarea>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Escribe cada verso en su propia línea. En la página de la canción se mostrará con un formato distintivo.</p>
+                    <x-input-error :messages="$errors->get('letra')" class="mt-2" />
                 </div>
 
                 <div class="sm:col-span-2">
@@ -411,13 +490,6 @@ new #[Layout('layouts.admin')] class extends Component
                         <textarea id="descripcion">{{ $descripcion }}</textarea>
                     </div>
                     <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
-                </div>
-
-                <div class="sm:col-span-2">
-                    <x-input-label for="letra" value="Letra de la canción" />
-                    <textarea wire:model="letra" id="letra" rows="8" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm font-mono text-sm"></textarea>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Escribe cada verso en su propia línea. En la página de la canción se mostrará con un formato distintivo.</p>
-                    <x-input-error :messages="$errors->get('letra')" class="mt-2" />
                 </div>
 
                 <div class="sm:col-span-2">
