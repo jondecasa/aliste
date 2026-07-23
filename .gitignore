@@ -16,6 +16,7 @@
 /node_modules
 /public/build
 /public/hot
+/public/sitemap.xml
 /public/storage
 /public/vendor/tinymce
 /storage/*.key

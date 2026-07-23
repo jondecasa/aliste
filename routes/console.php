@@ -11,3 +11,5 @@ Artisan::command('inspire', function () {
 Schedule::command('notificaciones:eventos-del-dia')->dailyAt('10:00');
 
 Schedule::command('noticias:scrapear')->twiceDaily(14, 22);
+
+Schedule::command('sitemap:generar')->dailyAt('03:00');
