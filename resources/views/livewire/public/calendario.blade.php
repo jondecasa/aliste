@@ -69,7 +69,9 @@ new #[Layout('layouts.public')] class extends Component
                 x-init="
                     const todosEventos = @js($eventosCalendario);
 
-                    const eventosDeFecha = (fechaISO) => todosEventos.filter((e) => e.start.slice(0, 10) === fechaISO);
+                    const eventosDeFecha = (fechaISO) => todosEventos
+                        .filter((e) => e.start.slice(0, 10) === fechaISO)
+                        .sort((a, b) => (a.extendedProps.ordenLogico ?? 0) - (b.extendedProps.ordenLogico ?? 0));
 
                     const calendario = new FullCalendar.Calendar($el, {
                         plugins: [FullCalendar.dayGridPlugin, FullCalendar.listPlugin, FullCalendar.interactionPlugin],
