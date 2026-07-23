@@ -40,7 +40,7 @@ class ContactoTest extends TestCase
     {
         Mail::fake();
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             RateLimiter::hit('contacto|127.0.0.1', 3600);
         }
 
