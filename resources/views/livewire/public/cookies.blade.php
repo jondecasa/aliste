@@ -12,7 +12,7 @@ new #[Layout('layouts.public')] class extends Component
     <div class="max-w-3xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-14">
         <h1 class="font-serif text-3xl sm:text-[38px] text-tinta mb-8">Política de cookies</h1>
 
-        <div class="prose prose-neutral max-w-none">
+        <div class="prose prose-neutral dark:prose-invert max-w-none">
             <p>
                 Cookie es un fichero que se descarga en su ordenador al acceder a determinadas páginas web. Las cookies
                 permiten a una página web, entre otras cosas, almacenar y recuperar información sobre los hábitos de

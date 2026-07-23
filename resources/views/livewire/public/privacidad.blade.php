@@ -12,7 +12,7 @@ new #[Layout('layouts.public')] class extends Component
     <div class="max-w-3xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-14">
         <h1 class="font-serif text-3xl sm:text-[38px] text-tinta mb-8">Política de privacidad</h1>
 
-        <div class="prose prose-neutral max-w-none">
+        <div class="prose prose-neutral dark:prose-invert max-w-none">
             <p>
                 En Aliste.es respetamos tu privacidad y solo recopilamos los datos personales necesarios para el
                 funcionamiento del sitio. Esta página explica qué información tratamos, con qué finalidad y qué

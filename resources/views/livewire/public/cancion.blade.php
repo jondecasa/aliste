@@ -73,7 +73,7 @@ new #[Layout('layouts.public')] class extends Component
         @endif
 
         @if ($cancion->descripcion)
-            <div class="prose prose-neutral max-w-none">
+            <div class="prose prose-neutral dark:prose-invert max-w-none">
                 {!! $cancion->descripcion !!}
             </div>
         @endif
