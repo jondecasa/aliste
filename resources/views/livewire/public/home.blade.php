@@ -43,7 +43,7 @@ new #[Layout('layouts.public')] class extends Component
                 ->get()
                 ->map(fn (Evento $evento) => [
                     'title' => $evento->titulo.' · '.$evento->pueblo->nombre,
-                    'start' => $evento->inicio_calendario->toIso8601String(),
+                    'start' => $evento->fecha_inicio->toIso8601String(),
                     'end' => $evento->fecha_fin?->toIso8601String(),
                     'color' => $evento->categoria->color ?? '#78716c',
                     'extendedProps' => [

@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Evento extends Model
 {
     /**
-     * Los eventos que empiezan antes de esta hora se consideran parte de la
-     * "noche" del día anterior (p. ej. un grupo tocando a las 00:30 cuenta
-     * como el último evento del día previo, no como el primero del nuevo).
+     * Los eventos que empiezan antes de esta hora se consideran la
+     * continuación nocturna de su propio día (p. ej. un grupo tocando a la
+     * 1:00 cuenta como el último evento de ese día, no el primero, aunque
+     * cronológicamente sea la hora más temprana).
      */
     private const HORA_CORTE_DIA = 5;
 
@@ -62,33 +62,10 @@ class Evento extends Model
     }
 
     /**
-     * Día al que pertenece el evento a efectos de agrupación en el
-     * calendario: si empieza de madrugada (antes de HORA_CORTE_DIA), se
-     * agrupa con el día anterior.
-     */
-    public function getDiaLogicoAttribute(): string
-    {
-        $fecha = $this->fecha_inicio;
-
-        return $fecha->hour < self::HORA_CORTE_DIA
-            ? $fecha->copy()->subDay()->toDateString()
-            : $fecha->toDateString();
-    }
-
-    /**
-     * Igual que fecha_inicio, pero con la fecha desplazada a dia_logico y
-     * conservando la hora real. Sirve para que el calendario coloque el
-     * evento en la celda del día correcto sin dejar de mostrar su hora real.
-     */
-    public function getInicioCalendarioAttribute(): Carbon
-    {
-        return Carbon::parse($this->dia_logico.' '.$this->fecha_inicio->format('H:i:s'), $this->fecha_inicio->getTimezone());
-    }
-
-    /**
-     * Minutos desde la medianoche de dia_logico, para poder ordenar dentro
-     * de un mismo día: un evento a las 00:30 debe figurar el último, no el
-     * primero, así que se le suman 24h "virtuales".
+     * Minutos desde la medianoche de su propio día, pensados para ordenar
+     * los eventos dentro de ese mismo día en el calendario: un evento a la
+     * 1:00 debe figurar el último (no el primero), así que se le suman 24h
+     * "virtuales" en vez de tratarlo como si fuera muy temprano.
      */
     public function getOrdenLogicoAttribute(): int
     {
