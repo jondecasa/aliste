@@ -92,11 +92,22 @@
                         @endauth
                     </nav>
 
-                    <button @click="menuAbierto = !menuAbierto" class="sm:hidden flex flex-col gap-1.5" aria-label="Abrir menú">
-                        <span class="w-6 h-0.5 bg-tinta"></span>
-                        <span class="w-6 h-0.5 bg-tinta"></span>
-                        <span class="w-6 h-0.5 bg-tinta"></span>
-                    </button>
+                    <div class="flex items-center gap-4 sm:hidden">
+                        @auth
+                            @if (auth()->user()->pueblo)
+                                <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
+                                    class="text-sm font-semibold {{ request()->routeIs('pueblo.calendario') ? 'text-terracota' : 'text-tinta/80' }}">
+                                    Mi pueblo
+                                </a>
+                            @endif
+                        @endauth
+
+                        <button @click="menuAbierto = !menuAbierto" class="flex flex-col gap-1.5" aria-label="Abrir menú">
+                            <span class="w-6 h-0.5 bg-tinta"></span>
+                            <span class="w-6 h-0.5 bg-tinta"></span>
+                            <span class="w-6 h-0.5 bg-tinta"></span>
+                        </button>
+                    </div>
                 </div>
 
                 <nav x-show="menuAbierto" x-cloak class="sm:hidden flex flex-col px-5 pb-4 gap-3 border-t border-tinta-borde pt-3">
@@ -116,12 +127,6 @@
                     <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
-                        @if (auth()->user()->pueblo)
-                            <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
-                                class="text-[15px] {{ request()->routeIs('pueblo.calendario') ? 'font-bold text-terracota' : 'text-tinta/80' }}">
-                                Mi pueblo
-                            </a>
-                        @endif
                         <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
                     @else
                         <a href="{{ route('login') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Entrar</a>
