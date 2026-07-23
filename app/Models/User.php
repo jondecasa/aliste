@@ -34,6 +34,8 @@ class User extends Authenticatable
         'pueblo_id',
         'avatar',
         'tema',
+        'notif_eventos_otros_pueblos',
+        'notif_eventos_mi_pueblo',
     ];
 
     /**
@@ -56,6 +58,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notif_eventos_otros_pueblos' => 'boolean',
+            'notif_eventos_mi_pueblo' => 'boolean',
         ];
     }
 

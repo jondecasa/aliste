@@ -3,17 +3,18 @@
 namespace App\Notifications;
 
 use App\Models\Evento;
+use App\Models\Pueblo;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
-class EventosDelDia extends Notification
+class EventosMiPueblo extends Notification
 {
     /**
      * @param  Collection<int, Evento>  $eventos
      */
-    public function __construct(private readonly Collection $eventos)
+    public function __construct(private readonly Pueblo $pueblo, private readonly Collection $eventos)
     {
     }
 
@@ -27,23 +28,16 @@ class EventosDelDia extends Notification
 
     public function toWebPush(object $notifiable, self $notification): WebPushMessage
     {
-        $titulo = $this->eventos->count() === 1
-            ? 'Hoy hay 1 evento en la comarca'
-            : "Hoy hay {$this->eventos->count()} eventos en la comarca";
+        $titulo = "Hoy hay eventos en {$this->pueblo->nombre}";
 
         $cuerpo = $this->eventos
-            ->map(fn (Evento $evento) => "{$evento->titulo} ({$evento->pueblo->nombre})")
-            ->take(3)
-            ->implode(' · ');
-
-        if ($this->eventos->count() > 3) {
-            $cuerpo .= '…';
-        }
+            ->map(fn (Evento $evento) => "{$evento->fecha_inicio->format('H:i')} - {$evento->titulo}")
+            ->implode("\n");
 
         return (new WebPushMessage())
             ->title($titulo)
             ->body($cuerpo)
             ->icon('/images/icons/icon-192.png')
-            ->data(['url' => route('inicio')]);
+            ->data(['url' => route('pueblo.calendario', $this->pueblo)]);
     }
 }
