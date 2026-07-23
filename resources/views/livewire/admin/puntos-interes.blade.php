@@ -3,6 +3,7 @@
 use App\Models\Categoria;
 use App\Models\Pueblo;
 use App\Models\PuntoInteres;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -108,7 +109,7 @@ new #[Layout('layouts.admin')] class extends Component
                 Storage::disk('public')->delete($this->fotoActual);
             }
 
-            $rutaFoto = $this->foto->store('puntos-interes', 'public');
+            $rutaFoto = OptimizadorImagenes::guardar($this->foto, 'puntos-interes');
         }
 
         $puntoInteres = PuntoInteres::updateOrCreate(

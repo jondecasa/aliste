@@ -3,6 +3,7 @@
 use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Pueblo;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -119,7 +120,7 @@ new #[Layout('layouts.admin')] class extends Component
                 Storage::disk('public')->delete($this->imagenActual);
             }
 
-            $rutaImagen = $this->imagen->store('eventos', 'public');
+            $rutaImagen = OptimizadorImagenes::guardar($this->imagen, 'eventos');
         }
 
         $valores = [

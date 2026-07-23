@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Pueblo;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -51,7 +52,7 @@ new class extends Component
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            $datos['avatar'] = $this->avatar->store('avatars', 'public');
+            $datos['avatar'] = OptimizadorImagenes::guardar($this->avatar, 'avatars', anchoMaximo: 512);
         }
 
         $user->fill($datos);

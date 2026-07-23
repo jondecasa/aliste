@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,7 @@ class EditorImagenController extends Controller
             'file' => ['required', 'image', 'max:4096'],
         ]);
 
-        $ruta = $request->file('file')->store('contenido-pueblos', 'public');
+        $ruta = OptimizadorImagenes::guardar($request->file('file'), 'contenido-pueblos');
 
         return response()->json([
             'location' => Storage::disk('public')->url($ruta),

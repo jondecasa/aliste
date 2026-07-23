@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Pueblo;
+use App\Support\OptimizadorImagenes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -78,7 +79,7 @@ new #[Layout('layouts.admin')] class extends Component
                 Storage::disk('public')->delete($this->portadaActual);
             }
 
-            $rutaPortada = $this->foto->store('pueblos', 'public');
+            $rutaPortada = OptimizadorImagenes::guardar($this->foto, 'pueblos');
         }
 
         Pueblo::updateOrCreate(
