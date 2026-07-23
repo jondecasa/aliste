@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             PuebloSeeder::class,
             CategoriaSeeder::class,
             PuntoInteresSeeder::class,
-            PuntoInteresCsvSeeder::class,
+            PuntoInteresHistoricoSeeder::class,
             ServicioSeeder::class,
             BannerSeeder::class,
             NoticiaSeeder::class,
