@@ -24,7 +24,7 @@ new #[Layout('layouts.public')] class extends Component
         return [
             'eventosCalendario' => $eventos->map(fn (Evento $evento) => [
                 'title' => $evento->titulo,
-                'start' => $evento->fecha_inicio->toIso8601String(),
+                'start' => $evento->inicio_calendario->toIso8601String(),
                 'end' => $evento->fecha_fin?->toIso8601String(),
                 'color' => $evento->categoria->color ?? '#78716c',
                 'extendedProps' => [
@@ -32,6 +32,7 @@ new #[Layout('layouts.public')] class extends Component
                     'descripcion' => $evento->descripcion,
                     'imagen' => $evento->imagen_url,
                     'categoria' => $evento->categoria->nombre ?? null,
+                    'ordenLogico' => $evento->orden_logico,
                 ],
             ]),
             'categoriasUsadas' => $eventos->pluck('categoria')->filter()->unique('id')->values(),
@@ -81,6 +82,7 @@ new #[Layout('layouts.public')] class extends Component
                             right: 'dayGridMonth,listMonth',
                         },
                         events: todosEventos,
+                        eventOrder: (a, b) => (a.extendedProps.ordenLogico ?? 0) - (b.extendedProps.ordenLogico ?? 0),
                         dateClick: (info) => {
                             eventoSeleccionado = null;
                             diaSeleccionado = info.dateStr;

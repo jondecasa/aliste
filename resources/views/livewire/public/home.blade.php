@@ -43,7 +43,7 @@ new #[Layout('layouts.public')] class extends Component
                 ->get()
                 ->map(fn (Evento $evento) => [
                     'title' => $evento->titulo.' · '.$evento->pueblo->nombre,
-                    'start' => $evento->fecha_inicio->toIso8601String(),
+                    'start' => $evento->inicio_calendario->toIso8601String(),
                     'end' => $evento->fecha_fin?->toIso8601String(),
                     'color' => $evento->categoria->color ?? '#78716c',
                     'extendedProps' => [
@@ -52,6 +52,7 @@ new #[Layout('layouts.public')] class extends Component
                         'descripcion' => $evento->descripcion,
                         'imagen' => $evento->imagen_url,
                         'categoria' => $evento->categoria->nombre ?? null,
+                        'ordenLogico' => $evento->orden_logico,
                     ],
                 ]),
         ];
@@ -100,6 +101,7 @@ new #[Layout('layouts.public')] class extends Component
                         right: 'dayGridMonth,listMonth',
                     },
                     events: @js($eventosCalendario),
+                    eventOrder: (a, b) => (a.extendedProps.ordenLogico ?? 0) - (b.extendedProps.ordenLogico ?? 0),
                     eventClick: (info) => {
                         eventoSeleccionado = {
                             titulo: info.event.title,
