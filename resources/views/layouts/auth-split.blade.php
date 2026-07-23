@@ -16,7 +16,7 @@
     </head>
     <body class="font-sans antialiased bg-crema text-tinta">
         <div class="relative min-h-screen lg:flex">
-            <div class="absolute inset-0 bg-foto-placeholder bg-cover bg-center lg:static lg:order-2 lg:flex-1">
+            <div class="absolute inset-0 bg-foto-placeholder bg-cover bg-center lg:relative lg:order-2 lg:flex-1">
                 <img
                     src="{{ asset('images/background-aliste.gif') }}"
                     alt=""
