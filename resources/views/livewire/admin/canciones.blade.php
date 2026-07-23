@@ -147,33 +147,35 @@ new #[Layout('layouts.admin')] class extends Component
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700/50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Artista</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
-                    <th class="px-6 py-3"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($canciones as $cancion)
-                    <tr wire:key="cancion-{{ $cancion->id }}">
-                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $cancion->titulo }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->artista }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
-                            <x-boton-editar wire:click="editar({{ $cancion->id }})" modal="cancion-form" />
-                            <x-boton-eliminar wire:click="confirmarEliminar({{ $cancion->id }})" />
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay canciones.</td>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Artista</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
+                        <th class="px-6 py-3 sticky right-0 bg-gray-50 dark:bg-gray-700/50"></th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse ($canciones as $cancion)
+                        <tr wire:key="cancion-{{ $cancion->id }}">
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $cancion->titulo }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->artista }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $cancion->pueblo?->nombre }}</td>
+                            <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap sticky right-0 bg-white dark:bg-gray-800">
+                                <x-boton-editar wire:click="editar({{ $cancion->id }})" modal="cancion-form" />
+                                <x-boton-eliminar wire:click="confirmarEliminar({{ $cancion->id }})" />
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay canciones.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <div class="px-6 py-4">
             {{ $canciones->links() }}

@@ -128,37 +128,39 @@ new #[Layout('layouts.admin')] class extends Component
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700/50">
-                <tr>
-                    <th class="px-6 py-3"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Grupo</th>
-                    <th class="px-6 py-3"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($categorias as $categoria)
-                    <tr wire:key="categoria-{{ $categoria->id }}">
-                        <td class="px-6 py-4">
-                            @if ($categoria->color)
-                                <span class="inline-block w-4 h-4 rounded-full" style="background-color: {{ $categoria->color }}"></span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $categoria->nombre }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ self::GRUPOS[$categoria->grupo] }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
-                            <x-boton-editar wire:click="editar({{ $categoria->id }})" modal="categoria-form" />
-                            <x-boton-eliminar wire:click="confirmarEliminar({{ $categoria->id }})" />
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay categorías.</td>
+                        <th class="px-6 py-3"></th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Nombre</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Grupo</th>
+                        <th class="px-6 py-3 sticky right-0 bg-gray-50 dark:bg-gray-700/50"></th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse ($categorias as $categoria)
+                        <tr wire:key="categoria-{{ $categoria->id }}">
+                            <td class="px-6 py-4">
+                                @if ($categoria->color)
+                                    <span class="inline-block w-4 h-4 rounded-full" style="background-color: {{ $categoria->color }}"></span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $categoria->nombre }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ self::GRUPOS[$categoria->grupo] }}</td>
+                            <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap sticky right-0 bg-white dark:bg-gray-800">
+                                <x-boton-editar wire:click="editar({{ $categoria->id }})" modal="categoria-form" />
+                                <x-boton-eliminar wire:click="confirmarEliminar({{ $categoria->id }})" />
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay categorías.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <div class="px-6 py-4">
             {{ $categorias->links() }}

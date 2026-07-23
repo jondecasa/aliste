@@ -235,50 +235,52 @@ new #[Layout('layouts.admin')] class extends Component
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700/50">
-                <tr>
-                    <th class="px-6 py-3"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fecha</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Principal</th>
-                    <th class="px-6 py-3"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse ($eventos as $evento)
-                    <tr wire:key="evento-{{ $evento->id }}">
-                        <td class="px-6 py-4">
-                            @if ($evento->imagen_url)
-                                <img src="{{ $evento->imagen_url }}" alt="{{ $evento->titulo }}" class="w-12 h-12 rounded-lg object-cover">
-                            @else
-                                <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-900"></div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                            @if ($evento->categoria?->color)
-                                <span class="inline-block w-2.5 h-2.5 rounded-full me-1.5" style="background-color: {{ $evento->categoria->color }}"></span>
-                            @endif
-                            {{ $evento->titulo }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->pueblo?->nombre }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->es_principal ? 'Sí' : '' }}</td>
-                        <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap">
-                            @if ($evento->puedeEditar(auth()->user()))
-                                <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
-                                <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
-                            @endif
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay eventos.</td>
+                        <th class="px-6 py-3"></th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Principal</th>
+                        <th class="px-6 py-3 sticky right-0 bg-gray-50 dark:bg-gray-700/50"></th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse ($eventos as $evento)
+                        <tr wire:key="evento-{{ $evento->id }}">
+                            <td class="px-6 py-4">
+                                @if ($evento->imagen_url)
+                                    <img src="{{ $evento->imagen_url }}" alt="{{ $evento->titulo }}" class="w-12 h-12 rounded-lg object-cover">
+                                @else
+                                    <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-900"></div>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                @if ($evento->categoria?->color)
+                                    <span class="inline-block w-2.5 h-2.5 rounded-full me-1.5" style="background-color: {{ $evento->categoria->color }}"></span>
+                                @endif
+                                {{ $evento->titulo }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->pueblo?->nombre }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->fecha_inicio?->format('d/m/Y H:i') }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $evento->es_principal ? 'Sí' : '' }}</td>
+                            <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap sticky right-0 bg-white dark:bg-gray-800">
+                                @if ($evento->puedeEditar(auth()->user()))
+                                    <x-boton-editar wire:click="editar({{ $evento->id }})" modal="evento-form" />
+                                    <x-boton-eliminar wire:click="confirmarEliminar({{ $evento->id }})" />
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay eventos.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <div class="px-6 py-4">
             {{ $eventos->links() }}
