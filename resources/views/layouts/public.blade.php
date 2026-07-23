@@ -61,6 +61,18 @@
                             Contacto
                         </a>
 
+                        <form action="{{ route('buscar') }}" method="GET" class="flex items-center gap-1.5 h-9 rounded-full border border-tinta-borde px-3 w-32 focus-within:w-52 transition-all">
+                            <svg class="w-3.5 h-3.5 text-tinta-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                            </svg>
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Buscar..."
+                                class="w-full min-w-0 border-none bg-transparent p-0 text-[13px] text-tinta placeholder:text-tinta-muted focus:ring-0"
+                            >
+                        </form>
+
                         @auth
                             @if (auth()->user()->pueblo)
                                 <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
@@ -88,6 +100,17 @@
                 </div>
 
                 <nav x-show="menuAbierto" x-cloak class="sm:hidden flex flex-col px-5 pb-4 gap-3 border-t border-tinta-borde pt-3">
+                    <form action="{{ route('buscar') }}" method="GET" class="flex items-center gap-2 h-11 rounded-full border border-tinta-borde px-4 mb-1">
+                        <svg class="w-4 h-4 text-tinta-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                        </svg>
+                        <input
+                            type="text"
+                            name="q"
+                            placeholder="Buscar en la comarca..."
+                            class="w-full border-none bg-transparent p-0 text-sm text-tinta placeholder:text-tinta-muted focus:ring-0"
+                        >
+                    </form>
                     <a href="{{ route('pueblos') }}" wire:navigate class="text-[15px] {{ request()->routeIs('pueblos') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Pueblos</a>
                     <a href="{{ route('servicios') }}" wire:navigate class="text-[15px] {{ request()->routeIs('servicios') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Servicios</a>
                     <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
