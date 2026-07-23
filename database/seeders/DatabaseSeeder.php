@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ServicioSeeder::class,
             BannerSeeder::class,
             NoticiaSeeder::class,
+            CancionesSeeder::class,
         ]);
     }
 }

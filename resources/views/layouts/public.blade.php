@@ -56,6 +56,10 @@
                             class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
                             Noticias
                         </a>
+                        <a href="{{ route('musica') }}" wire:navigate
+                            class="text-[15px] {{ request()->routeIs('musica') || request()->routeIs('cancion') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
+                            Música
+                        </a>
                         <a href="{{ route('contacto') }}" wire:navigate
                             class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
                             Contacto
@@ -125,6 +129,7 @@
                     <a href="{{ route('pueblos') }}" wire:navigate class="text-[15px] {{ request()->routeIs('pueblos') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Pueblos</a>
                     <a href="{{ route('servicios') }}" wire:navigate class="text-[15px] {{ request()->routeIs('servicios') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Servicios</a>
                     <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
+                    <a href="{{ route('musica') }}" wire:navigate class="text-[15px] {{ request()->routeIs('musica') || request()->routeIs('cancion') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Música</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
                         <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
