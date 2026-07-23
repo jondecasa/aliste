@@ -45,7 +45,7 @@ class EventoPermissionsTest extends TestCase
         ]);
     }
 
-    public function test_redactor_can_edit_their_own_future_event(): void
+    public function test_redactor_can_edit_a_future_event_in_their_pueblo(): void
     {
         $redactor = $this->redactor($this->puebloA);
         $evento = $this->evento($this->puebloA, $redactor, now()->addDays(3), 'futuro-propio');
@@ -55,7 +55,7 @@ class EventoPermissionsTest extends TestCase
         Volt::test('admin.eventos')->call('editar', $evento->id)->assertOk();
     }
 
-    public function test_redactor_can_edit_their_own_event_happening_today(): void
+    public function test_redactor_can_edit_an_event_happening_today(): void
     {
         $redactor = $this->redactor($this->puebloA);
         $evento = $this->evento($this->puebloA, $redactor, now(), 'hoy-propio');
@@ -65,7 +65,7 @@ class EventoPermissionsTest extends TestCase
         Volt::test('admin.eventos')->call('editar', $evento->id)->assertOk();
     }
 
-    public function test_redactor_cannot_edit_their_own_past_event(): void
+    public function test_redactor_cannot_edit_a_past_event(): void
     {
         $redactor = $this->redactor($this->puebloA);
         $evento = $this->evento($this->puebloA, $redactor, now()->subDays(3), 'pasado-propio');
@@ -85,7 +85,7 @@ class EventoPermissionsTest extends TestCase
         Volt::test('admin.eventos')->call('editar', $evento->id)->assertOk();
     }
 
-    public function test_redactor_cannot_edit_a_future_event_created_by_another_redactor(): void
+    public function test_redactor_can_edit_a_future_event_created_by_another_redactor_in_the_same_pueblo(): void
     {
         $otroRedactor = $this->redactor($this->puebloA);
         $redactor = $this->redactor($this->puebloA);
@@ -93,7 +93,7 @@ class EventoPermissionsTest extends TestCase
 
         $this->actingAs($redactor);
 
-        Volt::test('admin.eventos')->call('editar', $evento->id)->assertForbidden();
+        Volt::test('admin.eventos')->call('editar', $evento->id)->assertOk();
     }
 
     public function test_redactor_cannot_access_events_from_another_pueblo(): void
@@ -153,11 +153,23 @@ class EventoPermissionsTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_redactor_cannot_delete_an_event_created_by_another_redactor(): void
+    public function test_redactor_can_delete_a_future_event_created_by_another_redactor_in_the_same_pueblo(): void
     {
         $otroRedactor = $this->redactor($this->puebloA);
         $redactor = $this->redactor($this->puebloA);
         $evento = $this->evento($this->puebloA, $otroRedactor, now()->addDays(3), 'no-mio-eliminar');
+
+        $this->actingAs($redactor);
+
+        Volt::test('admin.eventos')->call('eliminar', $evento->id)->assertOk();
+
+        $this->assertNull($evento->fresh());
+    }
+
+    public function test_redactor_cannot_delete_a_past_event(): void
+    {
+        $redactor = $this->redactor($this->puebloA);
+        $evento = $this->evento($this->puebloA, $redactor, now()->subDays(3), 'pasado-eliminar');
 
         $this->actingAs($redactor);
 
