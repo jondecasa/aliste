@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Pueblo;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -11,6 +12,12 @@ new #[Layout('layouts.public')] class extends Component
     public string $buscar = '';
     public string $filtro = 'todos';
     public int $porPagina = 12;
+
+    public function mount(): void
+    {
+        View::share('title', 'Pueblos de la comarca · Aliste.es');
+        View::share('ogDescripcion', 'Descubre los pueblos de la comarca de Aliste, en Zamora.');
+    }
 
     public function verMas(): void
     {

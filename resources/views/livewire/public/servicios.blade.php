@@ -2,6 +2,7 @@
 
 use App\Models\Categoria;
 use App\Models\Servicio;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -10,6 +11,12 @@ new #[Layout('layouts.public')] class extends Component
     public string $buscar = '';
     public ?int $categoriaId = null;
     public int $porPagina = 12;
+
+    public function mount(): void
+    {
+        View::share('title', 'Servicios · Aliste.es');
+        View::share('ogDescripcion', 'Directorio de negocios y servicios de la comarca de Aliste, en Zamora.');
+    }
 
     public function verMas(): void
     {

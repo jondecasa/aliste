@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Noticia;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -11,6 +13,12 @@ new #[Layout('layouts.public')] class extends Component
     public function mount(Noticia $noticia): void
     {
         $this->noticia = $noticia->load('categorias', 'pueblo');
+
+        View::share('title', $this->noticia->titulo.' · Aliste.es');
+        View::share('ogDescripcion', Str::limit(strip_tags($this->noticia->extracto ?? $this->noticia->cuerpo ?? ''), 200));
+        View::share('ogImagen', $this->noticia->imagen_portada);
+        View::share('ogUrl', route('noticia', $this->noticia));
+        View::share('ogTipo', 'article');
     }
 }; ?>
 

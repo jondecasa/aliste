@@ -3,6 +3,7 @@
 use App\Mail\ContactoEnviado;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -14,6 +15,12 @@ new #[Layout('layouts.public')] class extends Component
     public string $descripcion = '';
     public string $captchaToken = '';
     public bool $enviado = false;
+
+    public function mount(): void
+    {
+        View::share('title', 'Contacto · Aliste.es');
+        View::share('ogDescripcion', 'Ponte en contacto con Aliste.es.');
+    }
 
     public function enviar(): void
     {

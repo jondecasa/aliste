@@ -7,6 +7,27 @@
 
         <title>{{ $title ?? config('app.name', 'Aliste.es') }}</title>
 
+        @php
+            $ogTitulo = $title ?? config('app.name', 'Aliste.es');
+            $ogDescripcionFinal = $ogDescripcion ?? 'Toda la actualidad, los pueblos y los servicios de la comarca de Aliste, Zamora.';
+            $ogImagenFinal = $ogImagen ?? asset('images/aliste-home.png');
+            $ogUrlFinal = $ogUrl ?? url()->current();
+            $ogTipoFinal = $ogTipo ?? 'website';
+        @endphp
+
+        <meta property="og:site_name" content="{{ config('app.name', 'Aliste.es') }}">
+        <meta property="og:type" content="{{ $ogTipoFinal }}">
+        <meta property="og:title" content="{{ $ogTitulo }}">
+        <meta property="og:description" content="{{ $ogDescripcionFinal }}">
+        <meta property="og:image" content="{{ $ogImagenFinal }}">
+        <meta property="og:url" content="{{ $ogUrlFinal }}">
+        <meta property="og:locale" content="es_ES">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $ogTitulo }}">
+        <meta name="twitter:description" content="{{ $ogDescripcionFinal }}">
+        <meta name="twitter:image" content="{{ $ogImagenFinal }}">
+
         <link rel="icon" type="image/png" href="{{ asset('images/logo-aliste.png') }}">
 
         <link rel="manifest" href="/manifest.json">

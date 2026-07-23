@@ -5,11 +5,17 @@ use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Pueblo;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('layouts.public')] class extends Component
 {
+    public function mount(): void
+    {
+        View::share('ogDescripcion', 'La web de la comarca de Aliste (Zamora): noticias, pueblos, servicios y eventos de la zona.');
+    }
+
     public function with(): array
     {
         return [

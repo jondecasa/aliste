@@ -2,6 +2,7 @@
 
 use App\Models\Categoria;
 use App\Models\Noticia;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -11,6 +12,12 @@ new #[Layout('layouts.public')] class extends Component
     #[Url]
     public ?int $categoriaId = null;
     public int $porPagina = 6;
+
+    public function mount(): void
+    {
+        View::share('title', 'Noticias · Aliste.es');
+        View::share('ogDescripcion', 'Últimas noticias de la comarca de Aliste, en Zamora.');
+    }
 
     public function verMas(): void
     {

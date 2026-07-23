@@ -2,6 +2,8 @@
 
 use App\Models\Noticia;
 use App\Models\Pueblo;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -12,6 +14,13 @@ new #[Layout('layouts.public')] class extends Component
     public function mount(Pueblo $pueblo): void
     {
         $this->pueblo = $pueblo;
+
+        View::share('title', $this->pueblo->nombre.' · Aliste.es');
+        View::share('ogDescripcion', $this->pueblo->descripcion
+            ? Str::limit(strip_tags($this->pueblo->descripcion), 200)
+            : "Descubre {$this->pueblo->nombre}, un pueblo de la comarca de Aliste.");
+        View::share('ogImagen', $this->pueblo->portada_url);
+        View::share('ogUrl', route('pueblo', $this->pueblo));
     }
 
     public function with(): array
