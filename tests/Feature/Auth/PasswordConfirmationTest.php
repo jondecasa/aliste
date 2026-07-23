@@ -15,7 +15,7 @@ class PasswordConfirmationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/confirm-password');
+        $response = $this->actingAs($user)->get(route('password.confirm'));
 
         $response
             ->assertSeeVolt('pages.auth.confirm-password')
@@ -34,7 +34,7 @@ class PasswordConfirmationTest extends TestCase
         $component->call('confirmPassword');
 
         $component
-            ->assertRedirect('/dashboard')
+            ->assertRedirect(route('dashboard', absolute: false))
             ->assertHasNoErrors();
     }
 

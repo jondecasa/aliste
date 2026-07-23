@@ -21,6 +21,18 @@ class User extends Authenticatable
     public const ROL_INVITADO = 'invitado';
 
     /**
+     * Valores por defecto en memoria, iguales a los definidos a nivel de BD.
+     * Evita nulls en una instancia recién creada antes de recargarla de la BD.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'tema' => 'claro',
+        'notif_eventos_otros_pueblos' => true,
+        'notif_eventos_mi_pueblo' => true,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

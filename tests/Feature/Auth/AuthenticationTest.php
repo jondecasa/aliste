@@ -13,7 +13,7 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get(route('login'));
 
         $response
             ->assertOk()
@@ -32,7 +32,7 @@ class AuthenticationTest extends TestCase
 
         $component
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('profile', absolute: false));
 
         $this->assertAuthenticated();
     }
@@ -60,7 +60,7 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get('/dashboard');
+        $response = $this->get(route('dashboard'));
 
         $response
             ->assertOk()
