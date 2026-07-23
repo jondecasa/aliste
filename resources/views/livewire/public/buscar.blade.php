@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Cancion;
 use App\Models\Evento;
 use App\Models\Noticia;
 use App\Models\Pueblo;
@@ -31,6 +32,7 @@ new #[Layout('layouts.public')] class extends Component
                 'servicios' => collect(),
                 'noticias' => collect(),
                 'eventos' => collect(),
+                'canciones' => collect(),
                 'total' => 0,
             ];
         }
@@ -71,13 +73,25 @@ new #[Layout('layouts.public')] class extends Component
             ->take(8)
             ->get();
 
+        $canciones = Cancion::query()
+            ->with('pueblo')
+            ->where(function ($cq) use ($q) {
+                $cq->where('titulo', 'like', "%{$q}%")
+                    ->orWhere('artista', 'like', "%{$q}%")
+                    ->orWhereHas('pueblo', fn ($pq) => $pq->where('nombre', 'like', "%{$q}%"));
+            })
+            ->orderBy('titulo')
+            ->take(8)
+            ->get();
+
         return [
             'q' => $q,
             'pueblos' => $pueblos,
             'servicios' => $servicios,
             'noticias' => $noticias,
             'eventos' => $eventos,
-            'total' => $pueblos->count() + $servicios->count() + $noticias->count() + $eventos->count(),
+            'canciones' => $canciones,
+            'total' => $pueblos->count() + $servicios->count() + $noticias->count() + $eventos->count() + $canciones->count(),
         ];
     }
 }; ?>
@@ -185,6 +199,27 @@ new #[Layout('layouts.public')] class extends Component
                                 </a>
                             @endforeach
                         </div>
+                    </div>
+                @endif
+
+                @if ($canciones->isNotEmpty())
+                    <div>
+                        <h2 class="font-serif text-xl text-tinta mb-4">Música</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach ($canciones as $cancion)
+                                <a href="{{ route('cancion', $cancion) }}" wire:navigate
+                                    class="block bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(60,30,10,0.06)] hover:shadow-[0_8px_24px_rgba(60,30,10,0.1)] transition">
+                                    <div class="text-xs text-tinta-muted">
+                                        {{ $cancion->artista }}
+                                        @if ($cancion->pueblo) · {{ $cancion->pueblo->nombre }} @endif
+                                    </div>
+                                    <div class="font-serif text-tinta mt-1">{{ $cancion->titulo }}</div>
+                                </a>
+                            @endforeach
+                        </div>
+                        <a href="{{ route('musica') }}" wire:navigate class="inline-block mt-3 text-sm text-terracota font-semibold">
+                            Ver toda la música →
+                        </a>
                     </div>
                 @endif
             </div>

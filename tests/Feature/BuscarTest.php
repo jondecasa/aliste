@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Cancion;
 use App\Models\Categoria;
 use App\Models\Evento;
 use App\Models\Noticia;
@@ -43,6 +44,9 @@ class BuscarTest extends TestCase
         Evento::create(['pueblo_id' => $pueblo->id, 'titulo' => 'Feria de Alcañices', 'slug' => 'feria-alcanices', 'fecha_inicio' => now()]);
         Evento::create(['pueblo_id' => $otroPueblo->id, 'titulo' => 'Otro evento', 'slug' => 'otro-evento', 'fecha_inicio' => now()]);
 
+        Cancion::create(['pueblo_id' => $pueblo->id, 'titulo' => 'Ronda de Alcañices', 'slug' => 'ronda-alcanices']);
+        Cancion::create(['pueblo_id' => $otroPueblo->id, 'titulo' => 'Otra canción cualquiera', 'slug' => 'otra-cancion']);
+
         Volt::test('public.buscar')
             ->set('q', 'Alcañices')
             ->assertSee('Alcañices') // el propio pueblo
@@ -51,7 +55,9 @@ class BuscarTest extends TestCase
             ->assertSee('Fiestas de Alcañices')
             ->assertDontSee('Otra noticia cualquiera')
             ->assertSee('Feria de Alcañices')
-            ->assertDontSee('Otro evento');
+            ->assertDontSee('Otro evento')
+            ->assertSee('Ronda de Alcañices')
+            ->assertDontSee('Otra canción cualquiera');
     }
 
     public function test_finds_a_service_by_its_category_name(): void

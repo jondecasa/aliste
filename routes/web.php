@@ -10,6 +10,8 @@ Volt::route('pueblos/{pueblo}', 'public.pueblo')->name('pueblo');
 Volt::route('pueblos/{pueblo}/calendario', 'public.calendario')->name('pueblo.calendario');
 Volt::route('pueblos/{pueblo}/gente', 'public.gente')->name('pueblo.gente');
 Volt::route('servicios', 'public.servicios')->name('servicios');
+Volt::route('musica', 'public.musica')->name('musica');
+Volt::route('musica/{cancion}', 'public.cancion')->name('cancion');
 Volt::route('noticias', 'public.blog')->name('noticias');
 Volt::route('noticias/{noticia}', 'public.noticia')->name('noticia');
 Volt::route('contacto', 'public.contacto')->name('contacto');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cancion extends Model
 {
@@ -16,12 +17,17 @@ class Cancion extends Model
         'slug',
         'artista',
         'album',
-        'archivo_audio',
         'duracion',
         'anio',
         'portada',
         'descripcion',
+        'letra',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     public function pueblo(): BelongsTo
     {
@@ -31,5 +37,10 @@ class Cancion extends Model
     public function categorias(): BelongsToMany
     {
         return $this->belongsToMany(Categoria::class, 'categoria_cancion');
+    }
+
+    public function audios(): HasMany
+    {
+        return $this->hasMany(AudioCancion::class)->orderBy('orden');
     }
 }
