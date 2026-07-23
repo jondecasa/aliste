@@ -35,6 +35,12 @@ new class extends Component
                             {{ __('Administración') }}
                         </x-nav-link>
                     @endcan
+
+                    @if (auth()->user()->pueblo)
+                        <x-nav-link :href="route('pueblo.calendario', auth()->user()->pueblo)" :active="request()->routeIs('pueblo.calendario')" wire:navigate>
+                            Mi pueblo
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -88,6 +94,12 @@ new class extends Component
                     {{ __('Administración') }}
                 </x-responsive-nav-link>
             @endcan
+
+            @if (auth()->user()->pueblo)
+                <x-responsive-nav-link :href="route('pueblo.calendario', auth()->user()->pueblo)" :active="request()->routeIs('pueblo.calendario')" wire:navigate>
+                    Mi pueblo
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

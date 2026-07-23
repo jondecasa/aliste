@@ -41,6 +41,12 @@
                         </a>
 
                         @auth
+                            @if (auth()->user()->pueblo)
+                                <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
+                                    class="text-[15px] {{ request()->routeIs('pueblo.calendario') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
+                                    Mi pueblo
+                                </a>
+                            @endif
                             <a href="{{ route('profile') }}" wire:navigate
                                 class="border border-terracota text-terracota px-4 py-2 rounded-full text-sm font-semibold hover:bg-terracota hover:text-white transition">
                                 Mi cuenta
@@ -66,6 +72,12 @@
                     <a href="{{ route('noticias') }}" wire:navigate class="text-[15px] {{ request()->routeIs('noticias') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Noticias</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
+                        @if (auth()->user()->pueblo)
+                            <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
+                                class="text-[15px] {{ request()->routeIs('pueblo.calendario') ? 'font-bold text-terracota' : 'text-tinta/80' }}">
+                                Mi pueblo
+                            </a>
+                        @endif
                         <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
                     @else
                         <a href="{{ route('login') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Entrar</a>
