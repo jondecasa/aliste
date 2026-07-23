@@ -27,7 +27,8 @@ class RegistrationTest extends TestCase
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
             ->set('password', 'password')
-            ->set('password_confirmation', 'password');
+            ->set('password_confirmation', 'password')
+            ->set('aceptaTerminos', true);
 
         $component->call('register');
 
@@ -43,6 +44,7 @@ class RegistrationTest extends TestCase
             ->set('email', 'bot@example.com')
             ->set('password', 'password')
             ->set('password_confirmation', 'password')
+            ->set('aceptaTerminos', true)
             ->set('sitioWeb', 'https://spam.example.com');
 
         $component->call('register');
@@ -65,7 +67,8 @@ class RegistrationTest extends TestCase
             ->set('name', 'Test User')
             ->set('email', 'otro@example.com')
             ->set('password', 'password')
-            ->set('password_confirmation', 'password');
+            ->set('password_confirmation', 'password')
+            ->set('aceptaTerminos', true);
 
         $component->call('register');
 
