@@ -13,3 +13,5 @@ Schedule::command('notificaciones:eventos-del-dia')->dailyAt('10:00');
 Schedule::command('noticias:scrapear')->twiceDaily(14, 22);
 
 Schedule::command('sitemap:generar')->dailyAt('03:00');
+
+Schedule::command('backup:base-datos')->cron('0 4 */3 * *');
