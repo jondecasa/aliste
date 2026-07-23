@@ -25,8 +25,8 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-tinta via-tinta/40 to-transparent lg:hidden"></div>
             </div>
 
-            <div class="relative flex min-h-screen flex-col justify-end p-6 pb-10 lg:min-h-0 lg:w-[480px] lg:flex-shrink-0 lg:justify-center lg:px-14 lg:py-10 xl:w-[520px]">
-                <a href="{{ route('inicio') }}" wire:navigate class="mb-6 block font-serif text-2xl italic text-white lg:mb-9 lg:text-tinta">
+            <div class="relative flex min-h-screen flex-col justify-end p-6 pb-10 lg:min-h-0 lg:w-[480px] lg:flex-shrink-0 lg:justify-center lg:px-14 lg:py-6 xl:w-[520px]">
+                <a href="{{ route('inicio') }}" wire:navigate class="mb-6 block font-serif text-2xl italic text-white lg:mb-5 lg:text-tinta">
                     Aliste.es
                 </a>
 

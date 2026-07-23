@@ -108,87 +108,90 @@ new #[Layout('layouts.auth-split')] class extends Component
     x-on:captcha-token.window="$wire.set('captchaToken', $event.detail)"
     x-on:captcha-reset.window="window.grecaptcha && window.grecaptcha.reset()"
 >
-    <h1 class="font-serif text-[28px] text-tinta sm:text-3xl">Únete a la comarca</h1>
-    <p class="mb-7 mt-2 text-sm text-tinta-muted">Crea tu cuenta para gestionar tu perfil y recibir notificaciones de tu pueblo.</p>
+    <h1 class="mb-5 font-serif text-[28px] text-tinta sm:text-3xl">Únete a la comarca</h1>
 
-    <form wire:submit="register" class="space-y-4">
+    <form wire:submit="register" class="space-y-3">
         <!-- Campo señuelo: oculto para personas, algunos bots lo rellenan igualmente -->
         <div class="absolute -left-[9999px]" aria-hidden="true">
             <label for="sitio_web">Deja este campo vacío</label>
             <input wire:model="sitioWeb" id="sitio_web" type="text" tabindex="-1" autocomplete="off">
         </div>
 
-        <div>
-            <label for="name" class="mb-1.5 block text-sm font-semibold text-tinta">Nombre completo</label>
-            <input
-                wire:model="name"
-                id="name"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                class="block h-[46px] w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
-            >
-            @error('name') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
+        <div class="flex gap-3">
+            <div class="flex-1">
+                <label for="name" class="mb-1 block text-sm font-semibold text-tinta">Nombre completo</label>
+                <input
+                    wire:model="name"
+                    id="name"
+                    type="text"
+                    required
+                    autofocus
+                    autocomplete="name"
+                    class="block h-11 w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
+                >
+                @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="w-2/5 flex-shrink-0">
+                <label for="puebloId" class="mb-1 block text-sm font-semibold text-tinta">Pueblo</label>
+                <select
+                    wire:model="puebloId"
+                    id="puebloId"
+                    class="block h-11 w-full rounded-lg border-tinta-borde bg-white px-3 text-sm text-tinta focus:border-terracota focus:ring-terracota"
+                >
+                    <option value="">Sin asociar</option>
+                    @foreach ($pueblos as $pueblo)
+                        <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+                    @endforeach
+                </select>
+                @error('puebloId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
         </div>
 
         <div>
-            <label for="puebloId" class="mb-1.5 block text-sm font-semibold text-tinta">Pueblo</label>
-            <select
-                wire:model="puebloId"
-                id="puebloId"
-                class="block h-[46px] w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta focus:border-terracota focus:ring-terracota"
-            >
-                <option value="">Selecciona tu pueblo</option>
-                @foreach ($pueblos as $pueblo)
-                    <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
-                @endforeach
-            </select>
-            @error('puebloId') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
-        </div>
-
-        <div>
-            <label for="email" class="mb-1.5 block text-sm font-semibold text-tinta">Correo electrónico</label>
+            <label for="email" class="mb-1 block text-sm font-semibold text-tinta">Correo electrónico</label>
             <input
                 wire:model="email"
                 id="email"
                 type="email"
                 required
                 autocomplete="username"
-                class="block h-[46px] w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
+                class="block h-11 w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
             >
-            @error('email') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
+            @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
 
-        <div>
-            <label for="password" class="mb-1.5 block text-sm font-semibold text-tinta">Contraseña</label>
-            <input
-                wire:model="password"
-                id="password"
-                type="password"
-                required
-                autocomplete="new-password"
-                class="block h-[46px] w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
-            >
-            @error('password') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
-        </div>
+        <div class="flex gap-3">
+            <div class="flex-1">
+                <label for="password" class="mb-1 block text-sm font-semibold text-tinta">Contraseña</label>
+                <input
+                    wire:model="password"
+                    id="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="block h-11 w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
+                >
+                @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label for="password_confirmation" class="mb-1.5 block text-sm font-semibold text-tinta">Confirmar contraseña</label>
-            <input
-                wire:model="password_confirmation"
-                id="password_confirmation"
-                type="password"
-                required
-                autocomplete="new-password"
-                class="block h-[46px] w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
-            >
-            @error('password_confirmation') <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p> @enderror
+            <div class="flex-1">
+                <label for="password_confirmation" class="mb-1 block text-sm font-semibold text-tinta">Confirmar</label>
+                <input
+                    wire:model="password_confirmation"
+                    id="password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="block h-11 w-full rounded-lg border-tinta-borde bg-white px-4 text-sm text-tinta placeholder:text-tinta-muted focus:border-terracota focus:ring-terracota"
+                >
+                @error('password_confirmation') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
         </div>
 
         <div class="flex items-start gap-2.5">
             <input wire:model="aceptaTerminos" id="aceptaTerminos" type="checkbox" class="mt-0.5 rounded border-tinta-borde text-terracota focus:ring-terracota">
-            <label for="aceptaTerminos" class="text-sm leading-relaxed text-tinta-muted">
+            <label for="aceptaTerminos" class="text-sm leading-snug text-tinta-muted">
                 Acepto la
                 <a href="{{ route('privacidad') }}" wire:navigate target="_blank" class="font-semibold text-terracota">política de privacidad</a>
                 de Aliste.es.
@@ -208,19 +211,19 @@ new #[Layout('layouts.auth-split')] class extends Component
         @endif
         @error('captchaToken') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
 
-        <button type="submit" class="mt-1 w-full rounded-full bg-terracota py-3.5 text-sm font-bold text-white transition hover:bg-terracota-dark">
+        <button type="submit" class="mt-1 w-full rounded-full bg-terracota py-3 text-sm font-bold text-white transition hover:bg-terracota-dark">
             Crear cuenta
         </button>
     </form>
 
-    <div class="my-6 flex items-center gap-3">
+    <div class="my-4 flex items-center gap-3">
         <div class="h-px flex-1 bg-tinta-borde"></div>
         <span class="text-xs text-tinta-muted">o</span>
         <div class="h-px flex-1 bg-tinta-borde"></div>
     </div>
 
     <a href="{{ route('auth.google.redirigir') }}"
-        class="flex w-full items-center justify-center gap-2.5 rounded-full border border-tinta-borde bg-white py-3 text-sm font-semibold text-tinta transition hover:bg-crema">
+        class="flex w-full items-center justify-center gap-2.5 rounded-full border border-tinta-borde bg-white py-2.5 text-sm font-semibold text-tinta transition hover:bg-crema">
         <svg class="h-[18px] w-[18px]" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
             <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
@@ -230,7 +233,7 @@ new #[Layout('layouts.auth-split')] class extends Component
         Continuar con Google
     </a>
 
-    <p class="mt-6 text-center text-sm text-tinta-muted">
+    <p class="mt-4 text-center text-sm text-tinta-muted">
         ¿Ya tienes cuenta?
         <a href="{{ route('login') }}" wire:navigate class="font-semibold text-terracota">Inicia sesión</a>
     </p>
