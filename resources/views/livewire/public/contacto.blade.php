@@ -2,8 +2,11 @@
 
 use App\Livewire\Concerns\VerificaCaptcha;
 use App\Mail\ContactoEnviado;
+use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -26,6 +29,8 @@ new #[Layout('layouts.public')] class extends Component
 
     public function enviar(): void
     {
+        $this->ensureIsNotRateLimited();
+
         $datos = $this->validate([
             'nombre' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
@@ -37,11 +42,15 @@ new #[Layout('layouts.public')] class extends Component
         ]);
 
         if (! $this->verificarCaptcha($datos['captchaToken'])) {
+            RateLimiter::hit($this->throttleKey(), 3600);
+
             $this->addError('captchaToken', 'No hemos podido verificar el captcha. Inténtalo de nuevo.');
             $this->dispatch('captcha-reset');
 
             return;
         }
+
+        RateLimiter::hit($this->throttleKey(), 3600);
 
         Mail::to(config('mail.contact_to'))->send(new ContactoEnviado(
             nombreRemitente: $datos['nombre'],
@@ -53,6 +62,26 @@ new #[Layout('layouts.public')] class extends Component
         $this->reset(['nombre', 'email', 'asunto', 'descripcion', 'captchaToken']);
         $this->dispatch('captcha-reset');
         $this->enviado = true;
+    }
+
+    private function ensureIsNotRateLimited(): void
+    {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+            return;
+        }
+
+        event(new Lockout(request()));
+
+        $segundos = RateLimiter::availableIn($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'descripcion' => "Demasiados mensajes enviados. Inténtalo de nuevo en {$segundos} segundos.",
+        ]);
+    }
+
+    private function throttleKey(): string
+    {
+        return 'contacto|'.request()->ip();
     }
 }; ?>
 
