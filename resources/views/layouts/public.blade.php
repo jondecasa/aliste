@@ -157,6 +157,9 @@
                         <a href="{{ route('privacidad') }}" wire:navigate>Política de privacidad</a>
                     </div>
                 </div>
+                <div class="max-w-7xl mx-auto px-5 sm:px-12 pb-6 sm:pb-8 text-xs text-tinta-borde/70">
+                    Contacto: <a href="mailto:contacto@aliste.es" class="underline hover:text-white">contacto@aliste.es</a>
+                </div>
             </footer>
         </div>
 

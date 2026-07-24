@@ -93,6 +93,15 @@ new #[Layout('layouts.public')] class extends Component
     </div>
 
     <div class="max-w-2xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
+        <div class="mb-8 rounded-2xl bg-crema-suave dark:bg-gray-800/60 border border-tinta-borde p-5 sm:p-6">
+            <div class="text-xs text-tinta-muted uppercase font-bold tracking-wide mb-2">Información de contacto</div>
+            <p class="text-sm text-tinta">
+                Puedes escribirnos directamente a
+                <a href="mailto:contacto@aliste.es" class="text-terracota font-semibold underline">contacto@aliste.es</a>,
+                o usar el formulario de abajo.
+            </p>
+        </div>
+
         @if ($enviado)
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-[0_8px_24px_rgba(60,30,10,0.08)] text-center">
                 <div class="font-serif text-xl text-tinta mb-2">¡Mensaje enviado!</div>
