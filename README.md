@@ -52,7 +52,7 @@ Web de la comarca de Aliste (Zamora): pueblos, servicios, noticias, eventos, mú
   - No tiene enlace en el menú principal (de momento); se llega desde el buscador general o accediendo directamente a `/musica`.
 - **Buscador unificado** (`/buscar`) — busca a la vez en pueblos, servicios, noticias, eventos y canciones. También hay una caja de búsqueda compacta en la cabecera (escritorio y móvil).
 - **Contacto** (`/contacto`) — formulario con reCAPTCHA v2 + honeypot + rate limit (2 envíos por IP y hora), con el email `contacto@aliste.es` mostrado de forma visible (no solo el formulario) tanto en esta página como en el pie de página de todo el sitio — requisito de la política de "Noticias y revistas" de Google Play.
-- **Páginas legales**: política de cookies (`/politica-cookies`) y de privacidad (`/politica-privacidad`).
+- **Páginas legales**: política de cookies (`/politica-cookies`) y de privacidad (`/politica-privacidad`). Esta última incluye un bloque de "Desarrollador y propiedad" (Jon de Casa, [jondecasa.com](https://jondecasa.com/), `jonapweb@gmail.com`) y menciona el email de contacto (`contacto@aliste.es`) además del formulario.
 - **Páginas de error personalizadas**, con el diseño propio del sitio y mensajes en el habla local:
   - 403 — "¡Rapá, nun pues pasar!"
   - 404 — "¡Per más que busqué, nun salió!"
