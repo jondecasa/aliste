@@ -101,6 +101,21 @@ Tres roles (`users.rol`): `administrador`, `redactor`, `invitado`. Definidos com
 
 Los usuarios `invitado` no tienen acceso al panel; solo pueden usar el sitio público, elegir "su pueblo" en el perfil (para ver el enlace "Mi pueblo" y activar el filtro de notificaciones) y suscribirse a notificaciones push.
 
+#### Qué ve cada rol
+
+Todas las páginas públicas del [sitio público](#sitio-público) (home, pueblos, servicios, noticias, música, calendario, buscador, contacto, legales, login/registro) son visibles para **cualquiera**, incluso sin haber iniciado sesión. Lo que cambia por rol es el acceso al perfil y al panel de administración:
+
+| Página / sección | Visitante (sin login) | Invitado | Redactor | Administrador |
+|---|:---:|:---:|:---:|:---:|
+| Sitio público (pueblos, servicios, noticias, música, calendario, buscador...) | ✅ | ✅ | ✅ | ✅ |
+| Perfil (`/perfil`): datos, pueblo, tema, avatar, notificaciones push | ❌ | ✅ | ✅ | ✅ |
+| Enlace "Mi pueblo" en la cabecera (si tiene pueblo asignado) | ❌ | ✅ | ✅ | ✅ |
+| Panel — Dashboard / Noticias (`/admin`, `/admin/noticias`) | ❌ | ❌ | ✅ | ✅ |
+| Panel — Eventos / Puntos de interés (`/admin/eventos`, `/admin/puntos-interes`) | ❌ | ❌ | ✅ *(solo si tiene pueblo asignado, y solo su propio pueblo)* | ✅ *(todos los pueblos)* |
+| Panel — Banner, Pueblos, Categorías, Servicios, Música, Literatura, Usuarios, Registros | ❌ | ❌ | ❌ | ✅ |
+
+Un redactor **sin pueblo asignado** puede entrar al dashboard y gestionar noticias, pero no ve "Eventos" ni "Puntos de interés" en el menú (la gate `gestionar-contenido-pueblo` se lo bloquea hasta que un administrador le asigne un pueblo desde `/admin/usuarios`).
+
 ### Automatización (tareas programadas)
 
 Definidas en `routes/console.php`, todas envían un email a `jonapweb@gmail.com` si fallan (`emailOutputOnFailure`):
