@@ -31,5 +31,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Volt::route('canciones', 'admin.canciones')->name('canciones');
         Volt::route('obras-literarias', 'admin.obras-literarias')->name('obras-literarias');
         Volt::route('usuarios', 'admin.usuarios')->name('usuarios');
+        Volt::route('logs', 'admin.logs')->name('logs');
     });
 });

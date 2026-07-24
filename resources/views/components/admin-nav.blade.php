@@ -19,6 +19,7 @@
         $enlaces[] = ['ruta' => 'admin.canciones', 'etiqueta' => 'Música'];
         $enlaces[] = ['ruta' => 'admin.obras-literarias', 'etiqueta' => 'Literatura'];
         $enlaces[] = ['ruta' => 'admin.usuarios', 'etiqueta' => 'Usuarios'];
+        $enlaces[] = ['ruta' => 'admin.logs', 'etiqueta' => 'Registros'];
     }
 @endphp
 

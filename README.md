@@ -12,6 +12,7 @@ Web de la comarca de Aliste (Zamora): pueblos, servicios, noticias, eventos, mú
   - [Panel de administración](#panel-de-administración-admin)
   - [Roles y permisos](#roles-y-permisos)
   - [Automatización (tareas programadas)](#automatización-tareas-programadas)
+  - [Registro de errores y tareas](#registro-de-errores-y-tareas-adminlogs)
   - [PWA y notificaciones push](#pwa-y-notificaciones-push)
 - [Modelo de datos](#modelo-de-datos)
 - [Estructura del proyecto](#estructura-del-proyecto)
@@ -81,6 +82,7 @@ Todo el contenido del sitio se gestiona desde aquí, con permisos según el rol 
 | Música | `/admin/canciones` | solo administrador |
 | Literatura (obras literarias) | `/admin/obras-literarias` | solo administrador |
 | Usuarios (cambio de rol) | `/admin/usuarios` | solo administrador |
+| Registros (logs) | `/admin/logs` | solo administrador |
 
 Características comunes del panel:
 - Tablas con buscador, paginación y scroll horizontal en móvil; la columna de acciones queda fija (`sticky`) a la derecha con botones de icono (lápiz / papelera) para ahorrar espacio.
@@ -113,6 +115,20 @@ Definidas en `routes/console.php`, todas envían un email a `jonapweb@gmail.com`
 
 Todas las horas se evalúan en la zona horaria configurada (`Europe/Madrid`, ver [Notas y gotchas](#notas-y-gotchas-conocidos)).
 
+### Registro de errores y tareas (`/admin/logs`)
+
+Tabla `logs` (modelo `App\Models\RegistroLog`) que se rellena **automáticamente**, sin que nadie tenga que llamarla a mano en el código de negocio:
+
+- **Cualquier excepción o error no controlado** de la aplicación se registra solo, enganchado en `bootstrap/app.php` (`$exceptions->reportable(...)`). Se clasifica como:
+  - `error` — si es un `\Error` de PHP (`TypeError`, `DivisionByZeroError`, etc., fallos del propio código).
+  - `excepcion` — el resto de `\Throwable` (`\Exception` y subclases).
+  - Se guarda mensaje, clase, archivo, línea, traza (recortada) y la URL/método si venía de una petición HTTP. Las excepciones "esperadas" que Laravel ya no reporta por defecto (404, 403, 419, 429, validación) tampoco llegan aquí — solo fallos genuinos.
+- **Cada ejecución de una tarea programada** (ver tabla de arriba) se registra sola, enganchada al evento `Illuminate\Console\Events\ScheduledTaskFinished` en `AppServiceProvider::boot()` — un único listener cubre las 4 tareas actuales y cualquiera que se añada en el futuro, sin tocar `routes/console.php`. Se clasifica como:
+  - `informacion` — terminó con código de salida 0.
+  - `error` — terminó con código de salida distinto de 0.
+- Panel de solo lectura en `/admin/logs` (solo administrador): filtro por tipo, buscador por mensaje/origen, y un modal de detalle con el contexto completo en JSON.
+- **No hay limpieza automática todavía** — la tabla crece sin límite; si hace falta rotarla/purgar registros antiguos, habría que añadir una tarea de mantenimiento aparte.
+
 ### PWA y notificaciones push
 
 - Los usuarios autenticados pueden suscribirse/desuscribirse a notificaciones push desde su perfil (`POST/DELETE /push/suscribirse`, `/push/desuscribirse`).
@@ -135,6 +151,7 @@ Tablas principales (ver `database/migrations` para el detalle completo, 35 migra
 - `obras_literarias` — literatura por pueblo/autor
 - `banners` — contenido HTML único mostrado en la home (`Banner::obtener()` hace `firstOrCreate`)
 - `push_subscriptions` — gestionada por el paquete de WebPush
+- `logs` — errores/excepciones no controlados y ejecuciones de tareas programadas, con `tipo` (`error`/`excepcion`/`informacion`), `origen`, `mensaje` y `contexto` (JSON); ver [Registro de errores y tareas](#registro-de-errores-y-tareas-adminlogs)
 
 ## Estructura del proyecto
 
