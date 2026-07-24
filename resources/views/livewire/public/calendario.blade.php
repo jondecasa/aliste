@@ -50,7 +50,33 @@ new #[Layout('layouts.public')] class extends Component
 
     <div
         class="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14 flex flex-col lg:flex-row gap-8"
-        x-data="{ diaSeleccionado: null, eventosDelDia: [], eventoSeleccionado: null }"
+        x-data="{
+            diaSeleccionado: null,
+            eventosDelDia: [],
+            eventoSeleccionado: null,
+            scrollPanelAlMedio() {
+                if (window.innerWidth >= 1024) return;
+
+                this.$nextTick(() => {
+                    const el = this.$refs.panelEventos;
+                    if (! el) return;
+
+                    const rect = el.getBoundingClientRect();
+                    window.scrollTo({ top: window.scrollY + rect.top - (window.innerHeight / 2), behavior: 'smooth' });
+                });
+            },
+            scrollPanelAlFondo() {
+                if (window.innerWidth >= 1024) return;
+
+                this.$nextTick(() => {
+                    const el = this.$refs.panelEventos;
+                    if (! el) return;
+
+                    const rect = el.getBoundingClientRect();
+                    window.scrollTo({ top: window.scrollY + rect.bottom - window.innerHeight, behavior: 'smooth' });
+                });
+            },
+        }"
     >
         <div class="flex-1 min-w-0">
             @if ($categoriasUsadas->isNotEmpty())
@@ -89,6 +115,7 @@ new #[Layout('layouts.public')] class extends Component
                             eventoSeleccionado = null;
                             diaSeleccionado = info.dateStr;
                             eventosDelDia = eventosDeFecha(info.dateStr);
+                            scrollPanelAlMedio();
                         },
                         eventClick: (info) => {
                             const fechaISO = info.event.startStr.slice(0, 10);
@@ -103,6 +130,7 @@ new #[Layout('layouts.public')] class extends Component
                                 categoria: info.event.extendedProps.categoria,
                                 hora: info.event.start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
                             };
+                            scrollPanelAlFondo();
                         },
                     });
                     calendario.render();
@@ -112,7 +140,7 @@ new #[Layout('layouts.public')] class extends Component
         </div>
 
         <div class="w-full lg:w-[320px] flex-shrink-0">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_24px_rgba(60,30,10,0.08)] sticky top-6 overflow-hidden">
+            <div x-ref="panelEventos" class="bg-white dark:bg-gray-800 rounded-2xl shadow-[0_8px_24px_rgba(60,30,10,0.08)] sticky top-6 overflow-hidden">
                 <template x-if="!diaSeleccionado">
                     <div class="p-6 text-sm text-tinta-muted italic">
                         Haz clic en un día del calendario para ver sus eventos.
@@ -138,7 +166,7 @@ new #[Layout('layouts.public')] class extends Component
                                             imagen: evento.extendedProps.imagen,
                                             categoria: evento.extendedProps.categoria,
                                             hora: new Date(evento.start).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                                        }"
+                                        }; scrollPanelAlFondo()"
                                         class="text-left block"
                                     >
                                         <div class="flex items-center gap-1.5 text-xs font-bold uppercase" :style="{ color: evento.color }" x-text="evento.extendedProps.categoria ?? 'Evento'"></div>
@@ -160,7 +188,7 @@ new #[Layout('layouts.public')] class extends Component
                         </template>
 
                         <div class="p-5">
-                            <button @click="eventoSeleccionado = null" class="text-xs text-tinta-muted hover:text-tinta mb-3">← Volver al día</button>
+                            <button @click="eventoSeleccionado = null; scrollPanelAlMedio()" class="text-xs text-tinta-muted hover:text-tinta mb-3">← Volver al día</button>
 
                             <div class="text-xs font-bold uppercase" :style="{ color: eventoSeleccionado?.color ?? '#78716c' }" x-text="eventoSeleccionado?.categoria ?? 'Evento'"></div>
                             <div class="font-serif font-semibold text-lg text-tinta mt-1" x-text="eventoSeleccionado?.titulo"></div>

@@ -84,7 +84,23 @@ new #[Layout('layouts.public')] class extends Component
         </div>
     @endif
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16" x-data="{ eventoSeleccionado: null }">
+    <div
+        class="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-16"
+        x-data="{
+            eventoSeleccionado: null,
+            scrollPanelAlFondo() {
+                if (window.innerWidth >= 1024) return;
+
+                this.$nextTick(() => {
+                    const el = this.$refs.panelEvento;
+                    if (! el) return;
+
+                    const rect = el.getBoundingClientRect();
+                    window.scrollTo({ top: window.scrollY + rect.bottom - window.innerHeight, behavior: 'smooth' });
+                });
+            },
+        }"
+    >
         <h2 class="font-serif text-xl sm:text-[28px] text-tinta mb-5 sm:mb-7">Calendario de la comarca</h2>
 
         <div
@@ -113,6 +129,7 @@ new #[Layout('layouts.public')] class extends Component
                             categoria: info.event.extendedProps.categoria,
                             fecha: info.event.start.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
                         };
+                        scrollPanelAlFondo();
                     },
                 });
                 calendario.render();
@@ -121,6 +138,7 @@ new #[Layout('layouts.public')] class extends Component
         ></div>
 
         <div
+            x-ref="panelEvento"
             x-show="eventoSeleccionado"
             x-cloak
             class="mt-6 bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(60,30,10,0.08)] flex flex-col sm:flex-row"
