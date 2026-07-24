@@ -19,24 +19,6 @@ new #[Layout('layouts.public')] class extends Component
                 derechos tienes al respecto.
             </p>
 
-            <div class="not-prose rounded-2xl bg-crema-suave dark:bg-gray-800/60 border border-tinta-borde p-5 sm:p-6 mb-8">
-                <div class="text-xs text-tinta-muted uppercase font-bold tracking-wide mb-3">Desarrollador y propiedad</div>
-                <p class="text-sm text-tinta leading-relaxed mb-3">
-                    Aliste.es es un proyecto personal, propiedad de <strong>Jon de Casa</strong>, quien lo ha
-                    desarrollado y se encarga de su mantenimiento.
-                </p>
-                <dl class="text-sm text-tinta space-y-1.5">
-                    <div class="flex gap-2">
-                        <dt class="font-semibold flex-shrink-0">Web:</dt>
-                        <dd><a href="https://jondecasa.com/" target="_blank" rel="noopener" class="text-terracota font-semibold underline">jondecasa.com</a></dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-semibold flex-shrink-0">Contacto:</dt>
-                        <dd><a href="mailto:jonapweb@gmail.com" class="text-terracota font-semibold underline">jonapweb@gmail.com</a></dd>
-                    </div>
-                </dl>
-            </div>
-
             <h2>¿Qué datos recopilamos?</h2>
             <ul>
                 <li>
@@ -118,6 +100,14 @@ new #[Layout('layouts.public')] class extends Component
                 Si tienes cualquier duda sobre esta política de privacidad, puedes contactar con nosotros en el
                 <a href="{{ route('contacto') }}" wire:navigate>formulario de contacto</a> o escribiendo a
                 <a href="mailto:contacto@aliste.es">contacto@aliste.es</a>.
+            </p>
+
+            <h2>Desarrollador y propiedad</h2>
+            <p>
+                Aliste.es es un proyecto personal, propiedad de <strong>Jon de Casa</strong>, quien lo ha
+                desarrollado y se encarga de su mantenimiento. Puedes visitar su web en
+                <a href="https://jondecasa.com/" target="_blank" rel="noopener">jondecasa.com</a> o escribirle a
+                <a href="mailto:jonapweb@gmail.com">jonapweb@gmail.com</a>.
             </p>
         </div>
     </div>
