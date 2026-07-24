@@ -112,6 +112,7 @@ Definidas en `routes/console.php`, todas envían un email a `jonapweb@gmail.com`
 | `sitemap:generar` | diario 03:00 | Regenera `public/sitemap.xml` con todas las URLs públicas |
 | `backup:base-datos` | cada 3 días a las 04:00 | Vuelca la base de datos comprimida en `storage/app/backups`, conservando los 10 backups más recientes |
 | `servicios:importar` | manual | Importa/actualiza el listado de servicios publicado en aliste.info (ejecuta el `ServicioSeeder`) |
+| `notificaciones:prueba-admin` | manual, a propósito | Envía una notificación push de prueba **solo** a los administradores con suscripción activa. No está enganchado al programador ni debe estarlo — es una herramienta de diagnóstico para lanzar a mano por SSH (`php artisan notificaciones:prueba-admin` o con `--mensaje="..."`) |
 
 Todas las horas se evalúan en la zona horaria configurada (`Europe/Madrid`, ver [Notas y gotchas](#notas-y-gotchas-conocidos)).
 
