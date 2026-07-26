@@ -67,4 +67,34 @@ class LogsTest extends TestCase
             ->assertSee('Mensaje de detalle')
             ->assertSee('valor');
     }
+
+    public function test_eliminar_visibles_borra_solo_los_registros_del_filtro_actual(): void
+    {
+        $this->actingAs($this->admin());
+
+        RegistroLog::create(['tipo' => RegistroLog::TIPO_ERROR, 'mensaje' => 'Error uno']);
+        RegistroLog::create(['tipo' => RegistroLog::TIPO_ERROR, 'mensaje' => 'Error dos']);
+        RegistroLog::create(['tipo' => RegistroLog::TIPO_INFORMACION, 'mensaje' => 'Info uno']);
+
+        Volt::test('admin.logs')
+            ->set('filtroTipo', RegistroLog::TIPO_ERROR)
+            ->call('eliminarVisibles');
+
+        $this->assertDatabaseCount('logs', 1);
+        $this->assertDatabaseHas('logs', ['mensaje' => 'Info uno']);
+        $this->assertDatabaseMissing('logs', ['mensaje' => 'Error uno']);
+        $this->assertDatabaseMissing('logs', ['mensaje' => 'Error dos']);
+    }
+
+    public function test_eliminar_visibles_sin_filtro_borra_todos_los_registros(): void
+    {
+        $this->actingAs($this->admin());
+
+        RegistroLog::create(['tipo' => RegistroLog::TIPO_ERROR, 'mensaje' => 'Error uno']);
+        RegistroLog::create(['tipo' => RegistroLog::TIPO_INFORMACION, 'mensaje' => 'Info uno']);
+
+        Volt::test('admin.logs')->call('eliminarVisibles');
+
+        $this->assertDatabaseCount('logs', 0);
+    }
 }

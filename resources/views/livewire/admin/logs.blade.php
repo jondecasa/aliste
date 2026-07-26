@@ -24,17 +24,28 @@ new #[Layout('layouts.admin')] class extends Component
         $this->dispatch('open-modal', 'log-detalle');
     }
 
+    public function eliminarVisibles(): void
+    {
+        $this->consultaFiltrada()->delete();
+
+        $this->resetPage();
+        $this->dispatch('close-modal', 'confirmar-eliminar-visibles');
+    }
+
+    private function consultaFiltrada()
+    {
+        return RegistroLog::query()
+            ->when($this->filtroTipo, fn ($q) => $q->where('tipo', $this->filtroTipo))
+            ->when($this->buscar, fn ($q) => $q->where(function ($sq) {
+                $sq->where('mensaje', 'like', "%{$this->buscar}%")
+                    ->orWhere('origen', 'like', "%{$this->buscar}%");
+            }));
+    }
+
     public function with(): array
     {
         return [
-            'logs' => RegistroLog::query()
-                ->when($this->filtroTipo, fn ($q) => $q->where('tipo', $this->filtroTipo))
-                ->when($this->buscar, fn ($q) => $q->where(function ($sq) {
-                    $sq->where('mensaje', 'like', "%{$this->buscar}%")
-                        ->orWhere('origen', 'like', "%{$this->buscar}%");
-                }))
-                ->latest()
-                ->paginate(25),
+            'logs' => $this->consultaFiltrada()->latest()->paginate(25),
             'registroSeleccionado' => $this->verId ? RegistroLog::find($this->verId) : null,
         ];
     }
@@ -43,6 +54,16 @@ new #[Layout('layouts.admin')] class extends Component
 <div>
     <div class="flex items-center justify-between mb-6">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">Registros</h2>
+
+        @if ($logs->total() > 0)
+            <button
+                type="button"
+                x-on:click="$dispatch('open-modal', 'confirmar-eliminar-visibles')"
+                class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition"
+            >
+                Eliminar visibles
+            </button>
+        @endif
     </div>
 
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -153,6 +174,31 @@ new #[Layout('layouts.admin')] class extends Component
 
             <div class="mt-6 flex justify-end">
                 <x-secondary-button x-on:click="$dispatch('close')">Cerrar</x-secondary-button>
+            </div>
+        </div>
+    </x-modal>
+
+    <x-modal name="confirmar-eliminar-visibles" focusable maxWidth="sm">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Eliminar registros visibles</h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                @if ($filtroTipo || $buscar)
+                    Se eliminarán solo los registros que coinciden con el filtro/búsqueda actual ({{ $logs->total() }} registro{{ $logs->total() === 1 ? '' : 's' }}).
+                @else
+                    Se eliminarán TODOS los registros ({{ $logs->total() }}).
+                @endif
+                Esta acción no se puede deshacer.
+            </p>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <x-secondary-button x-on:click="$dispatch('close')">Cancelar</x-secondary-button>
+                <button
+                    wire:click="eliminarVisibles"
+                    type="button"
+                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition"
+                >
+                    Eliminar
+                </button>
             </div>
         </div>
     </x-modal>

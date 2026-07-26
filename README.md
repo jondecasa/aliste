@@ -142,8 +142,8 @@ Tabla `logs` (modelo `App\Models\RegistroLog`) que se rellena **automáticamente
 - **Cada ejecución de una tarea programada** (ver tabla de arriba) se registra sola, enganchada al evento `Illuminate\Console\Events\ScheduledTaskFinished` en `AppServiceProvider::boot()` — un único listener cubre las 4 tareas actuales y cualquiera que se añada en el futuro, sin tocar `routes/console.php`. Se clasifica como:
   - `informacion` — terminó con código de salida 0.
   - `error` — terminó con código de salida distinto de 0.
-- Panel de solo lectura en `/admin/logs` (solo administrador): filtro por tipo, buscador por mensaje/origen, y un modal de detalle con el contexto completo en JSON.
-- **No hay limpieza automática todavía** — la tabla crece sin límite; si hace falta rotarla/purgar registros antiguos, habría que añadir una tarea de mantenimiento aparte.
+- Panel en `/admin/logs` (solo administrador): filtro por tipo, buscador por mensaje/origen, un modal de detalle con el contexto completo en JSON, y un botón "Eliminar visibles" que borra los registros que coinciden con el filtro/búsqueda activos en ese momento (si no hay ningún filtro aplicado, borra todos).
+- **No hay limpieza automática todavía** — la tabla crece sin límite salvo borrado manual desde el panel; si hace falta rotarla/purgar registros antiguos de forma programada, habría que añadir una tarea de mantenimiento aparte.
 
 ### PWA y notificaciones push
 
