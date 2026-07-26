@@ -101,7 +101,7 @@ Tres roles (`users.rol`): `administrador`, `redactor`, `invitado`. Definidos com
 
 Los usuarios `invitado` no tienen acceso al panel; solo pueden usar el sitio público, elegir "su pueblo" en el perfil (para ver el enlace "Mi pueblo" y activar el filtro de notificaciones) y suscribirse a notificaciones push.
 
-El enlace "Administración" (visible para administrador y redactor, `@can('redactar-noticias')`) solo aparece en el navbar del **backoffice** (`livewire/layout/navigation.blade.php`, compartido por `layouts/app.blade.php` y `layouts/admin.blade.php`) — **no** en el navbar del sitio público (`layouts/public.blade.php`).
+El enlace "Administración" (visible para administrador y redactor, `@can('redactar-noticias')`) solo aparece en el navbar del **backoffice** (`livewire/layout/navigation.blade.php`, compartido por `layouts/app.blade.php` y `layouts/admin.blade.php`) — **no** en el navbar del sitio público (`layouts/public.blade.php`). En móvil se muestra directamente en la barra superior (junto al botón de menú hamburguesa), no dentro del menú desplegable.
 
 #### Qué ve cada rol
 
