@@ -18,6 +18,7 @@ new #[Layout('layouts.public')] class extends Component
     {
         return [
             'gente' => User::where('pueblo_id', $this->pueblo->id)
+                ->where('bloqueado', false)
                 ->orderBy('name')
                 ->get(),
         ];

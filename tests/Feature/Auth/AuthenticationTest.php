@@ -54,6 +54,23 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_un_usuario_bloqueado_no_puede_autenticarse(): void
+    {
+        $user = User::factory()->create(['bloqueado' => true]);
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', $user->email)
+            ->set('form.password', 'password');
+
+        $component->call('login');
+
+        $component
+            ->assertHasErrors()
+            ->assertNoRedirect();
+
+        $this->assertGuest();
+    }
+
     public function test_navigation_menu_can_be_rendered(): void
     {
         $user = User::factory()->create();

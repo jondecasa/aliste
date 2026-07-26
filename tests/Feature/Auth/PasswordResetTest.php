@@ -35,6 +35,19 @@ class PasswordResetTest extends TestCase
         Notification::assertSentTo($user, ResetPassword::class);
     }
 
+    public function test_un_usuario_bloqueado_no_recibe_el_email_de_restablecimiento(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['bloqueado' => true]);
+
+        Volt::test('pages.auth.forgot-password')
+            ->set('email', $user->email)
+            ->call('sendPasswordResetLink');
+
+        Notification::assertNotSentTo($user, ResetPassword::class);
+    }
+
     public function test_reset_password_screen_can_be_rendered(): void
     {
         Notification::fake();

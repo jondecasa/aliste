@@ -81,7 +81,7 @@ Todo el contenido del sitio se gestiona desde aquí, con permisos según el rol 
 | Servicios | `/admin/servicios` | solo administrador |
 | Música | `/admin/canciones` | solo administrador |
 | Literatura (obras literarias) | `/admin/obras-literarias` | solo administrador |
-| Usuarios (cambio de rol) | `/admin/usuarios` | solo administrador |
+| Usuarios (cambio de rol y bloqueo) | `/admin/usuarios` | solo administrador |
 | Registros (logs) | `/admin/logs` | solo administrador |
 
 Características comunes del panel:
@@ -115,6 +115,14 @@ Todas las páginas públicas del [sitio público](#sitio-público) (home, pueblo
 | Panel — Banner, Pueblos, Categorías, Servicios, Música, Literatura, Usuarios, Registros | ❌ | ❌ | ❌ | ✅ |
 
 Un redactor **sin pueblo asignado** puede entrar al dashboard y gestionar noticias, pero no ve "Eventos" ni "Puntos de interés" en el menú (la gate `gestionar-contenido-pueblo` se lo bloquea hasta que un administrador le asigne un pueblo desde `/admin/usuarios`).
+
+#### Bloqueo de usuarios
+
+Campo `users.bloqueado` (booleano, `false` por defecto), gestionable solo por un administrador desde `/admin/usuarios` (botón que alterna "Bloqueado"/"Desbloqueado"; un administrador no puede bloquearse a sí mismo). Un usuario bloqueado:
+
+- **No puede iniciar sesión**, ni con email/contraseña (`App\Livewire\Forms\LoginForm`) ni con Google (`App\Http\Controllers\Auth\GoogleAuthController`) — en ambos casos se le redirige con un aviso en vez de dejarle entrar.
+- **No aparece en el listado público de "Gente"** de su pueblo (`/pueblos/{pueblo}/gente`).
+- **No puede completar el restablecimiento de contraseña**: `User::sendPasswordResetNotification()` no envía el email si la cuenta está bloqueada, aunque lo pida desde "¿Olvidaste tu contraseña?".
 
 ### Automatización (tareas programadas)
 

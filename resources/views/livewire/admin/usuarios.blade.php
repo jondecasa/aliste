@@ -35,6 +35,16 @@ new #[Layout('layouts.admin')] class extends Component
         User::findOrFail($id)->update(['rol' => $rol]);
     }
 
+    public function cambiarBloqueado(int $id): void
+    {
+        if ($id === auth()->id()) {
+            return;
+        }
+
+        $usuario = User::findOrFail($id);
+        $usuario->update(['bloqueado' => ! $usuario->bloqueado]);
+    }
+
     public function with(): array
     {
         return [
@@ -66,6 +76,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rol</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bloqueado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -86,6 +97,23 @@ new #[Layout('layouts.admin')] class extends Component
                                             <option value="{{ $valor }}" @selected($usuario->rol === $valor)>{{ $etiqueta }}</option>
                                         @endforeach
                                     </select>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                @if ($usuario->id === auth()->id())
+                                    <span class="text-gray-500 dark:text-gray-400">—</span>
+                                @else
+                                    <button
+                                        type="button"
+                                        wire:click="cambiarBloqueado({{ $usuario->id }})"
+                                        @class([
+                                            'px-2.5 py-1 rounded-full text-xs font-semibold transition',
+                                            'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300' => $usuario->bloqueado,
+                                            'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300' => ! $usuario->bloqueado,
+                                        ])
+                                    >
+                                        {{ $usuario->bloqueado ? 'Bloqueado' : 'Desbloqueado' }}
+                                    </button>
                                 @endif
                             </td>
                         </tr>

@@ -51,6 +51,10 @@ class GoogleAuthController extends Controller
             ]);
         }
 
+        if ($user->estaBloqueado()) {
+            return redirect()->route('login')->with('status', 'Esta cuenta ha sido bloqueada.');
+        }
+
         Auth::login($user, remember: true);
 
         Session::regenerate();

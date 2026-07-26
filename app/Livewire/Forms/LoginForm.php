@@ -38,6 +38,14 @@ class LoginForm extends Form
             ]);
         }
 
+        if (Auth::user()->estaBloqueado()) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'form.email' => 'Esta cuenta ha sido bloqueada.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

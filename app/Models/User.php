@@ -30,6 +30,7 @@ class User extends Authenticatable
         'tema' => 'claro',
         'notif_eventos_otros_pueblos' => true,
         'notif_eventos_mi_pueblo' => true,
+        'bloqueado' => false,
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'rol',
+        'bloqueado',
         'pueblo_id',
         'avatar',
         'tema',
@@ -72,6 +74,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'notif_eventos_otros_pueblos' => 'boolean',
             'notif_eventos_mi_pueblo' => 'boolean',
+            'bloqueado' => 'boolean',
         ];
     }
 
@@ -98,6 +101,25 @@ class User extends Authenticatable
     public function esInvitado(): bool
     {
         return $this->rol === self::ROL_INVITADO;
+    }
+
+    public function estaBloqueado(): bool
+    {
+        return (bool) $this->bloqueado;
+    }
+
+    /**
+     * Un usuario bloqueado no debe poder completar el flujo de "olvidé mi
+     * contraseña": se omite el envío del email en vez de dejar que el
+     * enlace de recuperación llegue a una cuenta que no puede acceder.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        if ($this->estaBloqueado()) {
+            return;
+        }
+
+        parent::sendPasswordResetNotification($token);
     }
 
     public function prefiereTemaOscuro(): bool
