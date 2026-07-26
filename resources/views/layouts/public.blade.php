@@ -78,12 +78,6 @@
                         </form>
 
                         @auth
-                            @can('redactar-noticias')
-                                <a href="{{ route('admin.dashboard') }}" wire:navigate
-                                    class="text-[15px] {{ request()->routeIs('admin.*') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
-                                    Administración
-                                </a>
-                            @endcan
                             @if (auth()->user()->pueblo)
                                 <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
                                     class="text-[15px] {{ request()->routeIs('pueblo.calendario') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
@@ -104,12 +98,6 @@
 
                     <div class="flex items-center gap-4 sm:hidden">
                         @auth
-                            @can('redactar-noticias')
-                                <a href="{{ route('admin.dashboard') }}" wire:navigate
-                                    class="text-sm font-semibold {{ request()->routeIs('admin.*') ? 'text-terracota' : 'text-tinta/80' }}">
-                                    Administración
-                                </a>
-                            @endcan
                             @if (auth()->user()->pueblo)
                                 <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
                                     class="text-sm font-semibold {{ request()->routeIs('pueblo.calendario') ? 'text-terracota' : 'text-tinta/80' }}">
