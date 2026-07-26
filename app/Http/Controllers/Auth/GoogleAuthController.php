@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class GoogleAuthController extends Controller
 {
@@ -19,7 +20,16 @@ class GoogleAuthController extends Controller
 
     public function callback(): RedirectResponse
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (InvalidStateException) {
+            // Ocurre si el enlace de Google ha caducado, se ha reutilizado
+            // una URL antigua o alguien visita /auth/google/callback
+            // directamente sin pasar antes por /auth/google/redirigir. No es
+            // un fallo de la aplicación, así que se redirige con un aviso en
+            // vez de dejar que reviente como una excepción no controlada.
+            return redirect()->route('login')->with('status', 'El enlace de acceso con Google ha caducado. Vuelve a intentarlo.');
+        }
 
         $user = User::firstWhere('google_id', $googleUser->getId());
 

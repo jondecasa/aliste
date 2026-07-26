@@ -25,15 +25,14 @@ class BackupBaseDatosCommandTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_invokes_mysqldump_piped_through_gzip(): void
+    public function test_it_invokes_mysqldump_as_an_array_command_without_a_shell(): void
     {
         Process::fake();
 
         $this->artisan('backup:base-datos')->assertSuccessful();
 
         Process::assertRan(function ($process) {
-            return str_contains($process->command, 'mysqldump')
-                && str_contains($process->command, 'gzip');
+            return is_array($process->command) && in_array('mysqldump', $process->command, true);
         });
     }
 
