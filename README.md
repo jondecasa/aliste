@@ -101,6 +101,8 @@ Tres roles (`users.rol`): `administrador`, `redactor`, `invitado`. Definidos com
 
 Los usuarios `invitado` no tienen acceso al panel; solo pueden usar el sitio público, elegir "su pueblo" en el perfil (para ver el enlace "Mi pueblo" y activar el filtro de notificaciones) y suscribirse a notificaciones push.
 
+El enlace "Administración" (visible para administrador y redactor, `@can('redactar-noticias')`) aparece en el navbar público (`layouts/public.blade.php`) tanto en el menú de escritorio como directamente en la barra superior en móvil (junto al logo, antes del botón de menú hamburguesa) — no dentro del propio menú desplegable.
+
 #### Qué ve cada rol
 
 Todas las páginas públicas del [sitio público](#sitio-público) (home, pueblos, servicios, noticias, música, calendario, buscador, contacto, legales, login/registro) son visibles para **cualquiera**, incluso sin haber iniciado sesión. Lo que cambia por rol es el acceso al perfil y al panel de administración:

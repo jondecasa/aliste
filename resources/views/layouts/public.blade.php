@@ -104,6 +104,12 @@
 
                     <div class="flex items-center gap-4 sm:hidden">
                         @auth
+                            @can('redactar-noticias')
+                                <a href="{{ route('admin.dashboard') }}" wire:navigate
+                                    class="text-sm font-semibold {{ request()->routeIs('admin.*') ? 'text-terracota' : 'text-tinta/80' }}">
+                                    Administración
+                                </a>
+                            @endcan
                             @if (auth()->user()->pueblo)
                                 <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
                                     class="text-sm font-semibold {{ request()->routeIs('pueblo.calendario') ? 'text-terracota' : 'text-tinta/80' }}">
@@ -138,9 +144,6 @@
                     <a href="{{ route('musica') }}" wire:navigate class="text-[15px] {{ request()->routeIs('musica') || request()->routeIs('cancion') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Música</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
-                        @can('redactar-noticias')
-                            <a href="{{ route('admin.dashboard') }}" wire:navigate class="text-[15px] {{ request()->routeIs('admin.*') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Administración</a>
-                        @endcan
                         <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
                     @else
                         <a href="{{ route('login') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Entrar</a>
