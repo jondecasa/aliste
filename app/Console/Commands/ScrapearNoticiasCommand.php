@@ -17,13 +17,17 @@ class ScrapearNoticiasCommand extends Command
 {
     protected $signature = 'noticias:scrapear';
 
-    protected $description = 'Importa noticias recientes de la comarca desde ZA49 (máximo 2, publicadas en las últimas 6 horas)';
+    protected $description = 'Importa noticias recientes de la comarca desde ZA49 (máximo 2, publicadas en las últimas 6 horas, descartando duplicados por título similar)';
 
     private const URL_CATEGORIA = 'https://www.za49.es/aliste/';
 
     private const HORAS_RECIENCIA = 6;
 
     private const MAXIMO_POR_EJECUCION = 2;
+
+    private const DIAS_VENTANA_DUPLICADOS = 3;
+
+    private const PORCENTAJE_SIMILITUD_DUPLICADO = 85.0;
 
     public function handle(): int
     {
@@ -36,6 +40,17 @@ class ScrapearNoticiasCommand extends Command
         }
 
         $limite = now()->subHours(self::HORAS_RECIENCIA);
+
+        // Ventana de títulos ya existentes (de esta fuente o de cualquier otra
+        // futura) para detectar el mismo suceso contado con otras palabras,
+        // no solo la misma URL exacta. Se va ampliando con cada candidato
+        // aceptado para no importar tampoco duplicados dentro de esta misma
+        // ejecución.
+        $titulosExistentes = Noticia::where('publicado_en', '>=', now()->subDays(self::DIAS_VENTANA_DUPLICADOS))
+            ->pluck('titulo')
+            ->map(fn (string $titulo) => $this->normalizarTitulo($titulo))
+            ->all();
+
         $candidatos = [];
 
         foreach ($enlaces as $url) {
@@ -49,6 +64,15 @@ class ScrapearNoticiasCommand extends Command
                 continue;
             }
 
+            $tituloNormalizado = $this->normalizarTitulo($datos['titulo']);
+
+            if ($this->existeTituloSimilar($tituloNormalizado, $titulosExistentes)) {
+                $this->info("Descartada por posible duplicado: {$datos['titulo']}");
+
+                continue;
+            }
+
+            $titulosExistentes[] = $tituloNormalizado;
             $candidatos[] = $datos;
         }
 
@@ -183,6 +207,27 @@ class ScrapearNoticiasCommand extends Command
         }
 
         $this->info("Importada: {$datos['titulo']}");
+    }
+
+    private function normalizarTitulo(string $titulo): string
+    {
+        return Str::of($titulo)->ascii()->lower()->squish()->value();
+    }
+
+    /**
+     * @param  array<int, string>  $titulosExistentes  ya normalizados
+     */
+    private function existeTituloSimilar(string $tituloNormalizado, array $titulosExistentes): bool
+    {
+        foreach ($titulosExistentes as $existente) {
+            similar_text($tituloNormalizado, $existente, $porcentaje);
+
+            if ($porcentaje >= self::PORCENTAJE_SIMILITUD_DUPLICADO) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function generarSlugUnico(string $titulo): string
