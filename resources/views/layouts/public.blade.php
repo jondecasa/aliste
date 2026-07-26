@@ -78,6 +78,12 @@
                         </form>
 
                         @auth
+                            @can('redactar-noticias')
+                                <a href="{{ route('admin.dashboard') }}" wire:navigate
+                                    class="text-[15px] {{ request()->routeIs('admin.*') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
+                                    Administración
+                                </a>
+                            @endcan
                             @if (auth()->user()->pueblo)
                                 <a href="{{ route('pueblo.calendario', auth()->user()->pueblo) }}" wire:navigate
                                     class="text-[15px] {{ request()->routeIs('pueblo.calendario') ? 'font-bold text-terracota border-b-2 border-terracota pb-1' : 'text-tinta/80 hover:text-tinta' }}">
@@ -132,6 +138,9 @@
                     <a href="{{ route('musica') }}" wire:navigate class="text-[15px] {{ request()->routeIs('musica') || request()->routeIs('cancion') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Música</a>
                     <a href="{{ route('contacto') }}" wire:navigate class="text-[15px] {{ request()->routeIs('contacto') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Contacto</a>
                     @auth
+                        @can('redactar-noticias')
+                            <a href="{{ route('admin.dashboard') }}" wire:navigate class="text-[15px] {{ request()->routeIs('admin.*') ? 'font-bold text-terracota' : 'text-tinta/80' }}">Administración</a>
+                        @endcan
                         <a href="{{ route('profile') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Mi cuenta</a>
                     @else
                         <a href="{{ route('login') }}" wire:navigate class="text-[15px] text-terracota font-semibold">Entrar</a>

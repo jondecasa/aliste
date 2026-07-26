@@ -7,6 +7,7 @@ use App\Models\ObraLiteraria;
 use App\Models\Pueblo;
 use App\Models\PuntoInteres;
 use App\Models\Servicio;
+use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -31,6 +32,7 @@ new #[Layout('layouts.admin')] class extends Component
                 'Servicios' => Servicio::count(),
                 'Canciones' => Cancion::count(),
                 'Obras literarias' => ObraLiteraria::count(),
+                'Usuarios' => User::count(),
             ],
         ];
     }
