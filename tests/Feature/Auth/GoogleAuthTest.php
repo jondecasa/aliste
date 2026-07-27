@@ -3,7 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Notifications\NuevoUsuarioRegistrado;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -51,5 +53,33 @@ class GoogleAuthTest extends TestCase
         $response->assertRedirect(route('login'));
 
         $this->assertGuest();
+    }
+
+    public function test_un_alta_nueva_por_google_notifica_a_los_administradores(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['rol' => User::ROL_ADMINISTRADOR]);
+        $admin->pushSubscriptions()->create([
+            'endpoint' => 'https://push.example.com/uno',
+            'public_key' => 'clave-publica',
+            'auth_token' => 'token-auth',
+            'content_encoding' => 'aesgcm',
+        ]);
+
+        $googleUser = new SocialiteUser();
+        $googleUser->id = 'google-nuevo-999';
+        $googleUser->email = 'nuevo-por-google@example.com';
+        $googleUser->name = 'Nuevo Por Google';
+
+        $proveedor = Mockery::mock(Provider::class);
+        $proveedor->shouldReceive('user')->andReturn($googleUser);
+
+        Socialite::shouldReceive('driver')->with('google')->andReturn($proveedor);
+
+        $this->get(route('auth.google.callback'));
+
+        $this->assertDatabaseHas('users', ['email' => 'nuevo-por-google@example.com']);
+        Notification::assertSentTo($admin, NuevoUsuarioRegistrado::class);
     }
 }

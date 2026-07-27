@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Listeners\NotificarAdminNuevoRegistro;
 use App\Models\RegistroLog;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
             'gestionar-contenido-pueblo',
             fn (User $user) => $user->esAdministrador() || ($user->esRedactor() && $user->pueblo_id !== null)
         );
+
+        Event::listen(Registered::class, NotificarAdminNuevoRegistro::class);
 
         Event::listen(function (ScheduledTaskFinished $event) {
             RegistroLog::registrarTareaProgramada(

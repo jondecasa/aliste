@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -49,6 +50,8 @@ class GoogleAuthController extends Controller
                 'password' => Str::password(32),
                 'email_verified_at' => now(),
             ]);
+
+            event(new Registered($user));
         }
 
         if ($user->estaBloqueado()) {

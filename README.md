@@ -159,6 +159,7 @@ Tabla `logs` (modelo `App\Models\RegistroLog`) que se rellena **automáticamente
 
 - Los usuarios autenticados pueden suscribirse/desuscribirse a notificaciones push desde su perfil (`POST/DELETE /push/suscribirse`, `/push/desuscribirse`).
 - Dos tipos de notificación (`App\Notifications`): `EventosMiPueblo` (eventos de su propio pueblo) y `EventosPrincipalesOtrosPueblos` (eventos marcados como "principal" en otros pueblos), configurables por el usuario (`notif_eventos_mi_pueblo`, `notif_eventos_otros_pueblos`).
+- `NuevoUsuarioRegistrado`: aviso automático a todos los administradores con suscripción push cada vez que se registra un usuario nuevo (tanto por email/contraseña como por Google), con el texto "Nombre de Pueblo se ha registrado" (o solo "Nombre se ha registrado" si no eligió pueblo). Enganchado al evento nativo de Laravel `Illuminate\Auth\Events\Registered` vía `App\Listeners\NotificarAdminNuevoRegistro` (registrado en `AppServiceProvider::boot()`), no a cada formulario por separado.
 - Claves VAPID configurables por entorno (ver variables de entorno).
 
 ## Modelo de datos
