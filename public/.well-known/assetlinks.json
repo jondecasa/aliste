@@ -5,7 +5,8 @@
             "namespace": "android_app",
             "package_name": "es.aliste.app",
             "sha256_cert_fingerprints": [
-                "59:C1:40:16:B9:9D:F1:15:74:4E:C4:DF:DC:38:B6:B2:98:3A:2D:5C:13:5C:13:AE:EF:90:C4:87:68:80:8C:54"
+                "59:C1:40:16:B9:9D:F1:15:74:4E:C4:DF:DC:38:B6:B2:98:3A:2D:5C:13:5C:13:AE:EF:90:C4:87:68:80:8C:54",
+                "00:57:8B:DA:48:A6:52:29:E9:DA:35:A2:55:E6:5F:F1:D6:F1:C2:8B:AB:FB:DC:D7:DE:9A:D8:22:08:E2:59:38"
             ]
         }
     }
