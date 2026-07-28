@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Listeners\NotificarAdminNuevoRegistro;
+use App\Listeners\RegistrarFalloNotificacionPush;
 use App\Models\RegistroLog;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -10,6 +11,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use NotificationChannels\WebPush\Events\NotificationFailed;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Event::listen(Registered::class, NotificarAdminNuevoRegistro::class);
+        Event::listen(NotificationFailed::class, RegistrarFalloNotificacionPush::class);
 
         Event::listen(function (ScheduledTaskFinished $event) {
             RegistroLog::registrarTareaProgramada(
