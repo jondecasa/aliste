@@ -2,41 +2,32 @@
 
 namespace App\Listeners;
 
-use App\Models\RegistroLog;
 use App\Models\User;
 use App\Notifications\NuevoUsuarioRegistrado;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
 
 class NotificarAdminNuevoRegistro
 {
     public function handle(Registered $event): void
     {
-        // DIAGNÓSTICO TEMPORAL: registrar cada invocación de este listener
-        // para averiguar por qué se dispara dos veces en producción vía web,
-        // pero no al llamar a Notification::send() directamente. Quitar en
-        // cuanto se resuelva el problema de duplicados.
-        RegistroLog::create([
-            'tipo' => RegistroLog::TIPO_INFORMACION,
-            'origen' => 'diagnostico:notificar-admin-nuevo-registro',
-            'mensaje' => 'handle() invocado para usuario '.($event->user->email ?? '?'),
-            'contexto' => [
-                'id_invocacion' => Str::uuid()->toString(),
-                'microtime' => microtime(true),
-                'pid' => getmypid(),
-                'usuario_id' => $event->user->id ?? null,
-                'peticion_inicio' => $_SERVER['REQUEST_TIME_FLOAT'] ?? null,
-                'url' => app()->runningInConsole() ? '(consola)' : request()?->fullUrl(),
-                'metodo_http' => app()->runningInConsole() ? null : request()?->method(),
-                'session_id' => app()->runningInConsole() ? null : session()->getId(),
-                'livewire_header' => app()->runningInConsole() ? null : request()?->header('X-Livewire'),
-            ],
-        ]);
-
         $usuario = $event->user;
 
         if (! $usuario instanceof User) {
+            return;
+        }
+
+        // Guarda atómico: en producción se ha observado que este listener
+        // puede dispararse más de una vez para el mismo evento dentro de una
+        // misma petición (causa no determinada en Livewire). El UPDATE ...
+        // WHERE NULL solo puede tener éxito una vez para un mismo usuario,
+        // así que evita notificar por duplicado sin importar cuántas veces
+        // se invoque handle().
+        $marcado = User::where('id', $usuario->id)
+            ->whereNull('notificacion_registro_enviada_en')
+            ->update(['notificacion_registro_enviada_en' => now()]);
+
+        if ($marcado === 0) {
             return;
         }
 
