@@ -31,14 +31,9 @@ new class extends Component
         suscrito: false,
         cargando: true,
         error: null,
-        diagnostico: '',
         async comprobar() {
             this.suscrito = await window.PushNotificaciones.estadoSuscripcion();
             this.cargando = false;
-
-            this.diagnostico = 'Notification' in window
-                ? ('permiso inicial: ' + Notification.permission)
-                : 'API Notification no disponible';
 
             if (! this.suscrito && window.Notification && Notification.permission === 'default') {
                 this.activar();
@@ -47,14 +42,9 @@ new class extends Component
         async activar() {
             this.error = null;
             try {
-                this.diagnostico += ' | pidiendo permiso...';
-                const permisoAntes = 'Notification' in window ? Notification.permission : '(sin API)';
                 await window.PushNotificaciones.suscribirNotificaciones('{{ config('webpush.vapid.public_key') }}');
                 this.suscrito = true;
-                this.diagnostico += ' | antes: ' + permisoAntes + ' -> ok';
             } catch (e) {
-                const permisoDespues = 'Notification' in window ? Notification.permission : '(sin API)';
-                this.diagnostico += ' | permiso tras el intento: ' + permisoDespues + ' | error: ' + e.message;
                 this.error = e.message;
             }
         },
@@ -96,9 +86,6 @@ new class extends Component
 
         <p x-show="suscrito" class="mt-2 text-sm text-green-600 dark:text-green-400">Notificaciones activadas.</p>
         <p x-show="error" x-text="error" class="mt-2 text-sm text-red-600 dark:text-red-400"></p>
-
-        {{-- DIAGNÓSTICO TEMPORAL: quitar en cuanto se resuelva el problema de permisos. --}}
-        <p x-show="diagnostico" x-text="diagnostico" class="mt-2 text-xs text-gray-500 dark:text-gray-400 break-words"></p>
 
         <div class="mt-4 space-y-2">
             <label class="flex items-start gap-2">
