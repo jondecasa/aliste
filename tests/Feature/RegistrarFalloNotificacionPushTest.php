@@ -48,4 +48,34 @@ class RegistrarFalloNotificacionPushTest extends TestCase
         $this->assertTrue($registro->contexto['suscripcion_caducada']);
         $this->assertSame('https://push.example.com/caducada', $registro->contexto['endpoint']);
     }
+
+    public function test_un_motivo_de_fallo_muy_largo_no_rompe_el_registro_del_log(): void
+    {
+        $usuario = User::factory()->create(['rol' => User::ROL_ADMINISTRADOR]);
+
+        $suscripcion = $usuario->pushSubscriptions()->create([
+            'endpoint' => 'https://push.example.com/motivo-largo',
+            'public_key' => 'clave-publica',
+            'auth_token' => 'token-auth',
+            'content_encoding' => 'aesgcm',
+        ]);
+
+        $peticion = new Request('POST', 'https://push.example.com/motivo-largo');
+        $respuesta = new Response(500, [], str_repeat('detalle del error del servicio push. ', 50));
+
+        $motivoMuyLargo = str_repeat('Motivo de fallo extremadamente largo. ', 50);
+        $reporte = new MessageSentReport($peticion, $respuesta, success: false, reason: $motivoMuyLargo);
+
+        $mensaje = (new WebPushMessage())->title('Aviso')->body('Cuerpo');
+
+        // Antes de esta corrección, esto lanzaba una excepción no capturada
+        // (columna "mensaje" de logs demasiado corta), que rompía en cascada
+        // cualquier flujo que disparara la notificación (p. ej. un registro).
+        event(new NotificationFailed($reporte, PushSubscription::find($suscripcion->id), $mensaje));
+
+        $this->assertDatabaseHas('logs', [
+            'tipo' => RegistroLog::TIPO_ERROR,
+            'origen' => 'notificaciones:push',
+        ]);
+    }
 }
