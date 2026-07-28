@@ -34,6 +34,12 @@ Pedirá la contraseña del keystore de firma.
 
 **Debe hacerse una copia de seguridad de `android.keystore` por separado**, fuera de git (gestor de contraseñas, almacenamiento cifrado, etc.). Si se pierde sin backup, no se podrá volver a publicar actualizaciones de esta app en Play Store con el mismo paquete — habría que publicarla como app nueva.
 
+## Notificaciones push mostradas como "Chrome" en vez de como la app
+
+Aunque la verificación de Digital Asset Links funcione (sin barra de navegador), las notificaciones push pueden seguir mostrándose como "vía Chrome" en lugar de con el icono/nombre de la app — esto depende de la **delegación de notificaciones** de `androidbrowserhelper` (`DelegationService`), que en la versión 2.6.2 tiene un [problema abierto sin resolver](https://github.com/GoogleChrome/android-browser-helper/issues/563) con exactamente este síntoma en `targetSdkVersion`/Android recientes: `Notification.requestPermission()` no se intercepta para delegar al diálogo nativo de Android. No es un fallo de configuración de este proyecto.
+
+Se actualizó la librería a la versión 2.7.2 (la más reciente disponible) como intento de solución, lo que obligó a subir `minSdkVersion` de 21 a 23 (Android 6.0), ya que 2.7.2 no soporta versiones anteriores. No hay confirmación de que esto resuelva el problema — si sigue sin funcionar tras probarlo, es una limitación de la librería de Google, no de este código.
+
 ## Si esta carpeta se pierde
 
 1. `npm install -g @bubblewrap/cli`
