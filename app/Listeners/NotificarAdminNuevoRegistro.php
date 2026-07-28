@@ -26,6 +26,11 @@ class NotificarAdminNuevoRegistro
                 'microtime' => microtime(true),
                 'pid' => getmypid(),
                 'usuario_id' => $event->user->id ?? null,
+                'peticion_inicio' => $_SERVER['REQUEST_TIME_FLOAT'] ?? null,
+                'url' => app()->runningInConsole() ? '(consola)' : request()?->fullUrl(),
+                'metodo_http' => app()->runningInConsole() ? null : request()?->method(),
+                'session_id' => app()->runningInConsole() ? null : session()->getId(),
+                'livewire_header' => app()->runningInConsole() ? null : request()?->header('X-Livewire'),
             ],
         ]);
 
