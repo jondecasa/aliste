@@ -7,12 +7,38 @@ Esta carpeta contiene el **código fuente y la configuración** del proyecto, no
 ## Requisitos para compilar en una máquina nueva
 
 - Node.js y `@bubblewrap/cli` instalado globalmente: `npm install -g @bubblewrap/cli`
-- JDK 17 de **64 bits** (el JDK embebido en `.bubblewrap/jdk` de algunas instalaciones es de 32 bits y falla al reservar el heap de Gradle — usar uno de 64 bits, p. ej. Eclipse Temurin, y apuntarlo con `org.gradle.java.home` en `gradle.properties` si hace falta).
+- JDK 17 de **64 bits**. El JDK embebido en `.bubblewrap/jdk` es de **32 bits** en este equipo y falla al reservar el heap de Gradle (`Could not reserve enough space for 1572864KB object heap`) — no es un problema de RAM real (puede haber de sobra libre), es el límite de espacio de direcciones de un proceso de 32 bits. Solución que persiste entre builds: crear `C:\Users\<usuario>\.gradle\gradle.properties` (la config **global** de Gradle para el usuario, fuera del alcance de Bubblewrap) con:
+  ```
+  org.gradle.java.home=C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.19.10-hotspot
+  ```
+  **No basta con ponerlo en el `gradle.properties` de este proyecto** — Bubblewrap lo regenera y lo borra en cada `bubblewrap build`/`update` que decida sincronizar el proyecto (ver más abajo).
 - Android SDK con la plataforma 36 instalada (Android Studio → SDK Manager).
 - Crear `local.properties` en esta carpeta con:
   ```
   sdk.dir=C:\\ruta\\a\\Android\\Sdk
   ```
+
+## Bubblewrap regenera `app/build.gradle` y revierte parches manuales
+
+`bubblewrap build` comprueba si `twa-manifest.json` cambió desde la última vez (comparando su hash contra `manifest-checksum.txt`). Si detecta un cambio, **pregunta si quiere sincronizar el proyecto** (por defecto que sí) y, al aceptar, regenera `app/build.gradle` desde sus plantillas internas — lo que **revierte cualquier edición manual a campos que no están en `twa-manifest.json`**, en concreto:
+
+- `targetSdkVersion` (Bubblewrap 1.24.1 sigue generando 35 por defecto; este proyecto necesita 36 para el requisito de Google Play de Android 16 — ver más abajo).
+- La versión de `com.google.androidbrowserhelper:androidbrowserhelper` (se actualizó a 2.7.2 a mano; la plantilla de Bubblewrap sigue usando 2.6.2).
+
+Esto pasa **incluso sin querer**, simplemente por editar `twa-manifest.json` a mano (p. ej. `minSdkVersion`) sin regenerar su checksum — Bubblewrap lo detecta como "manifest cambiado" y ofrece sincronizar, revirtiendo los parches de arriba en el proceso.
+
+**Después de cualquier `bubblewrap build` o `bubblewrap update` que haya sincronizado el proyecto**, hay que volver a aplicar a mano en `app/build.gradle`:
+```
+targetSdkVersion 36
+```
+```
+implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.7.2'
+```
+
+Si se edita `twa-manifest.json` a mano (sin pasar por `bubblewrap update`), regenerar también el checksum para que `bubblewrap build` no crea que hay que sincronizar:
+```bash
+node -e "const c=require('crypto'),f=require('fs');f.writeFileSync('manifest-checksum.txt',c.createHash('sha1').update(f.readFileSync('twa-manifest.json')).digest('hex'))"
+```
 
 ## Cómo compilar
 
