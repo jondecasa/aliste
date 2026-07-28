@@ -64,6 +64,7 @@ Web de la comarca de Aliste (Zamora): pueblos, servicios, noticias, eventos, mú
 - **Modo claro/oscuro** — preferencia guardada por usuario autenticado (`users.tema`).
 - **PWA instalable** — `manifest.json` + Service Worker (`public/sw.js`), con notificaciones push suscribibles desde el perfil.
 - **TWA (Trusted Web Activity)** — la web está publicada también como app en Google Play a través de una envoltura TWA (ver `public/.well-known/assetlinks.json`).
+- **SEO básico**: `<meta name="description">` y `<link rel="canonical">` en `layouts/public.blade.php` (reutilizan las mismas variables `$ogDescripcion`/`$ogUrl` ya usadas para Open Graph/Twitter Cards), `robots.txt` con referencia a `sitemap.xml`, y `favicon.ico` real en la raíz (16/32/48px, generado desde `images/logo-aliste.png`) — necesario porque Google y los navegadores lo piden por convención en la raíz del dominio además del `<link rel="icon">` del HTML.
 
 ### Panel de administración (`/admin`)
 

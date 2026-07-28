@@ -15,6 +15,9 @@
             $ogTipoFinal = $ogTipo ?? 'website';
         @endphp
 
+        <meta name="description" content="{{ $ogDescripcionFinal }}">
+        <link rel="canonical" href="{{ $ogUrlFinal }}">
+
         <meta property="og:site_name" content="{{ config('app.name', 'Aliste.es') }}">
         <meta property="og:type" content="{{ $ogTipoFinal }}">
         <meta property="og:title" content="{{ $ogTitulo }}">
