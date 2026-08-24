@@ -16,6 +16,7 @@ class Servicio extends Model
         'slug',
         'prioridad',
         'visto_en_importacion_en',
+        'revisado_en',
         'direccion',
         'codigo_postal',
         'telefono_1',
@@ -32,6 +33,7 @@ class Servicio extends Model
             'latitud' => 'decimal:7',
             'longitud' => 'decimal:7',
             'visto_en_importacion_en' => 'datetime',
+            'revisado_en' => 'datetime',
         ];
     }
 
@@ -43,6 +45,19 @@ class Servicio extends Model
     public function categorias(): BelongsToMany
     {
         return $this->belongsToMany(Categoria::class, 'categoria_servicio');
+    }
+
+    /**
+     * Enlace de búsqueda en Google Maps por nombre + pueblo, para
+     * comprobar rápidamente si el negocio sigue existiendo en la realidad
+     * (aliste.info, la fuente de la importación automática, lleva años sin
+     * actualizarse y no sirve como referencia de qué sigue abierto).
+     */
+    public function getEnlaceMapsAttribute(): string
+    {
+        $consulta = trim($this->nombre.', '.($this->pueblo?->nombre ?? '').', Zamora');
+
+        return 'https://www.google.com/maps/search/?api=1&query='.urlencode($consulta);
     }
 
     /**
