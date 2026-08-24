@@ -91,6 +91,7 @@ class ServicioSeeder extends Seeder
                 $servicio->telefono_2 = $fila['telefono_2'];
                 $servicio->latitud = $fila['latitud'];
                 $servicio->longitud = $fila['longitud'];
+                $servicio->visto_en_importacion_en = now();
                 $servicio->save();
 
                 $categoriaIds = [];

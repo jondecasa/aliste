@@ -13,6 +13,7 @@ new #[Layout('layouts.admin')] class extends Component
     use WithPagination;
 
     public string $buscar = '';
+    public bool $soloNoVistos = false;
 
     public ?int $servicioId = null;
     public ?int $puebloId = null;
@@ -134,11 +135,13 @@ new #[Layout('layouts.admin')] class extends Component
             'servicios' => Servicio::query()
                 ->with('pueblo')
                 ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
+                ->when($this->soloNoVistos, fn ($q) => $q->noVistosEnUltimaImportacion())
                 ->orderBy('prioridad')
                 ->orderBy('nombre')
                 ->paginate(15),
             'pueblos' => Pueblo::orderBy('nombre')->get(),
             'categoriasDisponibles' => Categoria::deGrupo('servicio')->orderBy('nombre')->get(),
+            'totalNoVistos' => Servicio::noVistosEnUltimaImportacion()->count(),
         ];
     }
 }; ?>
@@ -156,6 +159,20 @@ new #[Layout('layouts.admin')] class extends Component
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por nombre..." />
     </div>
 
+    <div class="mb-4">
+        <label class="inline-flex items-center gap-2">
+            <input type="checkbox" wire:model.live="soloNoVistos" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
+            <span class="text-sm text-gray-600 dark:text-gray-400">
+                Mostrar solo los que no aparecieron en la última importación de aliste.info ({{ $totalNoVistos }})
+            </span>
+        </label>
+        @if ($totalNoVistos > 0)
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Puede que hayan cerrado o desaparecido de la fuente original — revisa cada uno antes de borrarlo. Los servicios creados a mano en este panel nunca aparecen aquí.
+            </p>
+        @endif
+    </div>
+
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -165,6 +182,9 @@ new #[Layout('layouts.admin')] class extends Component
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Pueblo</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Teléfono</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Prioridad</th>
+                        @if ($soloNoVistos)
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Visto por última vez</th>
+                        @endif
                         <th class="px-6 py-3 sticky right-0 bg-gray-50 dark:bg-gray-700/50"></th>
                     </tr>
                 </thead>
@@ -175,6 +195,11 @@ new #[Layout('layouts.admin')] class extends Component
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $servicio->pueblo?->nombre }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $servicio->telefono_1 }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $servicio->prioridad }}</td>
+                            @if ($soloNoVistos)
+                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                    {{ $servicio->visto_en_importacion_en?->format('d/m/Y') ?? '—' }}
+                                </td>
+                            @endif
                             <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap sticky right-0 bg-white dark:bg-gray-800">
                                 <x-boton-editar wire:click="editar({{ $servicio->id }})" modal="servicio-form" />
                                 <x-boton-eliminar wire:click="confirmarEliminar({{ $servicio->id }})" />
@@ -182,7 +207,7 @@ new #[Layout('layouts.admin')] class extends Component
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay servicios.</td>
+                            <td colspan="{{ $soloNoVistos ? 6 : 5 }}" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">No hay servicios.</td>
                         </tr>
                     @endforelse
                 </tbody>

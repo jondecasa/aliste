@@ -91,6 +91,7 @@ Características comunes del panel:
 - Subida de imágenes con optimización automática a WebP (`App\Support\OptimizadorImagenes`), usada en pueblos, eventos, puntos de interés, canciones (portada) y avatar de usuario.
 - Canciones admite subir **varios archivos de audio a la vez o en tandas sucesivas** (se van acumulando en vez de sustituirse), cada uno con su propio título editable y opción de borrado individual.
 - Eventos: un redactor puede editar/eliminar cualquier evento de su propio pueblo (no solo los que él creó) mientras la fecha sea hoy o futura; un administrador puede editar cualquier evento sin restricción de fecha.
+- **Servicios "no vistos en la última importación"**: `servicios:importar` (`ServicioSeeder`) marca `visto_en_importacion_en = now()` en cada servicio que encuentra en aliste.info, pero **nunca borra nada** — si un negocio cierra y desaparece de la fuente, su registro se queda sin actualizar para siempre. `/admin/servicios` tiene un filtro ("Mostrar solo los que no aparecieron en la última importación") que compara la fecha de cada servicio contra la más reciente de todos (`Servicio::noVistosEnUltimaImportacion()`), para revisarlos uno a uno y borrarlos a mano con el botón ya existente. Los servicios creados manualmente en el panel nunca aparecen ahí (no tienen `visto_en_importacion_en`).
 
 ### Roles y permisos
 
@@ -137,7 +138,7 @@ Definidas en `routes/console.php`, todas envían un email a `jonapweb@gmail.com`
 | `noticias:scrapear` | 2x/día (14:00 y 22:00) | Scraping de noticias recientes de la comarca desde ZA49 (máx. 2 por ejecución, publicadas en las últimas 6h, descartando duplicados por título similar — ver [gotchas](#notas-y-gotchas-conocidos)) |
 | `sitemap:generar` | diario 03:00 | Regenera `public/sitemap.xml` con todas las URLs públicas |
 | `backup:base-datos` | cada 3 días a las 04:00 | Vuelca la base de datos comprimida en `storage/app/backups`, conservando los 10 backups más recientes |
-| `servicios:importar` | manual | Importa/actualiza el listado de servicios publicado en aliste.info (ejecuta el `ServicioSeeder`) |
+| `servicios:importar` | manual | Importa/actualiza el listado de servicios publicado en aliste.info (ejecuta el `ServicioSeeder`) — nunca borra nada automáticamente, ver más abajo |
 | `notificaciones:prueba-admin` | manual, a propósito | Envía una notificación push de prueba **solo** a los administradores con suscripción activa. No está enganchado al programador ni debe estarlo — es una herramienta de diagnóstico para lanzar a mano por SSH (`php artisan notificaciones:prueba-admin` o con `--mensaje="..."`) |
 
 Todas las horas se evalúan en la zona horaria configurada (`Europe/Madrid`, ver [Notas y gotchas](#notas-y-gotchas-conocidos)).
