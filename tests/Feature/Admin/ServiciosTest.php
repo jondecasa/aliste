@@ -28,23 +28,28 @@ class ServiciosTest extends TestCase
         ]);
     }
 
-    public function test_el_enlace_de_google_maps_usa_las_coordenadas_cuando_existen(): void
+    public function test_el_enlace_de_coordenadas_solo_existe_si_hay_lat_y_long(): void
     {
         $pueblo = Pueblo::create(['nombre' => 'Alcañices', 'slug' => 'alcanices']);
         $servicio = $this->crearServicio($pueblo, 'Bar El Cruce');
         $servicio->update(['latitud' => 41.7091234, 'longitud' => -6.4622345]);
 
-        $enlace = $servicio->fresh()->enlace_maps;
+        $this->assertSame(
+            'https://www.google.com/maps/search/?api=1&query=41.7091234,-6.4622345',
+            $servicio->fresh()->enlace_maps_coordenadas
+        );
 
-        $this->assertSame('https://www.google.com/maps/search/?api=1&query=41.7091234,-6.4622345', $enlace);
+        $sinCoords = $this->crearServicio($pueblo, 'Sin coordenadas');
+
+        $this->assertNull($sinCoords->enlace_maps_coordenadas);
     }
 
-    public function test_el_enlace_de_google_maps_busca_por_nombre_y_pueblo_sin_coordenadas(): void
+    public function test_el_enlace_por_nombre_siempre_existe_como_alternativa(): void
     {
         $pueblo = Pueblo::create(['nombre' => 'Alcañices', 'slug' => 'alcanices']);
         $servicio = $this->crearServicio($pueblo, 'Bar El Cruce');
 
-        $enlace = $servicio->enlace_maps;
+        $enlace = $servicio->enlace_maps_nombre;
 
         $this->assertStringStartsWith('https://www.google.com/maps/search/?api=1&query=', $enlace);
         $this->assertStringContainsString(urlencode('Bar El Cruce, Alcañices, Zamora'), $enlace);

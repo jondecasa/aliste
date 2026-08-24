@@ -240,18 +240,23 @@ new #[Layout('layouts.admin')] class extends Component
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right text-sm space-x-3 whitespace-nowrap sticky right-0 bg-white dark:bg-gray-800">
-                                <a
-                                    href="{{ $servicio->enlace_maps }}"
-                                    target="_blank"
-                                    rel="noopener"
+                                <button
+                                    type="button"
+                                    x-data=""
+                                    x-on:click="
+                                        window.open('{{ $servicio->enlace_maps_nombre }}', '_blank', 'noopener');
+                                        @if ($servicio->enlace_maps_coordenadas)
+                                            window.open('{{ $servicio->enlace_maps_coordenadas }}', '_blank', 'noopener');
+                                        @endif
+                                    "
                                     class="inline-flex items-center justify-center w-8 h-8 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition"
-                                    title="Ver en Google Maps"
+                                    title="{{ $servicio->enlace_maps_coordenadas ? 'Ver en Google Maps (por nombre y por coordenadas)' : 'Ver en Google Maps' }}"
                                 >
                                     <span class="sr-only">Ver en Google Maps</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
                                     </svg>
-                                </a>
+                                </button>
                                 @unless ($servicio->revisado_en)
                                     <button
                                         type="button"
