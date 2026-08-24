@@ -13,6 +13,7 @@ new #[Layout('layouts.admin')] class extends Component
     use WithPagination;
 
     public string $buscar = '';
+    public ?int $puebloFiltroId = null;
     public bool $soloNoVistos = false;
     public bool $ocultarRevisados = false;
 
@@ -141,6 +142,7 @@ new #[Layout('layouts.admin')] class extends Component
             'servicios' => Servicio::query()
                 ->with('pueblo')
                 ->when($this->buscar, fn ($q) => $q->where('nombre', 'like', "%{$this->buscar}%"))
+                ->when($this->puebloFiltroId, fn ($q) => $q->where('pueblo_id', $this->puebloFiltroId))
                 ->when($this->soloNoVistos, fn ($q) => $q->noVistosEnUltimaImportacion())
                 ->when($this->ocultarRevisados, fn ($q) => $q->whereNull('revisado_en'))
                 ->orderBy('prioridad')
@@ -163,8 +165,15 @@ new #[Layout('layouts.admin')] class extends Component
         </x-primary-button>
     </div>
 
-    <div class="mb-4">
+    <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <x-text-input wire:model.live.debounce.300ms="buscar" type="text" class="w-full" placeholder="Buscar por nombre..." />
+
+        <select wire:model.live="puebloFiltroId" class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+            <option value="">Todos los pueblos</option>
+            @foreach ($pueblos as $pueblo)
+                <option value="{{ $pueblo->id }}">{{ $pueblo->nombre }}</option>
+            @endforeach
+        </select>
     </div>
 
     <div class="mb-4">

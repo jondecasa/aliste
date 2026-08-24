@@ -65,4 +65,19 @@ class ServiciosTest extends TestCase
             ->assertSee('Pendiente de revisar')
             ->assertDontSee('Ya revisado');
     }
+
+    public function test_el_filtro_de_pueblo_solo_muestra_servicios_de_ese_pueblo(): void
+    {
+        $this->actingAs($this->admin());
+
+        $alcanices = Pueblo::create(['nombre' => 'Alcañices', 'slug' => 'alcanices']);
+        $rabanales = Pueblo::create(['nombre' => 'Rabanales', 'slug' => 'rabanales']);
+        $this->crearServicio($alcanices, 'Bar de Alcañices');
+        $this->crearServicio($rabanales, 'Bar de Rabanales');
+
+        Volt::test('admin.servicios')
+            ->set('puebloFiltroId', $alcanices->id)
+            ->assertSee('Bar de Alcañices')
+            ->assertDontSee('Bar de Rabanales');
+    }
 }
