@@ -28,7 +28,18 @@ class ServiciosTest extends TestCase
         ]);
     }
 
-    public function test_el_enlace_de_google_maps_incluye_el_nombre_y_el_pueblo(): void
+    public function test_el_enlace_de_google_maps_usa_las_coordenadas_cuando_existen(): void
+    {
+        $pueblo = Pueblo::create(['nombre' => 'Alcañices', 'slug' => 'alcanices']);
+        $servicio = $this->crearServicio($pueblo, 'Bar El Cruce');
+        $servicio->update(['latitud' => 41.7091234, 'longitud' => -6.4622345]);
+
+        $enlace = $servicio->fresh()->enlace_maps;
+
+        $this->assertSame('https://www.google.com/maps/search/?api=1&query=41.7091234,-6.4622345', $enlace);
+    }
+
+    public function test_el_enlace_de_google_maps_busca_por_nombre_y_pueblo_sin_coordenadas(): void
     {
         $pueblo = Pueblo::create(['nombre' => 'Alcañices', 'slug' => 'alcanices']);
         $servicio = $this->crearServicio($pueblo, 'Bar El Cruce');

@@ -48,13 +48,20 @@ class Servicio extends Model
     }
 
     /**
-     * Enlace de búsqueda en Google Maps por nombre + pueblo, para
-     * comprobar rápidamente si el negocio sigue existiendo en la realidad
-     * (aliste.info, la fuente de la importación automática, lleva años sin
-     * actualizarse y no sirve como referencia de qué sigue abierto).
+     * Enlace a Google Maps para comprobar rápidamente si el negocio sigue
+     * existiendo en la realidad (aliste.info, la fuente de la importación
+     * automática, lleva años sin actualizarse y no sirve como referencia de
+     * qué sigue abierto). Si hay coordenadas reales del scraping, se usan
+     * directamente (más fiable que buscar por nombre, que puede confundirse
+     * con negocios homónimos de otro pueblo); si no, se cae a una búsqueda
+     * por nombre + pueblo.
      */
     public function getEnlaceMapsAttribute(): string
     {
+        if ($this->latitud !== null && $this->longitud !== null) {
+            return 'https://www.google.com/maps/search/?api=1&query='.$this->latitud.','.$this->longitud;
+        }
+
         $consulta = trim($this->nombre.', '.($this->pueblo?->nombre ?? '').', Zamora');
 
         return 'https://www.google.com/maps/search/?api=1&query='.urlencode($consulta);
